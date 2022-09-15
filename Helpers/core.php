@@ -81,7 +81,7 @@ function getFreshBootstrap(): mixed
  */
 function env(string $key, mixed $default = null): mixed
 {
-    return $_ENV[$key] ?? $default;
+    return $_ENV[$key] ?: $default;
 }
 
 /**
