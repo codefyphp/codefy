@@ -22,7 +22,7 @@ class PasswordHashCommand extends ConsoleCommand
         parent::__construct($codefy);
     }
 
-    protected function handle(): int
+    public function handle(): int
     {
         $password = $this->getArgument('password');
 

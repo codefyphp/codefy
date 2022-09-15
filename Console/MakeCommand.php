@@ -64,7 +64,7 @@ class MakeCommand extends ConsoleCommand
         ],
     ];
 
-    protected function handle(): int
+    public function handle(): int
     {
         $stub = $this->getArgument('resource');
         $option = $this->getOptions('dir');
