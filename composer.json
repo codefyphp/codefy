@@ -1,0 +1,53 @@
+{
+    "name": "codefyphp/foundation",
+    "type": "project",
+    "description": "Foundation package for creating a new CodeyPHP project.",
+    "keywords": ["codefy","codefyphp","codefy-php","routing","application","container"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joshua Parker",
+            "email": "josh@joshuaparker.blog"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "dragonmantank/cron-expression": "^3.3",
+        "fenom/fenom": "^2.12",
+        "fenom/providers-collection": "^1.0",
+        "qubus/cache": "^2.0",
+        "qubus/error": "^1.0",
+        "qubus/event-dispatcher": "^2.0",
+        "qubus/exception": "^2.0",
+        "qubus/expressive": "^0.1.0",
+        "qubus/filesystem": "^2.0",
+        "qubus/injector": "^2.2",
+        "qubus/mail": "^2.0",
+        "qubus/router": "^2.0",
+        "qubus/security": "^2.0",
+        "qubus/support": "^2.1",
+        "symfony/console": "^6.1",
+        "symfony/options-resolver": "^6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codefy\\Foundation\\": ""
+        },
+        "files": [
+          "Helpers/core.php",
+          "Helpers/path.php"
+        ]
+    },
+    "scripts": {
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "pestphp/pest-plugin": true
+        }
+    }
+}

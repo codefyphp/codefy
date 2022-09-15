@@ -1,0 +1,5 @@
+.idea
+Scheduler/Tests
+vendor
+.php-cs-fixer.cache
+composer.lock

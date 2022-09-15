@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Codefy\Foundation\Scheduler\ValueObject;
+
+use Qubus\Exception\Data\TypeException;
+use Qubus\ValueObjects\Identity\Uuid;
+
+class TaskId extends Uuid
+{
+    /**
+     * @throws TypeException
+     */
+    public static function fromString(?string $id = null): TaskId
+    {
+        return new self($id);
+    }
+}
