@@ -11,6 +11,7 @@ use Qubus\Exception\Data\TypeException;
  * @property-read string base
  * @property-read string bootstrap
  * @property-read string config
+ * @property-read string database
  * @property-read string locale
  * @property-read string public
  * @property-read string storage
@@ -32,6 +33,7 @@ final class Paths
             $paths['base'],
             $paths['bootstrap'],
             $paths['config'],
+            $paths['database'],
             $paths['locale'],
             $paths['public'],
             $paths['storage'],
@@ -40,7 +42,7 @@ final class Paths
         )
         ) {
             throw new TypeException(
-                message: 'Paths array requires the following keys: path, base, bootstrap, config, 
+                message: 'Paths array requires the following keys: path, base, bootstrap, config, database,
                 locale, public, storage, resource, and view'
             );
         }

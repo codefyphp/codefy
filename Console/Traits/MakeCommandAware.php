@@ -17,6 +17,7 @@ use RuntimeException;
 use function glob;
 use function Qubus\Support\Helpers\camel_case;
 use function Qubus\Support\Helpers\studly_case;
+use function str_replace;
 
 trait MakeCommandAware
 {
@@ -27,7 +28,7 @@ trait MakeCommandAware
     private function resolveResource(string $resource, mixed $options): void
     {
         if (!empty($resource)) {
-            $elements = explode('_', $resource);
+            $elements = explode(separator: '_', string: $resource);
             $classNamePrefix = array_shift($elements) ?? null; // class file
             $classNameSuffix = array_pop($elements); // stub file
 
@@ -54,27 +55,37 @@ trait MakeCommandAware
         /* throw an exception if the argument is empty */
         (
             !empty($classNameSuffix) ?: throw new TypeException(
-                'Your stub file is invalid or no argument is supplied.'
+                message: 'Your stub file is invalid or no argument is supplied.'
             )
         );
 
         (
-            in_array($classNameSuffix, array_keys(self::STUBS))
+            in_array(needle: $classNameSuffix, haystack: array_keys(array: self::STUBS))
             ?: throw new TypeException(
-                'Your stub is an invalid stub. Please refer to the allowable stubs you can create. '
-                . implode(', ', array_keys(self::STUBS))
+                message: 'Your stub is an invalid stub. Please refer to the allowable Stubs you can create. '
+                . implode(separator: ', ', array: array_keys(array: self::STUBS))
             )
         );
 
-        $file = $this->getStubFiles($classNameSuffix);
+        $file = $this->getStubFiles(classNameSuffix: $classNameSuffix);
         /* replace the placeholder variables with valid strings */
         [
             $newContentStream,
             $qualifiedClass,
             $qualifiedNamespace
-        ] = $this->resolveStubContentPlaceholders($file, $classNameSuffix, $classNamePrefix);
+        ] = $this->resolveStubContentPlaceholders(
+            file: $file,
+            classNameSuffix: $classNameSuffix,
+            classNamePrefix: $classNamePrefix
+        );
 
-        $this->createClassFromStub($qualifiedClass, $newContentStream, $classNameSuffix, $options, $qualifiedNamespace);
+        $this->createClassFromStub(
+            qualifiedClass: $qualifiedClass,
+            contentStream: $newContentStream,
+            classNameSuffix: $classNameSuffix,
+            options: $options,
+            qualifiedNamespaces: $qualifiedNamespace
+        );
     }
 
     /**
@@ -109,28 +120,30 @@ trait MakeCommandAware
         $filePath = Application::$ROOT_PATH. Application::DS
             . $qualifiedNamespaces . $this->addOptionalDirFlag(options: $options);
 
-        if (!is_dir($filePath)) {
+        $normalizePath = str_replace(search: '\\', replace: Application::DS, subject: $filePath);
+
+        if (!is_dir(filename: $normalizePath)) {
             try {
-                LocalStorage::disk()->createDirectory($filePath);
+                LocalStorage::disk()->createDirectory(location: $normalizePath);
             } catch (FilesystemException $ex) {
-                FileLoggerFactory::error($ex->getMessage());
+                FileLoggerFactory::error(message: $ex->getMessage());
             }
         }
 
-        $realFilepath = realpath(path: $filePath);
+        $realFilepath = realpath(path: $normalizePath);
         $className = $qualifiedClass . self::FILE_EXTENSION;
         $newClassFileAndPath = $realFilepath . Application::DS . $className;
 
         /* We will need to check $newClassFileAndPath doesn't already exist else this will wipe the content */
-        if (file_exists($newClassFileAndPath)) {
+        if (file_exists(filename: $newClassFileAndPath)) {
             throw new MakeCommandFileAlreadyExistsException(
-                sprintf(
+                message: sprintf(
                     '%s file already exists. To recreate you will first need to delete the existing file.',
                     $className
                 )
             );
         }
-        file_put_contents($newClassFileAndPath, $contentStream, LOCK_EX);
+        file_put_contents(filename: $newClassFileAndPath, data: $contentStream, flags: LOCK_EX);
     }
 
     /**
@@ -143,7 +156,7 @@ trait MakeCommandAware
     private function addOptionalDirFlag(mixed $options): string
     {
         return (isset($options) && $options !== '' || $options !== null)
-            ? Application::DS . Inflector::wordsToUpper($options) :
+            ? Application::DS . Inflector::wordsToUpper(class: $options) :
             '';
     }
 
@@ -158,12 +171,11 @@ trait MakeCommandAware
      */
     private function getStubFiles(string $classNameSuffix): string|false
     {
-        //$files = glob(Application::$ROOT_PATH. '/vendor/magmacore/magmacore/src/Stubs/*.stub');
-        $files = glob(Application::$ROOT_PATH. '/stubs/*.stub');
-        if (is_array($files) && count($files)) {
+        $files = glob(pattern: Application::$ROOT_PATH. '/vendor/codefyphp/foundation/Stubs/*.stub');
+        if (is_array(value: $files) && count($files)) {
             foreach ($files as $file) {
-                if (is_file($file)) {
-                    if (str_contains($file, ucwords($classNameSuffix))) {
+                if (is_file(filename: $file)) {
+                    if (str_contains($file, ucwords(string: $classNameSuffix))) {
                         /* return the matching file bases on the class name suffix */
                         return $file;
                     }
@@ -185,7 +197,7 @@ trait MakeCommandAware
         string $classNamePrefix
     ): array|bool {
         if ($file) {
-            $contentStream = file_get_contents($file);
+            $contentStream = file_get_contents(filename: $file);
             if ($contentStream !='') {
                 $patterns = [
                     '{{ class }}',
@@ -199,18 +211,18 @@ trait MakeCommandAware
                 foreach ($patterns as $pattern) {
                     if (str_contains($contentStream, $pattern)) {
                         if (isset($pattern) && $pattern !='') {
-                            $qualifiedClass = studly_case($classNamePrefix . ucwords($classNameSuffix));
+                            $qualifiedClass = studly_case(string: $classNamePrefix . ucwords(string: $classNameSuffix));
 
                             $qualifiedNamespace = array_filter(
-                                self::STUBS,
-                                fn ($value, $key) => $value,
-                                ARRAY_FILTER_USE_BOTH
+                                array: self::STUBS,
+                                callback: fn ($value, $key) => $value,
+                                mode: ARRAY_FILTER_USE_BOTH
                             );
 
                             $_namespace = '';
 
-                            $stubFile = strrchr($file, '/');
-                            $stubFile = str_replace(['/Example', '.stub'], '', $stubFile);
+                            $stubFile = strrchr(haystack: $file, needle: '/');
+                            $stubFile = str_replace(search: ['/Example', '.stub'], replace: '', subject: $stubFile);
                             $_namespace = '';
                             foreach ($qualifiedNamespace as $namespace) {
                                 if (str_contains($namespace, $stubFile)) {
@@ -220,15 +232,20 @@ trait MakeCommandAware
                             }
 
                             /* resolve table_name placeholder for model class */
-                            $tableName = Inflector::pluralize($classNamePrefix) ?? '';
+                            $tableName = Inflector::pluralize(word: $classNamePrefix) ?? '';
                             /* fill the property placeholder */
-                            $property = camel_case($classNamePrefix . ucwords($classNameSuffix)) ?? '';
+                            $property = camel_case(str: $classNamePrefix . ucwords(string: $classNameSuffix)) ?? '';
                             /* resolve class which uses a model as a dependency */
-                            [$modelName, $modelVar] = $this->resolveModelDependency($classNamePrefix, $classNameSuffix);
+                            [$modelName, $modelVar] = $this->resolveModelDependency(
+                                classNamePrefix: $classNamePrefix,
+                                classNameSuffix: $classNameSuffix
+                            );
                             $newContentStream = str_replace(
-                                $patterns,
-                                [$qualifiedClass, $_namespace . ';', $property, $tableName, $modelName, $modelVar],
-                                $contentStream
+                                search: $patterns,
+                                replace: [
+                                    $qualifiedClass, $_namespace . ';', $property, $tableName, $modelName, $modelVar
+                                ],
+                                subject: $contentStream
                             );
 
                             return [
@@ -245,7 +262,7 @@ trait MakeCommandAware
     }
 
     /**
-     * Resolve the model dependency by specifying which stubs class will require a model.
+     * Resolve the model dependency by specifying which Stubs class will require a model.
      *
      * @param string $classNamePrefix
      * @param string $classNameSuffix
@@ -254,8 +271,8 @@ trait MakeCommandAware
     private function resolveModelDependency(string $classNamePrefix, string $classNameSuffix): array|bool
     {
         if ($classNameSuffix === 'fillable' || $classNameSuffix === 'schema' || $classNameSuffix === 'repository') {
-            $model = studly_case($classNamePrefix . 'Model');
-            $property = camel_case($classNamePrefix . 'Model') ?? '';
+            $model = studly_case(string: $classNamePrefix . 'Model');
+            $property = camel_case(str: $classNamePrefix . 'Model') ?? '';
             return [
                 $model,
                 $property

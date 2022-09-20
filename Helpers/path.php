@@ -56,6 +56,17 @@ function config_path(?string $path = null): string
 }
 
 /**
+ * Get the path to the application "database" directory.
+ *
+ * @param string|null $path
+ * @return string
+ */
+function database_path(?string $path = null): string
+{
+    return app(name: 'dir.path')->database.(!is_null__(var: $path) ? Application::DS.$path : '');
+}
+
+/**
  * Get the path to the application "locale" directory.
  *
  * @param string|null $path

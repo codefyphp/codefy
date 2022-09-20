@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }}
+
+use Codefy\Foundation\Support\CodefyServiceProvider;
+
+final class {{ class }} extends CodefyServiceProvider
+{
+    /**
+     * {@inheritDoc}
+     */
+    public function register(): void
+    {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function boot(): void
+    {
+    }
+}

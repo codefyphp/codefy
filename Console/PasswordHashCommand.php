@@ -19,16 +19,16 @@ class PasswordHashCommand extends ConsoleCommand
 
     public function __construct(protected Application $codefy)
     {
-        parent::__construct($codefy);
+        parent::__construct(codefy: $codefy);
     }
 
     public function handle(): int
     {
-        $password = $this->getArgument('password');
+        $password = $this->getArgument(key: 'password');
 
-        $hashedPassword = Password::hash($password);
+        $hashedPassword = Password::hash(password: $password);
 
-        $this->terminalRaw(sprintf(
+        $this->terminalRaw(string: sprintf(
             'Your hashed password is: <comment>%s</comment>',
             $hashedPassword
         ));

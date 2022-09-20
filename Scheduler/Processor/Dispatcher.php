@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Foundation\Scheduler\Processor;
 
-use Qubus\Console\Processor\BaseProcessor;
 use Qubus\EventDispatcher\EventDispatcher;
 use Stringable;
 
@@ -12,19 +11,26 @@ class Dispatcher extends BaseProcessor implements Stringable, Processor
 {
     protected EventDispatcher $dispatcher;
 
-    public function __construct(string $command)
-    {
-        $this->command = $command;
-    }
-
     public function getCommand(): string
     {
         return $this->command;
     }
 
-    public function run()
+    public function run(): bool
     {
-        return $this->dispatcher->dispatch($this->command);
+        if ($this->preventOverlapping &&
+            ! $this->mutex->tryLock($this)
+        ) {
+            return false;
+        }
+
+        $this->callBeforeCallbacks();
+
+        $this->dispatcher->dispatch($this->command);
+
+        $this->callAfterCallbacks();
+
+        return true;
     }
 
     public function setDispatcher(EventDispatcher $dispatcher): static

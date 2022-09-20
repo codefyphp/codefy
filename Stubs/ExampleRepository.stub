@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }}
+
+use Codefy\Domain\Aggregate\AggregateRepository
+use Codefy\Domain\EventSourcing\CorruptEventStreamException;
+use Codefy\Traits\IdentityMapAware;;
+
+final class {{ class }} implements AggregateRepository
+{
+    use IdentityMapAware;
+
+    /**
+     * Loads an aggregate from the given aggregate id.
+     *
+     * @param AggregateId $aggregateId
+     * @return RecordsEvents|null
+     * @throws AggregateNotFoundException|CorruptEventStreamException
+     */
+    public function loadAggregateRoot(AggregateId $aggregateId): RecordsEvents|null
+    {
+    }
+
+    /**
+     * Persist an aggregate.
+     *
+     * @param RecordsEvents $aggregate
+     * @return void
+     */
+    public function saveAggregateRoot(RecordsEvents $aggregate): void
+    {
+    }
+}

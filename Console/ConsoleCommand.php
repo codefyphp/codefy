@@ -22,18 +22,18 @@ abstract class ConsoleCommand extends SymfonyCommand
     protected string $name = '';
     protected string $description = '';
     protected string $help = '';
-    /* refers to name, type, description argument */
+    /* Refers to name, type, description argument. */
     protected array $args = [];
-    /* refers to name, shortcut, type, description and default */
+    /* Refers to name, shortcut, type, description and default. */
     protected array $options = [];
     protected InputInterface $input;
     protected OutputInterface $output;
 
     public function __construct(protected Application $codefy)
     {
-        $this->setName($this->name)
-            ->setDescription($this->description)
-            ->setHelp($this->help);
+        $this->setName(name: $this->name)
+            ->setDescription(description: $this->description)
+            ->setHelp(help: $this->help);
         parent::__construct();
     }
 
@@ -66,88 +66,96 @@ abstract class ConsoleCommand extends SymfonyCommand
         $parameters = new ReflectionMethod(objectOrMethod: $this, method: $method);
 
         foreach ($parameters->getParameters() as $arg) {
-            $classParameters[] = $this->codefy->make(name: $arg->getType()->getName());
+            $classParameters[] = $arg->getType()->getName();
         }
 
         if ($parameters->getNumberOfParameters() > 0) {
-            return (int) $this->codefy->call(closure: [$this, $method], parameters: $classParameters);
+            return (int) $this->codefy->execute(callableOrMethodStr: [$this, $method], args: $classParameters);
         }
 
-        return (int) $this->codefy->call(closure: [$this, $method]);
+        return (int) $this->codefy->execute(callableOrMethodStr: [$this, $method]);
     }
 
     /**
-     * Returns the argument value for the given argument name
+     * Returns the argument value for the given argument name.
+     *
      * @param string|null $key
      * @return mixed
      */
     protected function getArgument(?string $key = null): mixed
     {
-        return $this->input->getArgument($key) ?? '';
+        return $this->input->getArgument(name: $key) ?? '';
     }
 
     /**
-     * Returns the option value for the given option name
+     * Returns the option value for the given option name.
+     *
      * @param string|null $key
      * @return bool|string|string[]
      */
     protected function getOptions(?string $key = null): mixed
     {
-        return $this->input->getOption($key) ?? '';
+        return $this->input->getOption(name: $key) ?? '';
     }
 
     /**
-     * Outputs the string to the console without any tag
+     * Outputs the string to the console without any tag.
+     *
      * @param string $string
      * @return mixed
      */
     protected function terminalRaw(string $string): mixed
     {
-        return $this->output->writeln($string);
+        return $this->output->writeln(messages: $string);
     }
 
     /**
-     * output to the terminal wrap in info tags
+     * Output to the terminal wrap in info tags.
+     *
      * @param string $string
      * @return string
      */
     protected function terminalInfo(string $string): mixed
     {
-        return $this->output->writeln('<info>' . $string . '</info>');
+        return $this->output->writeln(messages: '<info>' . $string . '</info>');
     }
 
     /**
-     * output to the terminal wrap in comment tags
+     * Output to the terminal wrap in comment tags.
+     *
      * @param string $string
      * @return string
      */
     protected function terminalComment(string $string): mixed
     {
-        return $this->output->writeln('<comment>' . $string . '</comment>');
+        return $this->output->writeln(messages: '<comment>' . $string . '</comment>');
     }
 
     /**
-     * output to the terminal wrap in question tags
+     * Output to the terminal wrap in question tags.
+     *
      * @param string $string
      * @return string
      */
     protected function terminalQuestion(string $string): mixed
     {
-        return $this->output->writeln('<question>' . $string . '</question>');
+        return $this->output->writeln(messages: '<question>' . $string . '</question>');
     }
 
     /**
-     * output to the terminal wrap in error tags
+     * Output to the terminal wrap in error tags.
+     *
      * @param string $string
      * @return string
      */
     protected function terminalError(string $string): mixed
     {
-        return $this->output->writeln('<error>' . $string . '</error>');
+        return $this->output->writeln(messages: '<error>' . $string . '</error>');
     }
 
     /**
-     * $arg[0] = argument name, $arg[1] = argument type and $arg[2] = argument description
+     * $arg[0] = argument name, $arg[1] = argument type and $arg[2] = argument description.
+     *
      * @return ConsoleCommand|bool
      * @throws TypeException
      */
@@ -159,9 +167,9 @@ abstract class ConsoleCommand extends SymfonyCommand
 
         foreach ($this->args as $arg) {
             return match ($arg[1]) { /* match based on the argument type */
-                'required' => $this->addArgument($arg[0], InputArgument::REQUIRED, $arg[2]),
-                'optional' => $this->addArgument($arg[0], InputArgument::OPTIONAL, $arg[2]),
-                'array' => $this->addArgument($arg[0], InputArgument::IS_ARRAY, $arg[2]),
+                'required' => $this->addArgument(name: $arg[0], mode: InputArgument::REQUIRED, description: $arg[2]),
+                'optional' => $this->addArgument(name: $arg[0], mode: InputArgument::OPTIONAL, description: $arg[2]),
+                'array' => $this->addArgument(name: $arg[0], mode: InputArgument::IS_ARRAY, description: $arg[2]),
                 default => throw new TypeException(message: 'Invalid input argument passed.')
             };
         }
@@ -181,12 +189,37 @@ abstract class ConsoleCommand extends SymfonyCommand
 
         foreach ($this->options as $option) {
             return match ($option[2]) {
-                'none' => $this->addOption($option[0], $option[1], InputOption::VALUE_NONE, $option[3]),
-                'required' => $this->addOption($option[0], $option[1], InputOption::VALUE_REQUIRED, $option[3]),
-                'optional' => $this->addOption($option[0], $option[1], InputOption::VALUE_OPTIONAL, $option[3]),
-                'array' => $this->addOption($option[0], $option[1], InputOption::VALUE_IS_ARRAY, $option[3]),
-                'negatable' => $this->addOption($option[0], $option[1], InputOption::VALUE_NEGATABLE, $option[3]),
-                default => throw new TypeException('Invalid input argument passed.')
+                'none' => $this->addOption(
+                    name: $option[0],
+                    shortcut: $option[1],
+                    mode: InputOption::VALUE_NONE,
+                    description: $option[3]
+                ),
+                'required' => $this->addOption(
+                    name: $option[0],
+                    shortcut: $option[1],
+                    mode: InputOption::VALUE_REQUIRED,
+                    description: $option[3]
+                ),
+                'optional' => $this->addOption(
+                    name:  $option[0],
+                    shortcut:  $option[1],
+                    mode: InputOption::VALUE_OPTIONAL,
+                    description: $option[3]
+                ),
+                'array' => $this->addOption(
+                    name: $option[0],
+                    shortcut: $option[1],
+                    mode: InputOption::VALUE_IS_ARRAY,
+                    description: $option[3]
+                ),
+                'negatable' => $this->addOption(
+                    name: $option[0],
+                    shortcut: $option[1],
+                    mode: InputOption::VALUE_NEGATABLE,
+                    description: $option[3]
+                ),
+                default => throw new TypeException(message: 'Invalid input argument passed.')
             };
         }
 

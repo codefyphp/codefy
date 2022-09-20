@@ -28,29 +28,24 @@ class MakeCommand extends ConsoleCommand
 
     protected string $help = 'Command which can generate a class file from a set of predefined stub files';
 
-    /* @var array stubs */
+    /* @var array Stubs */
     private const STUBS = [
-        'controller'            => 'Codefy\Foundation\Infrastructure\Http\Controllers',
-        'resource-controller'   => 'Codefy\Foundation\Infrastructure\Http\Controllers',
-        'rest-controller'       => 'Codefy\Foundation\Infrastructure\Http\Controllers',
-        'repository'    => 'App\Repository',
-        'fillable'      => 'App\Database\Fillable',
-        'schema'        => 'App\Database\Schema',
-        'form'          => 'App\Forms',
-        'entity'        => 'App\Entity',
-        'model'         => 'App\Model',
-        'validate'      => 'App\Validate',
-        'event'         => 'App\Event',
-        'listener'      => 'App\EventListener',
-        'subscriber'    => 'App\EventSubscriber',
-        'middleware'    => 'App\Middleware'
+        'controller'                => 'App\Infrastructure\Http\Controllers',
+        'resource-controller'       => 'App\Infrastructure\Http\Controllers',
+        'rest-controller'           => 'App\Infrastructure\Http\Controllers',
+        'aggregate'                 => 'App\Domain',
+        'eventsourced-aggregate'    => 'App\Domain',
+        'repository'                => 'App\Infrastructure\Persistence\Repository',
+        'domain-event'              => 'App\Domain',
+        'subscriber'                => 'App\Domain',
+        'service-provider'          => 'App\Infrastructure\Providers',
     ];
 
     protected array $args = [
         [
             'resource',
             'required',
-            'What do you want to make. You can make the following: [controller, model, aggregate, form, schema etc..'
+            'What do you want to make. You can make the following: [controller, model, aggregate, etc..'
         ],
     ];
 
@@ -66,15 +61,15 @@ class MakeCommand extends ConsoleCommand
 
     public function handle(): int
     {
-        $stub = $this->getArgument('resource');
-        $option = $this->getOptions('dir');
+        $stub = $this->getArgument(key: 'resource');
+        $option = $this->getOptions(key: 'dir');
 
         try {
-            $this->resolveResource($stub, $option);
-            $this->terminalQuestion('Your file was created successfully');
+            $this->resolveResource(resource: $stub, options: $option);
+            $this->terminalQuestion(string: 'Your file was created successfully');
             return ConsoleCommand::SUCCESS;
         } catch (MakeCommandFileAlreadyExistsException|TypeException|RuntimeException|FilesystemException $e) {
-            $this->terminalError(sprintf('%s', $e->getMessage()));
+            $this->terminalError(string: sprintf('%s', $e->getMessage()));
         } finally {
             return ConsoleCommand::FAILURE;
         }

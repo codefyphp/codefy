@@ -136,7 +136,7 @@ class ConsoleKernel
     protected function getCodex(): Codex
     {
         if (null === $this->codex) {
-            return $this->codex = new Codex($this->codefy);
+            return $this->codex = new Codex(codefy: $this->codefy);
         }
 
         return $this->codex;
@@ -149,9 +149,9 @@ class ConsoleKernel
      */
     protected function loadCoreCommands(): void
     {
-        $this->registerCommand(new MakeCommand($this->codefy));
-        $this->registerCommand(new ScheduleRunCommand($this->schedule, $this->codefy));
-        $this->registerCommand(new PasswordHashCommand($this->codefy));
+        $this->registerCommand(new MakeCommand(codefy: $this->codefy));
+        $this->registerCommand(new ScheduleRunCommand(schedule: $this->schedule, codefy: $this->codefy));
+        $this->registerCommand(new PasswordHashCommand(codefy: $this->codefy));
     }
 
     /**
@@ -169,6 +169,6 @@ class ConsoleKernel
     {
         $this->bootstrap();
 
-        return $this->getCodex()->call($command, $parameters, $outputBuffer);
+        return $this->getCodex()->call(command: $command, parameters: $parameters, outputBuffer: $outputBuffer);
     }
 }

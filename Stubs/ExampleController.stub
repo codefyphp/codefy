@@ -1,0 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }}
+
+use Codefy\Foundation\Http\BaseController;
+
+class {{ class }} extends BaseController
+{
+
+}
