@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace {{ namespace }}
 
-use Codefy\Domain\Aggregate\AggregateRepository
+use Codefy\Domain\Aggregate\AggregateId;
+use Codefy\Domain\Aggregate\AggregateNotFoundException;
+use Codefy\Domain\Aggregate\AggregateRepository;
+use Codefy\Domain\Aggregate\RecordsEvents;
 use Codefy\Domain\EventSourcing\CorruptEventStreamException;
-use Codefy\Traits\IdentityMapAware;;
+use Codefy\Traits\IdentityMapAware;
 
 final class {{ class }} implements AggregateRepository
 {
