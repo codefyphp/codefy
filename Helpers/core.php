@@ -24,7 +24,7 @@ use function rtrim;
  */
 function app(?string $name = null, array $args = []): mixed
 {
-    $app = getFreshBootstrap();
+    $app = get_fresh_bootstrap();
 
     if (is_null__($name)) {
         return $app->getContainer();
@@ -54,7 +54,7 @@ function config(string $key, array|bool $set = false)
  *
  * @return mixed
  */
-function getFreshBootstrap(): mixed
+function get_fresh_bootstrap(): mixed
 {
     if (file_exists($file = __DIR__ . '/../../../../../bootstrap/app.php')) {
         return require($file);
