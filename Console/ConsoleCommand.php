@@ -66,7 +66,7 @@ abstract class ConsoleCommand extends SymfonyCommand
         $parameters = new ReflectionMethod(objectOrMethod: $this, method: $method);
 
         foreach ($parameters->getParameters() as $arg) {
-            $classParameters[] = $arg->getType()->getName();
+            $classParameters[] = $this->codefy->make(name: $arg->getType()->getName());
         }
 
         if ($parameters->getNumberOfParameters() > 0) {

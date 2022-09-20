@@ -30,15 +30,15 @@ class MakeCommand extends ConsoleCommand
 
     /* @var array Stubs */
     private const STUBS = [
-        'controller'                => 'App\Infrastructure\Http\Controllers',
-        'resource-controller'       => 'App\Infrastructure\Http\Controllers',
-        'rest-controller'           => 'App\Infrastructure\Http\Controllers',
-        'aggregate'                 => 'App\Domain',
-        'eventsourced-aggregate'    => 'App\Domain',
-        'repository'                => 'App\Infrastructure\Persistence\Repository',
-        'domain-event'              => 'App\Domain',
-        'subscriber'                => 'App\Domain',
-        'service-provider'          => 'App\Infrastructure\Providers',
+        'controller'               => 'App\Infrastructure\Http\Controllers',
+        'resourceController'       => 'App\Infrastructure\Http\Controllers',
+        'restController'           => 'App\Infrastructure\Http\Controllers',
+        'aggregate'                => 'App\Domain',
+        'eventSourcedAggregate'    => 'App\Domain',
+        'repository'               => 'App\Infrastructure\Persistence\Repository',
+        'domainEvent'              => 'App\Domain',
+        'subscriber'               => 'App\Domain',
+        'serviceProvider'          => 'App\Infrastructure\Providers',
     ];
 
     protected array $args = [
