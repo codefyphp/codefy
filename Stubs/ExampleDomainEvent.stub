@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }}
+
+use Codefy\Domain\EventSourcing\AggregateChanged;
+use Codefy\Domain\EventSourcing\DomainEvent;
+
+final class {{ class }} extends AggregateChanged implements DomainEvent
+{
+
+}

@@ -92,5 +92,5 @@ function env(string $key, mixed $default = null): mixed
  */
 function db(): OrmBuilder
 {
-    return Application::getDB();
+    return Application::$APP->getDB();
 }

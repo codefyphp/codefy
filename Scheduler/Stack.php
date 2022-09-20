@@ -106,7 +106,7 @@ class Stack
 
     public function run(): void
     {
-        $schedule = new Schedule($this->options['timezone']);
+        $schedule = new Schedule($this->options['timezone'], $this->options['mutex']);
 
         foreach ($this->tasks() as $task) {
             if (is_false__($task->getOption('enabled'))) {

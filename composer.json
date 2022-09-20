@@ -1,7 +1,7 @@
 {
     "name": "codefyphp/foundation",
     "type": "project",
-    "description": "Foundation package for creating a new CodeyPHP project.",
+    "description": "Foundation package for the CodefyPHP framework.",
     "keywords": ["codefy","codefyphp","codefy-php","routing","application","container"],
     "license": "MIT",
     "authors": [

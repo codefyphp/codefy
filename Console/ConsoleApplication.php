@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ConsoleApplication extends SymfonyApplication
 {
-    private bool|BufferedOutput $lastOutput;
+    private OutputInterface|string|null $lastOutput;
 
     public function __construct(protected Application $codefy)
     {
@@ -26,9 +26,9 @@ class ConsoleApplication extends SymfonyApplication
 
     public function run(InputInterface $input = null, OutputInterface $output = null): int
     {
-        $this->getCommandName($input = $input ?: new ArgvInput());
+        $this->getCommandName(input: $input = $input ?: new ArgvInput());
 
-        $exitCode = parent::run($input, $output);
+        $exitCode = parent::run(input: $input, output: $output);
 
         return $exitCode;
     }
@@ -36,17 +36,17 @@ class ConsoleApplication extends SymfonyApplication
     /**
      * @throws Exception
      */
-    public function call($command, array $parameters = [], bool $outputBuffer = null): int
+    public function call($command, array $parameters = [], bool|OutputInterface $outputBuffer = null): int
     {
-        [$command, $input] = $this->parseCommand($command, $parameters);
+        [$command, $input] = $this->parseCommand(command: $command, parameters: $parameters);
 
         if (! $this->has($command)) {
-            throw new CommandNotFoundException(sprintf('The command "%s" does not exist.', $command));
+            throw new CommandNotFoundException(message: sprintf('The command "%s" does not exist.', $command));
         }
 
         return $this->run(
             $input,
-            $this->lastOutput = $outputBuffer ?: new BufferedOutput()
+            $this->lastOutput = ($outputBuffer instanceof OutputInterface) ? new BufferedOutput() : ''
         );
     }
 

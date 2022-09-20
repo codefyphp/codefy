@@ -68,26 +68,31 @@ class Application extends Container
         }
 
         self::$APP = $this;
-
         self::$ROOT_PATH = $this->basePath;
 
-        $this->registerCoreAliases();
+        parent::__construct(InjectorFactory::create($this->coreAliases()));
         $this->registerDefaultServiceProviders();
-
-        parent::__construct(InjectorFactory::create([]));
     }
 
     /**
      * @throws Exception
      */
-    public static function getDbConnection(): Connection
+    public function getDbConnection(): Connection
     {
+        $config = $this->make(name: 'codefy.config');
+
+        $connection = env(key: 'DB_CONNECTION', default: 'default');
+
         return DB::connection([
-            'driver' => env(key: 'DB_DRIVER'),
-            'username' => env(key: 'DB_USER'),
-            'password' => env(key: 'DB_PASSWORD'),
-            'dbname' => env(key: 'DB_NAME'),
-            'prefix' => env(key: 'DB_TABLE_PREFIX'),
+            'driver' => $config->getConfigKey("connections.{$connection}.driver"),
+            'host' => $config->getConfigKey("connections.{$connection}.host", 'localhost'),
+            'port' => $config->getConfigKey("connections.{$connection}.port", 3306),
+            'charset' => $config->getConfigKey("connections.{$connection}.charset", 'utf8mb4'),
+            'collation' => $config->getConfigKey("connections.{$connection}.collation", 'utf8mb4_unicode_ci'),
+            'username' => $config->getConfigKey("connections.{$connection}.user"),
+            'password' => $config->getConfigKey("connections.{$connection}.password"),
+            'dbname' => $config->getConfigKey("connections.{$connection}.dbname"),
+            'prefix' => $config->getConfigKey("connections.{$connection}.prefix", ''),
         ]);
     }
 
@@ -95,11 +100,15 @@ class Application extends Container
      * @return OrmBuilder|null
      * @throws Exception
      */
-    public static function getDB(): ?OrmBuilder
+    public function getDB(): ?OrmBuilder
     {
+        $config = $this->make(name: 'codefy.config');
+
+        $connection = env(key: 'DB_CONNECTION', default: 'default');
+
         return new OrmBuilder(
-            connection: static::getDbConnection(),
-            tablePrefix: env(key: 'DB_TABLE_PREFIX', default: '')
+            connection: $this->getDbConnection(),
+            tablePrefix: $config->getConfigKey("connections.{$connection}.prefix", '')
         );
     }
 
@@ -111,6 +120,26 @@ class Application extends Container
     public function version(): string
     {
         return static::APP_VERSION;
+    }
+
+    /**
+     * Ensure a value or object will remain globally unique.
+     *
+     * @param string $key The value or object name
+     * @param callable $value The closure that defines the object
+     * @return void
+     */
+    public function singleton(string $key, callable $value): void
+    {
+        $this->proxy($key, function ($c) use ($value) {
+            static $object;
+
+            if (null === $object) {
+                $object = $value($c);
+            }
+
+            return $object;
+        });
     }
 
     protected function registerDefaultServiceProviders(): void
@@ -296,7 +325,7 @@ class Application extends Container
     protected function bootServiceProvider(Serviceable|Bootable $provider): void
     {
         if (method_exists(object_or_class: $provider, method: 'boot')) {
-            $this->call(closure: [$provider, 'boot']);
+            $this->execute(callableOrMethodStr: [$provider, 'boot']);
         }
     }
 
@@ -306,7 +335,7 @@ class Application extends Container
      * @param  callable  $callback
      * @return void
      */
-    public function booting($callback)
+    public function booting(callable $callback): void
     {
         $this->bootingCallbacks[] = $callback;
     }
@@ -391,6 +420,7 @@ class Application extends Container
                 'base' => $this->basePath(),
                 'bootstrap' => $this->bootStrapPath(),
                 'config' => $this->configPath(),
+                'database' => $this->databasePath(),
                 'locale' => $this->localePath(),
                 'public' => $this->publicPath(),
                 'storage' => $this->storagePath(),
@@ -451,6 +481,16 @@ class Application extends Container
     public function configPath(): string
     {
         return $this->basePath.self::DS.'config';
+    }
+
+    /**
+     * Get the path to the application's "database" directory.
+     *
+     * @return string
+     */
+    public function databasePath(): string
+    {
+        return $this->basePath.self::DS.'database';
     }
 
     /**
@@ -561,42 +601,43 @@ class Application extends Container
         return false;
     }
 
-    public function registerCoreAliases(): void
+    protected function coreAliases(): array
     {
-        foreach ([
-            \Psr\Container\ContainerInterface::class => self::class,
-            \Qubus\Injector\ServiceContainer::class => self::class,
-            \Psr\Http\Message\ServerRequestInterface::class => \Qubus\Http\ServerRequest::class,
-            \Psr\Http\Message\ServerRequestFactoryInterface::class => \Qubus\Http\ServerRequestFactory::class,
-            \Psr\Http\Message\RequestInterface::class => \Qubus\Http\Request::class,
-            \Psr\Http\Message\ResponseInterface::class => \Qubus\Http\Response::class,
-            \Psr\Cache\CacheItemInterface::class => \Qubus\Cache\Psr6\Item::class,
-            \Psr\Cache\CacheItemPoolInterface::class => \Qubus\Cache\Psr6\ItemPool::class,
-            \Qubus\Cache\Psr6\TaggableCacheItem::class => \Qubus\Cache\Psr6\TaggablePsr6ItemAdapter::class,
-            \Qubus\Cache\Psr6\TaggableCacheItemPool::class => \Qubus\Cache\Psr6\TaggablePsr6PoolAdapter::class,
-            \Qubus\Config\Path\Path::class => \Qubus\Config\Path\ConfigPath::class,
-            \Qubus\Config\ConfigContainer::class => \Qubus\Config\Collection::class,
-            \Qubus\EventDispatcher\EventDispatcher::class => \Qubus\EventDispatcher\Dispatcher::class,
-            'mailer' => \Qubus\Mail\Mailer::class,
-            'dir.path' => Support\Paths::class,
-            'container' => self::class,
-            'codefy' => self::class,
-            \Qubus\Routing\Interfaces\Collector::class => \Qubus\Routing\Route\RouteCollector::class,
-            'router' => \Qubus\Routing\Router::class,
-            \Codefy\Foundation\Contracts\Kernel::class => \Codefy\Foundation\Http\Kernel::class,
-            \Codefy\Foundation\Contracts\RoutingController::class => \Codefy\Foundation\Http\BaseController::class,
-            \League\Flysystem\FilesystemOperator::class => \Qubus\FileSystem\FileSystem::class,
-            \League\Flysystem\FilesystemAdapter::class => \Qubus\FileSystem\Adapter\LocalFlysystemAdapter::class,
-            \Qubus\Cache\Adapter\CacheAdapter::class => \Qubus\Cache\Adapter\FileSystemCacheAdapter::class,
-            \Codefy\Foundation\Scheduler\Mutex\Locker::class => \Codefy\Foundation\Scheduler\Mutex\CacheLocker::class,
-            \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
-            \Symfony\Component\Console\Input\InputInterface::class => \Symfony\Component\Console\Input\ArgvInput::class,
-            \Symfony\Component\Console\Output\OutputInterface::class
-            => \Symfony\Component\Console\Output\ConsoleOutput::class,
-        ] as $key => $alias) {
-            $this->alias(original: $key, alias: $alias);
-            $this->share(nameOrInstance: $key);
-        }
+        return [
+            self::SHARED_ALIASES => [
+                \Psr\Container\ContainerInterface::class => self::class,
+                \Qubus\Injector\ServiceContainer::class => self::class,
+                \Psr\Http\Message\ServerRequestInterface::class => \Qubus\Http\ServerRequest::class,
+                \Psr\Http\Message\ServerRequestFactoryInterface::class => \Qubus\Http\ServerRequestFactory::class,
+                \Psr\Http\Message\RequestInterface::class => \Qubus\Http\Request::class,
+                \Psr\Http\Message\ResponseInterface::class => \Qubus\Http\Response::class,
+                \Psr\Cache\CacheItemInterface::class => \Qubus\Cache\Psr6\Item::class,
+                \Psr\Cache\CacheItemPoolInterface::class => \Qubus\Cache\Psr6\ItemPool::class,
+                \Qubus\Cache\Psr6\TaggableCacheItem::class => \Qubus\Cache\Psr6\TaggablePsr6ItemAdapter::class,
+                \Qubus\Cache\Psr6\TaggableCacheItemPool::class => \Qubus\Cache\Psr6\TaggablePsr6PoolAdapter::class,
+                \Qubus\Config\Path\Path::class => \Qubus\Config\Path\ConfigPath::class,
+                \Qubus\Config\ConfigContainer::class => \Qubus\Config\Collection::class,
+                \Qubus\EventDispatcher\EventDispatcher::class => \Qubus\EventDispatcher\Dispatcher::class,
+                'mailer' => \Qubus\Mail\Mailer::class,
+                'dir.path' => Support\Paths::class,
+                'container' => self::class,
+                'codefy' => self::class,
+                \Qubus\Routing\Interfaces\Collector::class => \Qubus\Routing\Route\RouteCollector::class,
+                'router' => \Qubus\Routing\Router::class,
+                \Codefy\Foundation\Contracts\Kernel::class => \Codefy\Foundation\Http\Kernel::class,
+                \Codefy\Foundation\Contracts\RoutingController::class => \Codefy\Foundation\Http\BaseController::class,
+                \League\Flysystem\FilesystemOperator::class => \Qubus\FileSystem\FileSystem::class,
+                \League\Flysystem\FilesystemAdapter::class => \Qubus\FileSystem\Adapter\LocalFlysystemAdapter::class,
+                \Qubus\Cache\Adapter\CacheAdapter::class => \Qubus\Cache\Adapter\FileSystemCacheAdapter::class,
+                \Codefy\Foundation\Scheduler\Mutex\Locker::class
+                => \Codefy\Foundation\Scheduler\Mutex\CacheLocker::class,
+                \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
+                \Symfony\Component\Console\Input\InputInterface::class
+                => \Symfony\Component\Console\Input\ArgvInput::class,
+                \Symfony\Component\Console\Output\OutputInterface::class
+                => \Symfony\Component\Console\Output\ConsoleOutput::class,
+            ]
+        ];
     }
 
     public function __destruct()
