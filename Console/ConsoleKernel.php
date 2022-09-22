@@ -5,6 +5,17 @@ declare(strict_types=1);
 namespace Codefy\Foundation\Console;
 
 use Codefy\Foundation\Application;
+use Codefy\Foundation\Console\Commands\CheckCommand;
+use Codefy\Foundation\Console\Commands\DownCommand;
+use Codefy\Foundation\Console\Commands\GenerateCommand;
+use Codefy\Foundation\Console\Commands\MakeCommand;
+use Codefy\Foundation\Console\Commands\MigrateCommand;
+use Codefy\Foundation\Console\Commands\PasswordHashCommand;
+use Codefy\Foundation\Console\Commands\RedoCommand;
+use Codefy\Foundation\Console\Commands\RollbackCommand;
+use Codefy\Foundation\Console\Commands\ScheduleRunCommand;
+use Codefy\Foundation\Console\Commands\StatusCommand;
+use Codefy\Foundation\Console\Commands\UpCommand;
 use Codefy\Foundation\Console\ConsoleApplication as Codex;
 use Codefy\Foundation\Factory\FileLoggerSmtpFactory;
 use Codefy\Foundation\Scheduler\Mutex\Locker;
@@ -152,6 +163,14 @@ class ConsoleKernel
         $this->registerCommand(new MakeCommand(codefy: $this->codefy));
         $this->registerCommand(new ScheduleRunCommand(schedule: $this->schedule, codefy: $this->codefy));
         $this->registerCommand(new PasswordHashCommand(codefy: $this->codefy));
+        $this->registerCommand(new StatusCommand($this->codefy));
+        $this->registerCommand(new CheckCommand($this->codefy));
+        $this->registerCommand(new GenerateCommand($this->codefy));
+        $this->registerCommand(new UpCommand($this->codefy));
+        $this->registerCommand(new DownCommand($this->codefy));
+        $this->registerCommand(new MigrateCommand($this->codefy));
+        $this->registerCommand(new RollbackCommand($this->codefy));
+        $this->registerCommand(new RedoCommand($this->codefy));
     }
 
     /**

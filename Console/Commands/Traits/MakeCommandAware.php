@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Traits;
+namespace Codefy\Foundation\Console\Commands\Traits;
 
 use Codefy\Foundation\Application;
 use Codefy\Foundation\Console\Exceptions\MakeCommandFileAlreadyExistsException;
@@ -14,6 +14,7 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Support\Inflector;
 use RuntimeException;
 
+use function str_contains;
 use function glob;
 use function Qubus\Support\Helpers\camel_case;
 use function Qubus\Support\Helpers\studly_case;

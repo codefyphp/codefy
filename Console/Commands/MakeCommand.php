@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console;
+namespace Codefy\Foundation\Console\Commands;
 
+use Codefy\Foundation\Console\Commands\Traits\MakeCommandAware;
+use Codefy\Foundation\Console\ConsoleCommand;
 use Codefy\Foundation\Console\Exceptions\MakeCommandFileAlreadyExistsException;
-use Codefy\Foundation\Console\Traits\MakeCommandAware;
 use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;
 use RuntimeException;
@@ -30,29 +31,25 @@ class MakeCommand extends ConsoleCommand
 
     /* @var array Stubs */
     private const STUBS = [
-        'controller'               => 'App\Infrastructure\Http\Controllers',
-        'resourceController'       => 'App\Infrastructure\Http\Controllers',
-        'restController'           => 'App\Infrastructure\Http\Controllers',
-        'aggregate'                => 'App\Domain',
-        'eventSourcedAggregate'    => 'App\Domain',
-        'repository'               => 'App\Infrastructure\Persistence\Repository',
-        'domainEvent'              => 'App\Domain',
-        'subscriber'               => 'App\Domain',
-        'serviceProvider'          => 'App\Infrastructure\Providers',
+        'controller'    => 'App\Infrastructure\Http\Controllers',
+        'repository'    => 'App\Infrastructure\Persistence\Repository',
+        'provider'      => 'App\Infrastructure\Providers',
+        'middleware'    => 'App\Infrastructure\Http\Middleware',
+        'error'         => 'App\Infrastructure\Errors',
     ];
 
     protected array $args = [
         [
             'resource',
             'required',
-            'What do you want to make. You can make the following: [controller, model, aggregate, etc..'
+            'What do you want to make. You can make the following: [controller, repositories, providers, etc.].'
         ],
     ];
 
     protected array $options = [
         [
-            'dir',
-            null,
+            '--dir',
+            '-d',
             'optional',
             'Specify the directory of your controller, model, aggregate, entity, etc.',
             false

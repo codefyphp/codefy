@@ -1,0 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }}
+
+use Qubus\Error\Error;
+
+final class {{ class }} extends Error
+{
+
+}
