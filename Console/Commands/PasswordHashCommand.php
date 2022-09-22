@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console;
+namespace Codefy\Foundation\Console\Commands;
 
 use Codefy\Foundation\Application;
+use Codefy\Foundation\Console\ConsoleCommand;
 use Codefy\Foundation\Support\Password;
 
 class PasswordHashCommand extends ConsoleCommand
