@@ -12,6 +12,7 @@
     ],
     "require": {
         "php": ">=8.1",
+        "ext-pdo": "*",
         "codefyphp/codefy": "^0.2.0",
         "dragonmantank/cron-expression": "^3.3",
         "fenom/fenom": "^2.12",
@@ -39,7 +40,11 @@
           "Helpers/path.php"
         ]
     },
+    "require-dev": {
+        "pestphp/pest": "^1.22"
+    },
     "scripts": {
+        "test": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --min=50 --colors=always",
         "cs-check": "phpcs",
         "cs-fix": "phpcbf"
     },
