@@ -69,7 +69,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             $filename = 'phpmig.php';
         }
 
-        return $this->codefy->databasePath() . Application::DS . $filename;
+        return $this->codefy->bootStrapPath() . Application::DS . $filename;
     }
 
     protected function bootstrapObjectMap(): ArrayAccess
