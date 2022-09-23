@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Foundation\Migration\Adapter;
 
 use Codefy\Foundation\Migration\Migration;
-use Qubus\Dbal\Connection;
 
 interface MigrationDatabaseAdapter
 {
