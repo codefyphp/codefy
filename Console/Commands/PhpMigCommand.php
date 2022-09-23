@@ -31,14 +31,14 @@ abstract class PhpMigCommand extends ConsoleCommand
             '--set',
             '-s',
             'required',
-            'The database.migrations.sets key',
+            'The phpmig.migrations.sets key.',
             false
         ],
         [
             '--bootstrap',
             '-b',
             'required',
-            'The bootstrap file to load',
+            'The bootstrap file to load.',
             false
         ],
     ];
@@ -127,7 +127,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         if (!($adapter instanceof MigrationAdapter)) {
             throw new RuntimeException(
                 message: "phpmig.adapter or phpmig.sets must be an 
-                instance of \\Codefy\\Foundation\\Migration\\Adapter\\DatabaseAdapter"
+                instance of \\Codefy\\Foundation\\Migration\\Adapter\\MigrationAdapter"
             );
         }
 
