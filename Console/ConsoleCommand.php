@@ -166,7 +166,7 @@ abstract class ConsoleCommand extends SymfonyCommand
         }
 
         foreach ($this->args as $arg) {
-            return match ($arg[1]) { /* match based on the argument type */
+            match ($arg[1]) { /* match based on the argument type */
                 'required' => $this->addArgument(name: $arg[0], mode: InputArgument::REQUIRED, description: $arg[2]),
                 'optional' => $this->addArgument(name: $arg[0], mode: InputArgument::OPTIONAL, description: $arg[2]),
                 'array' => $this->addArgument(name: $arg[0], mode: InputArgument::IS_ARRAY, description: $arg[2]),
@@ -188,7 +188,7 @@ abstract class ConsoleCommand extends SymfonyCommand
         }
 
         foreach ($this->options as $option) {
-            return match ($option[2]) {
+            match ($option[2]) {
                 'none' => $this->addOption(
                     name: $option[0],
                     shortcut: $option[1],
