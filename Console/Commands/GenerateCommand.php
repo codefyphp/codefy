@@ -48,13 +48,13 @@ EOT;
         $set = $this->getOptions(key: 'set');
 
         if (null === $path) {
-            if ($this->config->getConfigKey('database.phpmig.migrations_path') !== null) {
-                $path = $this->config->getConfigKey('database.phpmig.migrations_path');
+            if (true === isset($this->objectmap['phpmig.migrations_path'])) {
+                $path = $this->objectmap['phpmig.migrations_path'];
             }
             // do not deep link to nested keys without first testing the parent key
-            if ($this->config->getConfigKey('database.phpmig.sets') !== null) {
-                if ($this->config->getConfigKey('database.phpmig.sets')[$set]['migrations_path'] !== null) {
-                    $path = $this->config->getConfigKey('database.phpmig.sets')[$set]['migrations_path'];
+            if (true === isset($this->objectmap['phpmig.sets'])) {
+                if (true === isset($this->objectmap['phpmig.sets'][$set]['migrations_path'])) {
+                    $path = $this->objectmap['phpmig.sets'][$set]['migrations_path'];
                 }
             }
         }
@@ -87,14 +87,13 @@ EOT;
 
         $className = $this->migrationToClassName(migrationName: $migrationName);
 
-        if ($this->config->getConfigKey('database.phpmig.migrations_template_path') !== null
-            || ($this->config->getConfigKey('database.phpmig.sets') !== null)
-            && $this->config->getConfigKey('database.phpmig.sets')[$set]['migrations_template_path'] !== null) {
-            if ($this->config->getConfigKey('database.phpmig.migrations_template_path') !== null) {
-                $migrationsTemplatePath = $this->config->getConfigKey('database.phpmig.migrations_template_path');
+        if (isset($this->objectmap['phpmig.migrations_template_path'])
+            || (isset($this->objectmap['phpmig.sets'])
+                && isset($this->objectmap['phpmig.sets'][$set]['migrations_template_path']))) {
+            if (true === isset($this->objectmap['phpmig.migrations_template_path'])) {
+                $migrationsTemplatePath = $this->objectmap['phpmig.migrations_template_path'];
             } else {
-                $migrationsTemplatePath =
-                    $this->config->getConfigKey('database.phpmig.sets')[$set]['migrations_template_path'];
+                $migrationsTemplatePath = $this->objectmap['phpmig.sets'][$set]['migrations_template_path'];
             }
 
             if (false === file_exists(filename: $migrationsTemplatePath)) {

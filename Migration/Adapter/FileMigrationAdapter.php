@@ -10,7 +10,7 @@ use Qubus\Exception\Data\TypeException;
 
 use function in_array;
 
-class FileMigrationAdapter implements MigrationDatabaseAdapter
+class FileMigrationAdapter implements MigrationAdapter
 {
     /**
      * @var string
@@ -35,7 +35,7 @@ class FileMigrationAdapter implements MigrationDatabaseAdapter
     /**
      * {@inheritdoc}
      */
-    public function up(Migration $migration): MigrationDatabaseAdapter
+    public function up(Migration $migration): MigrationAdapter
     {
         $versions = $this->fetchAll();
         if (in_array(needle: $migration->getVersion(), haystack: $versions)) {
@@ -50,7 +50,7 @@ class FileMigrationAdapter implements MigrationDatabaseAdapter
     /**
      * {@inheritdoc}
      */
-    public function down(Migration $migration): MigrationDatabaseAdapter
+    public function down(Migration $migration): MigrationAdapter
     {
         $versions = $this->fetchAll();
         if (!in_array(needle: $migration->getVersion(), haystack: $versions)) {
@@ -74,7 +74,7 @@ class FileMigrationAdapter implements MigrationDatabaseAdapter
      * {@inheritdoc}
      * @throws TypeException
      */
-    public function createSchema(): MigrationDatabaseAdapter
+    public function createSchema(): MigrationAdapter
     {
         if (!is_writable(filename: dirname(path: $this->filename))) {
             throw new TypeException(message: sprintf('The file "%s" is not writeable', $this->filename));

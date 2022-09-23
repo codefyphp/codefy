@@ -79,7 +79,8 @@ EOT;
                 }
 
                 if (in_array(needle: $migration->getVersion(), haystack: $versions)) {
-                    $this->config->getConfigKey('database.phpmig.migrator')->down($migration);
+                    $objectmap = $this->getObjectMap();
+                    $objectmap['phpmig.migrator']->down($migration);
                 }
             }
         }
@@ -91,7 +92,8 @@ EOT;
             }
 
             if (!in_array(needle: $migration->getVersion(), haystack: $versions)) {
-                $this->config->getConfigKey('database.phpmig.migrator')->up($migration);
+                $objectmap = $this->getObjectMap();
+                $objectmap['phpmig.migrator']->up($migration);
             }
         }
 

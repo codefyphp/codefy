@@ -4,28 +4,26 @@ declare(strict_types=1);
 
 namespace Codefy\Foundation\Migration;
 
-use Codefy\Foundation\Migration\Adapter\MigrationDatabaseAdapter;
+use ArrayAccess;
+use Codefy\Foundation\Migration\Adapter\MigrationAdapter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Migrator
 {
-    /**
-     * @var ?MigrationDatabaseAdapter
-     */
-    protected MigrationDatabaseAdapter|null $adapter = null;
+    protected ?ArrayAccess $objectmap = null;
 
-    /**
-     * @var ?OutputInterface
-     */
-    protected OutputInterface|null $output = null;
+    protected ?MigrationAdapter $adapter = null;
+
+    protected ?OutputInterface $output = null;
 
     /**
      * Constructor
      *
-     * @param MigrationDatabaseAdapter $adapter
+     * @param MigrationAdapter $adapter
      */
-    public function __construct(MigrationDatabaseAdapter $adapter, OutputInterface $output)
+    public function __construct(MigrationAdapter $adapter, ArrayAccess $objectmap, OutputInterface $output)
     {
+        $this->objectmap  = $objectmap;
         $this->adapter    = $adapter;
         $this->output     = $output;
     }
@@ -73,6 +71,7 @@ class Migrator
             )
         );
         $start = microtime(as_float: true);
+        $migration->setObjectMap($this->getObjectMap());
         $migration->init();
         $migration->{$direction}();
         $this->getAdapter()->{$direction}($migration);
@@ -91,11 +90,33 @@ class Migrator
     }
 
     /**
+     * Get ObjectMap.
+     *
+     * @return ArrayAccess
+     */
+    public function getObjectMap(): ArrayAccess
+    {
+        return $this->objectmap;
+    }
+
+    /**
+     * Set ObjectMap.
+     *
+     * @param ArrayAccess $objectmap
+     * @return Migrator
+     */
+    public function setObjectMap(ArrayAccess $objectmap): static
+    {
+        $this->objectmap = $objectmap;
+        return $this;
+    }
+
+    /**
      * Get Adapter
      *
-     * @return MigrationDatabaseAdapter|null
+     * @return MigrationAdapter|null
      */
-    public function getAdapter(): ?MigrationDatabaseAdapter
+    public function getAdapter(): ?MigrationAdapter
     {
         return $this->adapter;
     }
@@ -103,10 +124,10 @@ class Migrator
     /**
      * Set Adapter
      *
-     * @param MigrationDatabaseAdapter $adapter
+     * @param MigrationAdapter $adapter
      * @return Migrator
      */
-    public function setAdapter(MigrationDatabaseAdapter $adapter): static
+    public function setAdapter(MigrationAdapter $adapter): static
     {
         $this->adapter = $adapter;
         return $this;

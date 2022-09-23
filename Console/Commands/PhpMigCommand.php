@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Codefy\Foundation\Console\Commands;
 
+use ArrayAccess;
 use Codefy\Foundation\Application;
 use Codefy\Foundation\Console\ConsoleCommand;
-use Codefy\Foundation\Migration\Adapter\MigrationDatabaseAdapter;
+use Codefy\Foundation\Migration\Adapter\MigrationAdapter;
 use Codefy\Foundation\Migration\Migration;
 use Codefy\Foundation\Migration\Migrator;
-use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use RuntimeException;
@@ -18,27 +18,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class PhpMigCommand extends ConsoleCommand
 {
-    protected ConfigContainer $config;
-    /**
-     * @var ?MigrationDatabaseAdapter
-     */
-    protected ?MigrationDatabaseAdapter $adapter = null;
+    protected ?ArrayAccess $objectmap = null;
 
-    /**
-     * @var ?string
-     */
+    protected ?MigrationAdapter $adapter = null;
+
     protected ?string $bootstrap = null;
 
-    /**
-     * @var array
-     */
     protected array $migrations = [];
-
-    public function __construct(protected Application $codefy)
-    {
-        $this->config = $this->codefy->make(name: 'codefy.config');
-        parent::__construct(codefy: $this->codefy);
-    }
 
     protected array $options = [
         [
@@ -46,6 +32,13 @@ abstract class PhpMigCommand extends ConsoleCommand
             '-s',
             'required',
             'The database.migrations.sets key',
+            false
+        ],
+        [
+            '--bootstrap',
+            '-b',
+            'required',
+            'The bootstrap file to load',
             false
         ],
     ];
@@ -58,47 +51,82 @@ abstract class PhpMigCommand extends ConsoleCommand
      */
     protected function bootstrap(InputInterface $input, OutputInterface $output): void
     {
+        $this->setBootstrap(bootstrap: $this->findBootstrapFile($input->getOption(name: 'bootstrap')));
+
+        $objectmap = $this->bootstrapObjectMap();
+        $this->setObjectMap($objectmap);
+
         $this->setAdapter(adapter: $this->bootstrapAdapter(input: $input));
 
         $this->setMigrations(migrations: $this->bootstrapMigrations(input: $input, output: $output));
 
-        $this->config->setConfigKey('database.phpmig.migrator', $this->bootstrapMigrator(output: $output));
+        $objectmap['phpmig.migrator'] = $this->bootstrapMigrator(output: $output);
+    }
+
+    protected function findBootstrapFile($filename): string
+    {
+        if (null === $filename) {
+            $filename = 'phpmig.php';
+        }
+
+        return $this->codefy->databasePath() . Application::DS . $filename;
+    }
+
+    protected function bootstrapObjectMap(): ArrayAccess
+    {
+        $bootstrapFile = $this->getBootstrap();
+
+        $func = function () use ($bootstrapFile) {
+            return require $bootstrapFile;
+        };
+
+        $objectmap = $func();
+
+        if (!($objectmap instanceof ArrayAccess)) {
+            throw new RuntimeException(message: $bootstrapFile . ' must return object of type ArrayAccess');
+        }
+
+        return $objectmap;
     }
 
     /**
      * @param InputInterface $input
-     * @return MigrationDatabaseAdapter
+     * @return MigrationAdapter
      * @throws RuntimeException
-     * @throws Exception
      */
-    protected function bootstrapAdapter(InputInterface $input)
+    protected function bootstrapAdapter(InputInterface $input): MigrationAdapter
     {
-        $validAdapter = $this->config->getConfigKey('database.phpmig.adapter') !== null;
-        $validSets = $this->config->getConfigKey('database.phpmig.sets') === null
-            || is_array(value: $this->config->getConfigKey('database.phpmig.sets'));
+        $objectmap = $this->getObjectMap();
+
+        $validAdapter = isset($objectmap['phpmig.adapter']);
+        $validSets = !isset($objectmap['phpmig.sets']) || is_array($objectmap['phpmig.sets']);
 
         if (!$validAdapter && !$validSets) {
             throw new RuntimeException(
-                message: 'Database config must return data with database.phpmig.adapter or database.phpmig.sets'
+                message: sprintf(
+                    '%s must return data with phpmig.adapter or phpmig.sets',
+                    $this->getBootstrap()
+                )
             );
         }
 
-        if ($this->config->getConfigKey('database.phpmig.sets') !== null) {
+        if (isset($objectmap['phpmig.sets'])) {
             $set = $input->getOption(name: 'set');
-            if ($this->config->getConfigKey('database.phpmig.sets')[$set]['adapter'] === null) {
+            if (!isset($objectmap['phpmig.sets'][$set]['adapter'])) {
                 throw new RuntimeException(
-                    message: $set . ' has undefined keys or adapter at database.phpmig.sets'
+                    message: $set . ' has undefined keys or adapter at phpmig.sets'
                 );
             }
-            $adapter = $this->config->getConfigKey('database.phpmig.sets')[$set]['adapter'];
-        }
-        if ($this->config->getConfigKey('database.phpmig.adapter') !== null) {
-            $adapter = $this->config->getConfigKey('database.phpmig.adapter');
+            $adapter = $objectmap['phpmig.sets'][$set]['adapter'];
         }
 
-        if (!($adapter instanceof MigrationDatabaseAdapter)) {
+        if (isset($objectmap['phpmig.adapter'])) {
+            $adapter = $objectmap['phpmig.adapter'];
+        }
+
+        if (!($adapter instanceof MigrationAdapter)) {
             throw new RuntimeException(
-                message: "database.phpmig.adapter or database.phpmig.sets must be an 
+                message: "phpmig.adapter or phpmig.sets must be an 
                 instance of \\Codefy\\Foundation\\Migration\\Adapter\\DatabaseAdapter"
             );
         }
@@ -119,52 +147,50 @@ abstract class PhpMigCommand extends ConsoleCommand
      */
     protected function bootstrapMigrations(InputInterface $input, OutputInterface $output): array
     {
+        $objectmap = $this->getObjectMap();
         $set = $input->getOption(name: 'set');
 
-        if ($this->config->getConfigKey('database.phpmig.migrations') === null
-            && $this->config->getConfigKey('database.phpmig.migrations_path') === null
-            && ($this->config->getConfigKey('database.phpmig.sets') !== null)
-                && $this->config->getConfigKey('database.phpmig.sets')[$set]['migrations_path'] === null) {
+        if (!isset($objectmap['phpmig.migrations'])
+            && !isset($objectmap['phpmig.migrations_path'])
+            && (isset($objectmap['phpmig.sets'])
+                && !isset($objectmap['phpmig.sets'][$set]['migrations_path']))) {
             throw new RuntimeException(
-                message: $this->getBootstrap() . ' must return database.phpmig.migrations array 
-                or migrations default path at database.phpmig.migrations_path 
-                or migrations default path at database.phpmig.sets'
+                message: $this->getBootstrap() . ' must return phpmig.migrations array 
+                or migrations default path at phpmig.migrations_path 
+                or migrations default path at phpmig.sets'
             );
         }
 
         $migrations = [];
 
-        if ($this->config->getConfigKey('database.phpmig.migrations') !== null) {
-            if (!is_array(value: $this->config->getConfigKey('database.phpmig.migrations'))) {
+        if (isset($objectmap['phpmig.migrations'])) {
+            if (!is_array(value: $objectmap['phpmig.migrations'])) {
                 throw new RuntimeException(
-                    message: $this->getBootstrap() . ' database.phpmig.migrations must be an array.'
+                    message: $this->getBootstrap() . ' phpmig.migrations must be an array.'
                 );
             }
 
-            $migrations = $this->config->getConfigKey('database.phpmig.migrations');
+            $migrations = $objectmap['phpmig.migrations'];
         }
-        if ($this->config->getConfigKey('database.phpmig.migrations_path') !== null) {
-            if (!is_dir(filename: $this->config->getConfigKey('database.phpmig.migrations_path'))) {
+        if (isset($objectmap['phpmig.migrations_path'])) {
+            if (!is_dir(filename: $objectmap['phpmig.migrations_path'])) {
                 throw new RuntimeException(
-                    message: $this->getBootstrap() . ' database.phpmig.migrations_path must be a directory.'
+                    message: $this->getBootstrap() . ' phpmig.migrations_path must be a directory.'
                 );
             }
 
-            $migrationsPath = realpath(path: $this->config->getConfigKey('database.phpmig.migrations_path'));
+            $migrationsPath = realpath(path: $objectmap['phpmig.migrations_path']);
             $migrations = array_merge($migrations, glob(pattern: $migrationsPath . Application::DS . '*.php'));
         }
-        if ($this->config->getConfigKey('database.phpmig.sets') !== null
-            && $this->config->getConfigKey('database.phpmig.sets')[$set]['migrations_path'] !== null) {
-            if (!is_dir(filename: $this->config->getConfigKey('database.phpmig.sets')[$set]['migrations_path'])) {
+        if (isset($objectmap['phpmig.sets']) && isset($objectmap['phpmig.sets'][$set]['migrations_path'])) {
+            if (!is_dir(filename: $objectmap['phpmig.sets'][$set]['migrations_path'])) {
                 throw new RuntimeException(
-                    message: $this->getBootstrap() . " ['database.phpmig.sets']['" . $set . "']['migrations_path'] 
+                    message: $this->getBootstrap() . " ['phpmig.sets']['" . $set . "']['migrations_path'] 
                     must be a directory."
                 );
             }
 
-            $migrationsPath = realpath(
-                path: $this->config->getConfigKey('database.phpmig.sets')[$set]['migrations_path']
-            );
+            $migrationsPath = realpath(path: $objectmap['phpmig.sets'][$set]['migrations_path']);
             $migrations = array_merge($migrations, glob(pattern: $migrationsPath . Application::DS . '*.php'));
         }
         $migrations = array_unique(array: $migrations);
@@ -223,6 +249,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             $names[$class] = $path;
 
             require_once $path;
+
             if (!class_exists(class: $class)) {
                 throw new TypeException(
                     message: sprintf(
@@ -250,12 +277,8 @@ abstract class PhpMigCommand extends ConsoleCommand
             $versions[$version] = $migration;
         }
 
-        if ($this->config->getConfigKey('database.phpmig.sets') !== null
-            && $this->config->getConfigKey('database.phpmig.sets')[$set]['adapter'] !== null) {
-            $this->config->setConfigKey(
-                'database.phpmig.adapter',
-                $this->config->getConfigKey('database.phpmig.sets')[$set]['adapter']
-            );
+        if (isset($objectmap['phpmig.sets']) && isset($objectmap['phpmig.sets'][$set]['connection'])) {
+            $objectmap['phpmig.connection'] = $objectmap['phpmig.sets'][$set]['connection'];
         }
 
         ksort($versions);
@@ -269,7 +292,7 @@ abstract class PhpMigCommand extends ConsoleCommand
      */
     protected function bootstrapMigrator(OutputInterface $output): mixed
     {
-        return new Migrator(adapter: $this->getAdapter(), output: $output);
+        return new Migrator(adapter: $this->getAdapter(), objectmap: $this->getObjectMap(), output: $output);
     }
 
     /**
@@ -317,12 +340,35 @@ abstract class PhpMigCommand extends ConsoleCommand
     }
 
     /**
-     * Set adapter.
+     * Set objectmap.
      *
-     * @param MigrationDatabaseAdapter $adapter
+     * @param ArrayAccess $objectmap
      * @return PhpMigCommand
      */
-    public function setAdapter(MigrationDatabaseAdapter $adapter): static
+    public function setObjectMap(ArrayAccess $objectmap): static
+    {
+        $this->objectmap = $objectmap;
+        return $this;
+    }
+
+    /**
+     * Get objectmap.
+     *
+     * @return ArrayAccess|null
+     */
+    public function getObjectMap(): ?ArrayAccess
+    {
+        return $this->objectmap;
+    }
+
+
+    /**
+     * Set adapter.
+     *
+     * @param MigrationAdapter $adapter
+     * @return PhpMigCommand
+     */
+    public function setAdapter(MigrationAdapter $adapter): static
     {
         $this->adapter = $adapter;
         return $this;
@@ -331,9 +377,9 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Get Adapter
      *
-     * @return MigrationDatabaseAdapter|null
+     * @return MigrationAdapter|null
      */
-    public function getAdapter(): ?MigrationDatabaseAdapter
+    public function getAdapter(): ?MigrationAdapter
     {
         return $this->adapter;
     }

@@ -46,7 +46,7 @@ EOT;
 
         // Check we have at least 1 migration to revert
         if (empty($versions) || $version == end($versions)) {
-            $this->terminalRaw(string: '<error>No migrations to rollback</error>');
+            $this->terminalError(string: 'No migrations to rollback');
             return 0;
         }
 
@@ -67,11 +67,12 @@ EOT;
 
         // Check the target version exists
         if (0 !== $version && !isset($migrations[$version])) {
-            $this->terminalRaw(string: "<error>Target version ($version) not found</error>");
+            $this->terminalError(string: "Target version ($version) not found");
             return 0;
         }
 
         // Revert the migration(s)
+        $objectmap = $this->getObjectMap();
         krsort($migrations);
         foreach ($migrations as $migration) {
             if ($migration->getVersion() <= $version) {
@@ -79,7 +80,7 @@ EOT;
             }
 
             if (in_array(needle: $migration->getVersion(), haystack: $versions)) {
-                $this->config->getConfigKey('database.phpmig.migrator')->down($migration);
+                $objectmap['phpmig.migrator']->down($migration);
             }
         }
 

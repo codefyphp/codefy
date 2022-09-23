@@ -6,7 +6,7 @@ namespace Codefy\Foundation\Migration\Adapter;
 
 use Codefy\Foundation\Migration\Migration;
 
-interface MigrationDatabaseAdapter
+interface MigrationAdapter
 {
     /**
      * Get all migrated version numbers
@@ -19,17 +19,17 @@ interface MigrationDatabaseAdapter
      * Up
      *
      * @param Migration $migration
-     * @return MigrationDatabaseAdapter
+     * @return MigrationAdapter
      */
-    public function up(Migration $migration): MigrationDatabaseAdapter;
+    public function up(Migration $migration): MigrationAdapter;
 
     /**
      * Down
      *
      * @param Migration $migration
-     * @return MigrationDatabaseAdapter
+     * @return MigrationAdapter
      */
-    public function down(Migration $migration): MigrationDatabaseAdapter;
+    public function down(Migration $migration): MigrationAdapter;
 
     /**
      * Is the schema ready?
@@ -41,7 +41,7 @@ interface MigrationDatabaseAdapter
     /**
      * Create Schema
      *
-     * @return MigrationDatabaseAdapter
+     * @return MigrationAdapter
      */
-    public function createSchema(): MigrationDatabaseAdapter;
+    public function createSchema(): MigrationAdapter;
 }
