@@ -4,29 +4,19 @@ declare(strict_types=1);
 
 namespace Codefy\Foundation\Migration\Adapter;
 
-use Codefy\Foundation\Application;
 use Codefy\Foundation\Migration\Migration;
 use PDO;
 use Qubus\Dbal\Connection;
-use Qubus\Dbal\Schema;
 use Qubus\Dbal\Schema\CreateTable;
 use Qubus\Exception\Exception;
 
 use function array_map;
 use function in_array;
 
-class DbalMigrationAdapter implements MigrationDatabaseAdapter
+class DbalMigrationAdapter implements MigrationAdapter
 {
-    protected Connection $connection;
-
-    protected string $tableName;
-
-    /**
-     * @throws Exception
-     */
-    public function __construct(string $tableName)
+    public function __construct(protected Connection $connection, protected string $tableName)
     {
-        $this->connection = Application::$APP->getDbConnection();
     }
 
     public function connection(): Connection
@@ -52,9 +42,9 @@ class DbalMigrationAdapter implements MigrationDatabaseAdapter
      * Up
      *
      * @param Migration $migration
-     * @return MigrationDatabaseAdapter
+     * @return MigrationAdapter
      */
-    public function up(Migration $migration): MigrationDatabaseAdapter
+    public function up(Migration $migration): MigrationAdapter
     {
         $this->connection->insert($this->tableName)
             ->values(['version' => $migration->getVersion()]);
@@ -66,9 +56,9 @@ class DbalMigrationAdapter implements MigrationDatabaseAdapter
      * Down
      *
      * @param Migration $migration
-     * @return MigrationDatabaseAdapter
+     * @return MigrationAdapter
      */
-    public function down(Migration $migration): MigrationDatabaseAdapter
+    public function down(Migration $migration): MigrationAdapter
     {
         $this->connection->delete($this->tableName)
         ->where('version', $migration->getVersion())
@@ -97,9 +87,9 @@ class DbalMigrationAdapter implements MigrationDatabaseAdapter
     /**
      * Create Schema
      *
-     * @return MigrationDatabaseAdapter
+     * @return MigrationAdapter
      */
-    public function createSchema(): MigrationDatabaseAdapter
+    public function createSchema(): MigrationAdapter
     {
         $this->connection->schema()->create($this->tableName, function (CreateTable $table) {
             $table->integer('id')->size('medium')->autoincrement();

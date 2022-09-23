@@ -27,7 +27,7 @@
         "qubus/mail": "^2.0",
         "qubus/router": "^2.0",
         "qubus/security": "^2.0",
-        "qubus/support": "^2.1",
+        "qubus/support": "^2.2",
         "symfony/console": "^6.1",
         "symfony/options-resolver": "^6.1"
     },

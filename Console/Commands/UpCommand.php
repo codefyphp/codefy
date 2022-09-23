@@ -46,7 +46,8 @@ EOT;
             return 0;
         }
 
-        $this->config->getConfigKey('database.phpmig.migrator')->up($migrations[$version]);
+        $objectmap = $this->getObjectMap();
+        $objectmap['phpmig.migrator']->up($migrations[$version]);
 
         return ConsoleCommand::SUCCESS;
     }

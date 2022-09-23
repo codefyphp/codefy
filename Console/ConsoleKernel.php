@@ -132,7 +132,6 @@ class ConsoleKernel
     public function bootstrap(): void
     {
         if (false === $this->commandsLoaded) {
-            $this->loadCoreCommands();
             $this->commands();
 
             $this->commandsLoaded = true;
@@ -151,26 +150,6 @@ class ConsoleKernel
         }
 
         return $this->codex;
-    }
-
-    /**
-     * Loads core commands used by the application.
-     *
-     * @return void
-     */
-    protected function loadCoreCommands(): void
-    {
-        $this->registerCommand(new MakeCommand(codefy: $this->codefy));
-        $this->registerCommand(new ScheduleRunCommand(schedule: $this->schedule, codefy: $this->codefy));
-        $this->registerCommand(new PasswordHashCommand(codefy: $this->codefy));
-        $this->registerCommand(new StatusCommand($this->codefy));
-        $this->registerCommand(new CheckCommand($this->codefy));
-        $this->registerCommand(new GenerateCommand($this->codefy));
-        $this->registerCommand(new UpCommand($this->codefy));
-        $this->registerCommand(new DownCommand($this->codefy));
-        $this->registerCommand(new MigrateCommand($this->codefy));
-        $this->registerCommand(new RollbackCommand($this->codefy));
-        $this->registerCommand(new RedoCommand($this->codefy));
     }
 
     /**

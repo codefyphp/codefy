@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace Codefy\Foundation\Migration;
 
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Migration\Adapter\MigrationDatabaseAdapter;
+use ArrayAccess;
+use Codefy\Foundation\Migration\Adapter\MigrationAdapter;
 use Qubus\Dbal\Schema;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Question\Question;
 
+use function get_class;
+
 class Migration
 {
     protected ?int $version = null;
+
+    protected ?ArrayAccess $objectmap = null;
 
     protected ?InputInterface $input = null;
 
@@ -22,21 +26,20 @@ class Migration
 
     protected ?QuestionHelper $dialogHelper = null;
 
-    protected ?MigrationDatabaseAdapter $adapter = null;
+    protected ?MigrationAdapter $adapter = null;
 
     /**
      * Constructor
      *
      * @param int $version
      */
-    final public function __construct(int $version, protected Application $codefy)
+    final public function __construct(int $version)
     {
         $this->version = $version;
-        $this->adapter = $this->codefy->make(name: 'codefy.config')->getConfigKey('database.phpmig.adapter');
     }
 
     /**
-     * init
+     * Init.
      *
      * @return void
      */
@@ -46,7 +49,7 @@ class Migration
     }
 
     /**
-     * Do the migration
+     * Do the migration.
      *
      * @return void
      */
@@ -56,7 +59,7 @@ class Migration
     }
 
     /**
-     * Undo the migration
+     * Undo the migration.
      *
      * @return void
      */
@@ -68,27 +71,15 @@ class Migration
     /**
      * Get adapter.
      *
-     * @return MigrationDatabaseAdapter
+     * @return MigrationAdapter
      */
-    public function getAdapter(): MigrationDatabaseAdapter
+    public function getAdapter(): MigrationAdapter
     {
-        return $this->adapter;
+        return $this->get('phpmig.adapter');
     }
 
     /**
-     * Set adapter.
-     *
-     * @param MigrationDatabaseAdapter $adapter
-     * @return Migration
-     */
-    public function setAdapter(MigrationDatabaseAdapter $adapter): static
-    {
-        $this->adapter = $adapter;
-        return $this;
-    }
-
-    /**
-     * Get Version
+     * Get Version.
      *
      * @return int|null
      */
@@ -98,7 +89,7 @@ class Migration
     }
 
     /**
-     * Set version
+     * Set version.
      *
      * @param int $version
      * @return Migration
@@ -110,7 +101,7 @@ class Migration
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -120,7 +111,30 @@ class Migration
     }
 
     /**
-     * Get Output
+     * Get ObjectMap.
+     *
+     * @return ArrayAccess
+     */
+    public function getObjectMap(): ArrayAccess
+    {
+        return $this->objectmap;
+    }
+
+    /**
+     * Set ObjectMap.
+     *
+     * @param ArrayAccess $objectmap
+     * @return Migration
+     */
+    public function setObjectMap(ArrayAccess $objectmap): static
+    {
+        $this->objectmap = $objectmap;
+        return $this;
+    }
+
+
+    /**
+     * Get Output.
      *
      * @return OutputInterface|null
      */
@@ -130,7 +144,7 @@ class Migration
     }
 
     /**
-     * Set Output
+     * Set Output.
      *
      * @param OutputInterface $output
      * @return Migration
@@ -142,7 +156,7 @@ class Migration
     }
 
     /**
-     * Get Input
+     * Get Input.
      *
      * @return InputInterface|null
      */
@@ -152,7 +166,7 @@ class Migration
     }
 
     /**
-     * Set Input
+     * Set Input.
      *
      * @param InputInterface $input
      * @return Migration
@@ -164,7 +178,7 @@ class Migration
     }
 
     /**
-     * Ask for input
+     * Ask for input.
      *
      * @param Question $question
      * @return mixed
@@ -175,7 +189,19 @@ class Migration
     }
 
     /**
-     * Get Dialog Helper
+     * Get something from the objectmap
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function get(string $key): mixed
+    {
+        $c = $this->getObjectMap();
+        return $c[$key];
+    }
+
+    /**
+     * Get Dialog Helper.
      *
      * @return QuestionHelper|null
      */
@@ -189,7 +215,7 @@ class Migration
     }
 
     /**
-     * Set Dialog Helper
+     * Set Dialog Helper.
      *
      * @param QuestionHelper $dialogHelper
      * @return Migration
