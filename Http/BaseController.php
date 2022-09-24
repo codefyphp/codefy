@@ -38,7 +38,7 @@ class BaseController extends Controller implements RoutingController
                 provider: new Provider(template_dir: resource_path(path: 'views'))
             ))->setCompileDir(
                 dir: resource_path(path: 'views'.Application::DS.'cache')
-            )->setOptions(Fenom::DISABLE_CACHE)
+            )->setOptions(options: Fenom::DISABLE_CACHE)
         );
     }
 

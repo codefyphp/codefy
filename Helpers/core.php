@@ -26,7 +26,7 @@ function app(?string $name = null, array $args = []): mixed
 {
     $app = get_fresh_bootstrap();
 
-    if (is_null__($name)) {
+    if (is_null__(var: $name)) {
         return $app->getContainer();
     }
     return $app->getContainer()->make($name, $args);
@@ -41,12 +41,12 @@ function app(?string $name = null, array $args = []): mixed
  */
 function config(string $key, array|bool $set = false)
 {
-    if (!is_false__($set)) {
-        app(Collection::class)->setConfigKey($key, $set);
-        return app(Collection::class)->getConfigKey($key);
+    if (!is_false__(var: $set)) {
+        app(name: Collection::class)->setConfigKey($key, $set);
+        return app(name: Collection::class)->getConfigKey($key);
     }
 
-    return app(Collection::class)->getConfigKey($key);
+    return app(name: Collection::class)->getConfigKey($key);
 }
 
 /**
@@ -56,14 +56,14 @@ function config(string $key, array|bool $set = false)
  */
 function get_fresh_bootstrap(): mixed
 {
-    if (file_exists($file = __DIR__ . '/../../../../../bootstrap/app.php')) {
+    if (file_exists(filename: $file = __DIR__ . '/../../../../../bootstrap/app.php')) {
         return require($file);
-    } elseif (file_exists($file = __DIR__ . '/../../../../bootstrap/app.php')) {
+    } elseif (file_exists(filename: $file = __DIR__ . '/../../../../bootstrap/app.php')) {
         return require($file);
-    } elseif (file_exists($file = __DIR__ . '/../../bootstrap/app.php')) {
+    } elseif (file_exists(filename: $file = __DIR__ . '/../../bootstrap/app.php')) {
         return require($file);
     } elseif (file_exists(
-        $file = rtrim(string: (string) env('APP_BASE_PATH'), characters: '/') . '/bootstrap.app.php'
+        filename: $file = rtrim(string: (string) env(key: 'APP_BASE_PATH'), characters: '/') . '/bootstrap/app.php'
     )
     ) {
         return require($file);

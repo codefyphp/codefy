@@ -83,7 +83,7 @@ final class Kernel implements HttpKernel
         __observer()->action->doAction('kernel.preboot');
 
         if (! $this->codefy->hasBeenBootstrapped()) {
-            $this->codefy->bootstrapWith($this->bootstrappers());
+            $this->codefy->bootstrapWith(bootstrappers: $this->bootstrappers());
         }
 
         return $this->dispatchRouter();
