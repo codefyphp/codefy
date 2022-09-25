@@ -55,10 +55,13 @@ EOT
                     ]
                 );
             }
+
             $table->render();
 
             return 1;
         }
+
+        $this->terminalInfo(string: 'No migrations to run.');
 
         return 0;
     }
