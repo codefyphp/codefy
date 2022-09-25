@@ -47,7 +47,7 @@ EOT;
         $path = $this->getArgument(key: 'path');
         $set = $this->getOptions(key: 'set');
 
-        if (null === $path) {
+        if (null === $path || '' === $path) {
             if (true === isset($this->objectmap['phpmig.migrations_path'])) {
                 $path = $this->objectmap['phpmig.migrations_path'];
             }
@@ -126,14 +126,14 @@ class $className extends Migration
     /**
      * Do the migration
      */
-    public function up()
+    public function up(): void
     {
     }
     
     /**
      * Undo the migration
      */
-    public function down()
+    public function down(): void
     {
     }
 }
