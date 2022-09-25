@@ -56,7 +56,7 @@ EOT
             $current = 0;
         }
 
-        if (null !== $version) {
+        if (null !== $version && '' !== $version) {
             if (0 !== $version && !isset($migrations[$version])) {
                 return ConsoleCommand::SUCCESS;
             }

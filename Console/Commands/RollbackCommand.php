@@ -55,7 +55,7 @@ EOT
         }
 
         // If no target version was supplied, revert the last migration
-        if (null === $version) {
+        if (null === $version || '' === $version) {
             // Get the migration before the last run migration
             $prev = count($versions) - 2;
             $version = $prev >= 0 ? $versions[$prev] : 0;
