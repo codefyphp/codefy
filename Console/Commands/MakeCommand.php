@@ -25,7 +25,7 @@ class MakeCommand extends ConsoleCommand
 
     protected string $name = 'stub:make';
 
-    protected string $description = 'Make command can make class controllers, models, entities, forms etc...';
+    protected string $description = 'Make command can make class controllers, repositories, providers, etc...';
 
     protected string $help = 'Command which can generate a class file from a set of predefined stub files';
 

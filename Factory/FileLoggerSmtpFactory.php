@@ -30,7 +30,7 @@ class FileLoggerSmtpFactory implements LoggerFactory
     {
         $storage = new SplObjectStorage();
 
-        $filesystem = LocalStorage::disk('logs');
+        $filesystem = LocalStorage::disk(name: 'logs');
 
         $storage->attach(
             object: new FileLogger(filesystem: $filesystem, threshold: LogLevel::INFO)

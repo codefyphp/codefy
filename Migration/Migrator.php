@@ -60,7 +60,7 @@ class Migrator
     protected function run(Migration $migration, string $direction = 'up'): void
     {
         $direction = ($direction == 'down' ? 'down' :'up');
-        $this->getOutput()->writeln(
+        $this->getOutput()?->writeln(
             messages: sprintf(
                 ' == <info>' .
                 $migration->getVersion() . ' ' .
@@ -76,7 +76,7 @@ class Migrator
         $migration->{$direction}();
         $this->getAdapter()->{$direction}($migration);
         $end = microtime(as_float: true);
-        $this->getOutput()->writeln(
+        $this->getOutput()?->writeln(
             messages: sprintf(
                 ' == <info>' .
                 $migration->getVersion() . ' ' .

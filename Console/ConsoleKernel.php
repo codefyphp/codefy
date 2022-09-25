@@ -40,9 +40,16 @@ class ConsoleKernel
 
     protected ?Schedule $schedule = null;
 
+    protected array $bootstrappers = [
+        \Codefy\Foundation\Bootstrap\RegisterProviders::class,
+        \Codefy\Foundation\Bootstrap\BootProviders::class,
+    ];
+
     public function __construct(protected Application $codefy)
     {
-        $this->defineConsoleSchedule();
+        $this->codefy->booted(function () {
+            $this->defineConsoleSchedule();
+        });
     }
 
     protected function defineConsoleSchedule(): void
@@ -131,6 +138,10 @@ class ConsoleKernel
      */
     public function bootstrap(): void
     {
+        if (! $this->codefy->hasBeenBootstrapped()) {
+            $this->codefy->bootstrapWith($this->bootstrappers());
+        }
+
         if (false === $this->commandsLoaded) {
             $this->commands();
 
@@ -168,5 +179,15 @@ class ConsoleKernel
         $this->bootstrap();
 
         return $this->getCodex()->call(command: $command, parameters: $parameters, outputBuffer: $outputBuffer);
+    }
+
+    /**
+     * Get the bootstrappers.
+     *
+     * @return string[]
+     */
+    protected function bootstrappers(): array
+    {
+        return $this->bootstrappers;
     }
 }
