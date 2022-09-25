@@ -54,7 +54,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         $this->setBootstrap(bootstrap: $this->findBootstrapFile($input->getOption(name: 'bootstrap')));
 
         $objectmap = $this->bootstrapObjectMap();
-        $this->setObjectMap($objectmap);
+        $this->setObjectMap(objectmap: $objectmap);
 
         $this->setAdapter(adapter: $this->bootstrapAdapter(input: $input));
 
@@ -216,7 +216,7 @@ abstract class PhpMigCommand extends ConsoleCommand
                 );
             }
 
-            $migrationName = preg_replace(pattern: '/^[0-9]+_/', replacement: '', subject: basename($path));
+            $migrationName = preg_replace(pattern: '/^[0-9]+_/', replacement: '', subject: basename(path: $path));
             if (false !== strpos(haystack: $migrationName, needle: '.')) {
                 $migrationName = substr(
                     string: $migrationName,
