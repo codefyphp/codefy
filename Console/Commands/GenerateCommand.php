@@ -11,31 +11,34 @@ use Qubus\Exception\Exception;
 
 use RuntimeException;
 
+use Symfony\Component\Console\Input\InputArgument;
+
 use function Qubus\Support\Helpers\is_writable;
 
 class GenerateCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:generate';
 
-    protected string $description = 'Generate a new migration.';
+    protected function configure(): void
+    {
+        parent::configure();
 
-    protected string $help = <<<EOT
+        $this
+            ->addArgument(name: 'name', mode: InputArgument::REQUIRED, description: 'The name for the migration.')
+            ->addArgument(
+                name: 'path',
+                mode: InputArgument::OPTIONAL,
+                description: 'The directory in which to put the migration 
+                ( optional if phpmig.migrations_path is set ).'
+            )
+            ->setDescription(description: 'Generate a new migration.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate:generate</info> command creates a new migration with the name and path specified
-<info>php codex migrate:generate CreatePostTable ./migrations</info>
-EOT;
-
-    protected array $args = [
-        [
-            'name',
-            'required',
-            'The name of the migration.'
-        ],
-        [
-            'path',
-            'optional',
-            'The directory in which to put the migration ( optional if database.phpmig.migrations_path is set. )'
-        ],
-    ];
+<info>php codex migrate:generate CreatePostTable</info>
+EOT
+            );
+    }
 
     /**
      * @throws Exception

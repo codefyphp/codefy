@@ -11,12 +11,19 @@ class StatusCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:status';
 
-    protected string $description = 'Show the up/down status of all migrations.';
+    protected function configure(): void
+    {
+        parent::configure();
 
-    protected string $help = <<<EOT
+        $this
+            ->setDescription(description: 'Show the up/down status of all migrations.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate:status</info> command prints a list of all migrations, along with their current status 
 <info>php codex migrate:status</info>
-EOT;
+EOT
+            );
+    }
 
     /**
      * @throws Exception

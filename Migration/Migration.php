@@ -16,7 +16,7 @@ use function get_class;
 
 class Migration
 {
-    protected ?int $version = null;
+    protected int|string|null $version = null;
 
     protected ?ArrayAccess $objectmap = null;
 
@@ -31,9 +31,9 @@ class Migration
     /**
      * Constructor
      *
-     * @param int $version
+     * @param int|string $version
      */
-    final public function __construct(int $version)
+    final public function __construct(int|string $version)
     {
         $this->version = $version;
     }
@@ -81,9 +81,9 @@ class Migration
     /**
      * Get Version.
      *
-     * @return int|null
+     * @return int|string|null
      */
-    public function getVersion(): ?int
+    public function getVersion(): int|string|null
     {
         return $this->version;
     }
@@ -91,10 +91,10 @@ class Migration
     /**
      * Set version.
      *
-     * @param int $version
+     * @param int|string $version
      * @return Migration
      */
-    public function setVersion(int $version): static
+    public function setVersion(int|string $version): static
     {
         $this->version = $version;
         return $this;

@@ -6,18 +6,26 @@ namespace Codefy\Foundation\Console\Commands;
 
 use Qubus\Exception\Exception;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\InputOption;
 
 class CheckCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:check';
 
-    protected string $description = 'Check that all migrations have run; exit with non-zero if not.';
+    protected function configure(): void
+    {
+        parent::configure();
 
-    protected string $help = <<<EOT
+        $this
+            ->setDescription(description: 'Check that all migrations have run; exit with non-zero if not.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate:check</info> checks that all migrations have been run and exits with a 
 non-zero exit code if not, useful for build or deployment scripts.
 <info>php codex migrate:check</info>
-EOT;
+EOT
+            );
+    }
 
     /**
      * @throws Exception
@@ -36,22 +44,6 @@ EOT;
         }
 
         if (!empty($down)) {
-            /*$this->terminalRaw('');
-            $this->terminalRaw(' Status   Migration ID    Migration Name ');
-            $this->terminalRaw('-----------------------------------------');
-
-            foreach ($down as $migration) {
-                $this->terminalRaw(
-                    sprintf(
-                        '   <error>down</error>  %14s  <comment>%s</comment>',
-                        $migration->getVersion(),
-                        $migration->getName()
-                    )
-                );
-            }
-
-            $this->terminalRaw('');*/
-
             $table = new Table(output: $this->output);
             $table->setHeaders(headers: ['Status', 'Migration ID', 'Migration Name']);
             foreach ($down as $migration) {
@@ -59,7 +51,7 @@ EOT;
                     row: [
                         '<error>down</error>',
                         $migration->getVersion(),
-                        "<comment>$migration->getName()</comment>"
+                        "<comment>{$migration->getName()}</comment>"
                     ]
                 );
             }

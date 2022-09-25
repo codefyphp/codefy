@@ -6,28 +6,32 @@ namespace Codefy\Foundation\Console\Commands;
 
 use Codefy\Foundation\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
+use Symfony\Component\Console\Input\InputArgument;
 
 class MigrateCommand extends PhpMigCommand
 {
     protected string $name = 'migrate';
 
-    protected string $description = 'Run all migrations.';
+    protected function configure(): void
+    {
+        parent::configure();
 
-    protected string $help = <<<EOT
+        $this
+            ->addOption(
+                name: '--target',
+                shortcut: '-t',
+                mode: InputArgument::OPTIONAL,
+                description: 'The version number to migrate to.'
+            )
+            ->setDescription(description: 'Run all migrations.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate</info> command runs all available migrations, optionally up to a specific version
 <info>php codex migrate</info>
 <info>php codex migrate -t 20111018185412</info>
-EOT;
-
-    protected array $options = [
-        [
-            '--target',
-            '-t',
-            'optional',
-            'The version number to migrate to.',
-            false
-        ],
-    ];
+EOT
+            );
+    }
 
     /**
      * @throws Exception
