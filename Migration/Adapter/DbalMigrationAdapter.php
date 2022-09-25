@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Codefy\Foundation\Migration\Adapter;
 
 use Codefy\Foundation\Migration\Migration;
-use PDO;
 use Qubus\Dbal\Connection;
+use Qubus\Dbal\DB;
 use Qubus\Dbal\Schema\CreateTable;
 use Qubus\Exception\Exception;
 
@@ -30,12 +30,13 @@ class DbalMigrationAdapter implements MigrationAdapter
      * Get all migrated version numbers
      *
      * @return array
+     * @throws Exception
      */
     public function fetchAll(): array
     {
         $tableName = $this->connection->quoteIdentifier($this->tableName);
-        $sql = $this->connection->getPdo()->prepare(query: "SELECT version FROM $tableName ORDER BY version ASC");
-        $all = $sql->fetchAll(mode: PDO::FETCH_ASSOC);
+        $sql = DB::query(query: "SELECT version FROM $tableName ORDER BY version ASC", type: DB::SELECT)->asAssoc();
+        $all = $sql->execute($this->connection);
 
         return array_map(fn ($v) => $v['version'], $all);
     }
@@ -52,7 +53,7 @@ class DbalMigrationAdapter implements MigrationAdapter
             ->values(
                 [
                     'version' => $migration->getVersion(),
-                    'recorded_on' => (new QubusDateTimeImmutable('now'))->format('Y-m-d h:i:s')
+                    'recorded_on' => (new QubusDateTimeImmutable(time: 'now'))->format(format: 'Y-m-d h:i:s')
                 ]
             )->execute();
 
@@ -99,9 +100,9 @@ class DbalMigrationAdapter implements MigrationAdapter
     public function createSchema(): MigrationAdapter
     {
         $this->connection->schema()->create($this->tableName, function (CreateTable $table) {
-            $table->integer('id')->size('medium')->autoincrement();
-            $table->string('version', 191)->notNull();
-            $table->dateTime('recorded_on');
+            $table->integer(name: 'id')->size(value: 'big')->autoincrement();
+            $table->string(name: 'version', length: 191)->notNull();
+            $table->dateTime(name: 'recorded_on');
         });
 
         return $this;

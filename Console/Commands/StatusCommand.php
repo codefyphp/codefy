@@ -6,6 +6,9 @@ namespace Codefy\Foundation\Console\Commands;
 
 use Codefy\Foundation\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
+use Symfony\Component\Console\Helper\Table;
+
+use function sprintf;
 
 class StatusCommand extends PhpMigCommand
 {
@@ -32,11 +35,10 @@ EOT
     {
         $this->bootstrap(input: $this->input, output: $this->output);
 
-        $this->terminalRaw('');
-        $this->terminalRaw(' Status   Migration ID    Migration Name ');
-        $this->terminalRaw('-----------------------------------------');
-
         $versions = $this->getAdapter()->fetchAll();
+
+        $table = new Table(output: $this->output);
+        $table->setHeaders(headers: ['Status', 'Migration ID', 'Migration Name']);
 
         foreach ($this->getMigrations() as $migration) {
             if (in_array($migration->getVersion(), $versions)) {
@@ -46,23 +48,28 @@ EOT
                 $status = '   <error>down</error> ';
             }
 
-            $this->terminalRaw(
-                $status .
-                sprintf(" %14s ", $migration->getVersion()) .
-                ' <comment>' . $migration->getName() . '</comment>'
+            $table->addRow(
+                row: [
+                    $status,
+                    sprintf(' %14s ', $migration->getVersion()),
+                    "<comment>{$migration->getName()}</comment>"
+                ]
             );
         }
 
         foreach ($versions as $missing) {
-            $this->terminalRaw(
-                '   <error>up</error> ' .
-                sprintf(" %14s ", $missing) .
-                ' <error>** MISSING **</error> '
+            $table->addRow(
+                row: [
+                    '<error>up</error>',
+                    sprintf(' %14s ', $missing),
+                    '<error>** MISSING **</error>'
+                ]
             );
         }
 
+        $table->render();
+
         // print status
-        $this->terminalRaw('');
         return ConsoleCommand::SUCCESS;
     }
 }
