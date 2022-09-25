@@ -6,25 +6,29 @@ namespace Codefy\Foundation\Console\Commands;
 
 use Codefy\Foundation\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
+use Symfony\Component\Console\Input\InputArgument;
 
 class DownCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:down';
 
-    protected string $description = 'Revert a specific migration.';
+    protected function configure(): void
+    {
+        parent::configure();
 
-    protected string $help = <<<EOT
+        $this->addArgument(
+            name: 'version',
+            mode: InputArgument::REQUIRED,
+            description: 'The version number for the migration.'
+        )
+            ->setDescription(description: 'Revert a specific migration.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate:down</info> command reverts a specific migration
 <info>php codex migrate:down 20111018185412</info>
-EOT;
-
-    protected array $args = [
-        [
-            'version',
-            'required',
-            'The version number for the migration.'
-        ],
-    ];
+EOT
+            );
+    }
 
     /**
      * @throws Exception

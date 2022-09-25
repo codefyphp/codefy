@@ -14,6 +14,7 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class PhpMigCommand extends ConsoleCommand
@@ -26,22 +27,21 @@ abstract class PhpMigCommand extends ConsoleCommand
 
     protected array $migrations = [];
 
-    protected array $options = [
-        [
-            '--set',
-            '-s',
-            'required',
-            'The phpmig.migrations.sets key.',
-            false
-        ],
-        [
-            '--bootstrap',
-            '-b',
-            'required',
-            'The bootstrap file to load.',
-            false
-        ],
-    ];
+    protected function configure(): void
+    {
+        $this->addOption(
+            name: '--set',
+            shortcut: '-s',
+            mode: InputOption::VALUE_REQUIRED,
+            description: 'The phpmig.sets key.'
+        );
+        $this->addOption(
+            name: '--bootstrap',
+            shortcut: '-b',
+            mode: InputOption::VALUE_REQUIRED,
+            description: 'The bootstrap file to load.'
+        );
+    }
 
     /**
      * Bootstrap migration.

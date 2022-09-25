@@ -6,28 +6,32 @@ namespace Codefy\Foundation\Console\Commands;
 
 use Codefy\Foundation\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
+use Symfony\Component\Console\Input\InputArgument;
 
 class RollbackCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:rollback';
 
-    protected string $description = 'Rollback to the last, or to a specific migration.';
+    protected function configure(): void
+    {
+        parent::configure();
 
-    protected string $help = <<<EOT
+        $this
+            ->addOption(
+                name: '--target',
+                shortcut: '-t',
+                mode: InputArgument::OPTIONAL,
+                description: 'The version number to rollback to.'
+            )
+            ->setDescription(description: 'Rollback to the last, or to a specific migration.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate:rollback</info> command reverts the last migration, or optionally up to a specific version
 <info>php codex migrate:rollback</info>
 <info>php codex migrate:rollback -t 20111018185412</info>
-EOT;
-
-    protected array $options = [
-        [
-            '--target',
-            '-t',
-            'optional',
-            'The version number to rollback to.',
-            false
-        ],
-    ];
+EOT
+            );
+    }
 
     /**
      * @throws Exception

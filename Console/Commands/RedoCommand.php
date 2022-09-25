@@ -6,25 +6,30 @@ namespace Codefy\Foundation\Console\Commands;
 
 use Codefy\Foundation\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
+use Symfony\Component\Console\Input\InputArgument;
 
 class RedoCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:redo';
 
-    protected string $description = 'Redo a specific migration.';
+    protected function configure(): void
+    {
+        parent::configure();
 
-    protected string $help = <<<EOT
+        $this
+            ->addArgument(
+                name: 'version',
+                mode: InputArgument::REQUIRED,
+                description: 'The version number for the migration'
+            )
+            ->setDescription(description: 'Redo a specific migration.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate:redo</info> command redo a specific migration
 <info>php codex migrate:redo 20111018185412</info>
-EOT;
-
-    protected array $args = [
-        [
-            'version',
-            'required',
-            'The version number for the migration.'
-        ],
-    ];
+EOT
+            );
+    }
 
     /**
      * @throws Exception

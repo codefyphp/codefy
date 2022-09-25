@@ -14,16 +14,18 @@ class InitCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:init';
 
-    protected string $description = 'Initialise this directory for use with phpmig.';
-
-    protected string $help = <<<EOT
+    protected function configure(): void
+    {
+        $this
+            ->setDescription(description: 'Initialise this directory for use with phpmig.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate:init</info> command creates a skeleton bootstrap file and a migrations directory.
 <info>php codex migrate:init</info>
-EOT;
+EOT
+            );
+    }
 
-    /**
-     * @throws Exception
-     */
     public function handle(): int
     {
         $bootstrap = $this->codefy->bootStrapPath() . Application::DS . 'phpmig.php';

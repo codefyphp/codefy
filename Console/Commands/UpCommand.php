@@ -6,25 +6,30 @@ namespace Codefy\Foundation\Console\Commands;
 
 use Codefy\Foundation\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
+use Symfony\Component\Console\Input\InputArgument;
 
 class UpCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:up';
 
-    protected string $description = 'Run a specific migration.';
+    protected function configure(): void
+    {
+        parent::configure();
 
-    protected string $help = <<<EOT
+        $this
+            ->addArgument(
+                name: 'version',
+                mode: InputArgument::REQUIRED,
+                description: 'The version number for the migration.'
+            )
+            ->setDescription(description: 'Run a specific migration.')
+            ->setHelp(
+                help: <<<EOT
 The <info>migrate:up</info> command runs a specific migration
 <info>php codex migrate:up 20111018185121</info>
-EOT;
-
-    protected array $args = [
-        [
-            'version',
-            'required',
-            'The version number for the migration.'
-        ],
-    ];
+EOT
+            );
+    }
 
     /**
      * @throws Exception
