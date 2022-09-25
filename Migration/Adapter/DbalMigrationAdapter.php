@@ -10,6 +10,8 @@ use Qubus\Dbal\Connection;
 use Qubus\Dbal\Schema\CreateTable;
 use Qubus\Exception\Exception;
 
+use Qubus\Support\DateTime\QubusDateTimeImmutable;
+
 use function array_map;
 use function in_array;
 
@@ -47,7 +49,12 @@ class DbalMigrationAdapter implements MigrationAdapter
     public function up(Migration $migration): MigrationAdapter
     {
         $this->connection->insert($this->tableName)
-            ->values(['version' => $migration->getVersion()]);
+            ->values(
+                [
+                    'version' => $migration->getVersion(),
+                    'recorded_on' => (new QubusDateTimeImmutable('now'))->format('Y-m-d h:i:s')
+                ]
+            )->execute();
 
         return $this;
     }
@@ -61,8 +68,8 @@ class DbalMigrationAdapter implements MigrationAdapter
     public function down(Migration $migration): MigrationAdapter
     {
         $this->connection->delete($this->tableName)
-        ->where('version', $migration->getVersion())
-        ->execute();
+            ->where('version', $migration->getVersion())
+            ->execute();
 
         return $this;
     }
