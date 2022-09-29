@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Codefy\Foundation\Scheduler\Expressions\At;
-use Codefy\Foundation\Scheduler\Expressions\EveryMinute;
 use Codefy\Foundation\Scheduler\Expressions\Hourly;
 use PHPUnit\Framework\Assert;
 
