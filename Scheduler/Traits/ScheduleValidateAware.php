@@ -35,7 +35,7 @@ trait ScheduleValidateAware
     /**
      * @throws TypeException
      */
-    protected static function range(int|string|array|null $value = null, int $min = 0, int $max = 0): int|string
+    protected static function range(int|string|array|null $value = null, int $min = 0, int $max = 0): int|string|null
     {
         if ($value === '*') {
             return '*';
@@ -60,8 +60,8 @@ trait ScheduleValidateAware
             return $value;
         }
 
-        if (! is_numeric($value) ||
-            ! ($value >= $min && $value <= $max)
+        if (null !== $value && (! is_numeric($value) ||
+            ! ($value >= $min && $value <= $max))
         ) {
             throw new TypeException(
                 sprintf(

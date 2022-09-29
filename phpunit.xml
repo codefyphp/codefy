@@ -10,9 +10,12 @@
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
+        <exclude>
+            <directory suffix=".php">./vendor</directory>
+            <directory suffix=".php">./tests</directory>
+        </exclude>
         <include>
-            <directory suffix=".php">./app</directory>
-            <directory suffix=".php">./src</directory>
+            <directory suffix=".php">./</directory>
         </include>
     </coverage>
 </phpunit>

@@ -40,7 +40,7 @@ trait LiteralAware
     /**
      * @throws TypeException
      */
-    protected function alias(?string $literal): CronExpression
+    public function alias(?string $literal): CronExpression
     {
         $literal = is_string($literal) ? strtolower($literal) : null;
 
