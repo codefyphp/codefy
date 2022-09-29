@@ -43,10 +43,12 @@ EOT
         $version = $this->getArgument(key: 'version');
 
         if (!in_array(needle: $version, haystack: $versions)) {
+            $this->terminalInfo(string: 'No available migration to run down.');
             return ConsoleCommand::SUCCESS;
         }
 
         if (!isset($migrations[$version])) {
+            $this->terminalError(string: 'Migration version does not exist.');
             return ConsoleCommand::SUCCESS;
         }
 

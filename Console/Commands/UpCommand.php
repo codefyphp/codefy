@@ -44,10 +44,12 @@ EOT
         $version = $this->getArgument(key: 'version');
 
         if (in_array(needle: $version, haystack: $versions)) {
+            $this->terminalInfo(string: 'Migration version already exists.');
             return 0;
         }
 
         if (!isset($migrations[$version])) {
+            $this->terminalError(string: 'No migration by that version exists.');
             return 0;
         }
 

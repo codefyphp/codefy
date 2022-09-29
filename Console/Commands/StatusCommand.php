@@ -42,10 +42,10 @@ EOT
 
         foreach ($this->getMigrations() as $migration) {
             if (in_array($migration->getVersion(), $versions)) {
-                $status = '     <info>up</info> ';
+                $status = '<info>up</info>';
                 unset($versions[array_search($migration->getVersion(), $versions)]);
             } else {
-                $status = '   <error>down</error> ';
+                $status = '<error>down</error>';
             }
 
             $table->addRow(
