@@ -9,7 +9,6 @@ use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
 use Qubus\Dbal\Schema\CreateTable;
 use Qubus\Exception\Exception;
-
 use Qubus\Support\DateTime\QubusDateTimeImmutable;
 
 use function array_map;
