@@ -84,15 +84,15 @@ class Application extends Container
         $connection = env(key: 'DB_CONNECTION', default: 'default');
 
         return DB::connection([
-            'driver' => $config->getConfigKey("connections.{$connection}.driver"),
-            'host' => $config->getConfigKey("connections.{$connection}.host", 'localhost'),
-            'port' => $config->getConfigKey("connections.{$connection}.port", 3306),
-            'charset' => $config->getConfigKey("connections.{$connection}.charset", 'utf8mb4'),
-            'collation' => $config->getConfigKey("connections.{$connection}.collation", 'utf8mb4_unicode_ci'),
-            'username' => $config->getConfigKey("connections.{$connection}.user"),
-            'password' => $config->getConfigKey("connections.{$connection}.password"),
-            'dbname' => $config->getConfigKey("connections.{$connection}.dbname"),
-            'prefix' => $config->getConfigKey("connections.{$connection}.prefix", ''),
+            'driver' => $config->getConfigKey("database.connections.{$connection}.driver"),
+            'host' => $config->getConfigKey("database.connections.{$connection}.host", 'localhost'),
+            'port' => $config->getConfigKey("database.connections.{$connection}.port", 3306),
+            'charset' => $config->getConfigKey("database.connections.{$connection}.charset", 'utf8mb4'),
+            'collation' => $config->getConfigKey("database.connections.{$connection}.collation", 'utf8mb4_unicode_ci'),
+            'username' => $config->getConfigKey("database.connections.{$connection}.username"),
+            'password' => $config->getConfigKey("database.connections.{$connection}.password"),
+            'dbname' => $config->getConfigKey("database.connections.{$connection}.dbname"),
+            'prefix' => $config->getConfigKey("database.connections.{$connection}.prefix", ''),
         ]);
     }
 
@@ -108,7 +108,7 @@ class Application extends Container
 
         return new OrmBuilder(
             connection: $this->getDbConnection(),
-            tablePrefix: $config->getConfigKey("connections.{$connection}.prefix", '')
+            tablePrefix: $config->getConfigKey("database.connections.{$connection}.prefix", '')
         );
     }
 
