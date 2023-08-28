@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Commands;
+namespace Codefy\Framework\Console\Commands;
 
 use ArrayAccess;
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Console\ConsoleCommand;
-use Codefy\Foundation\Migration\Adapter\MigrationAdapter;
-use Codefy\Foundation\Migration\Migration;
-use Codefy\Foundation\Migration\Migrator;
+use Codefy\Framework\Application;
+use Codefy\Framework\Console\ConsoleCommand;
+use Codefy\Framework\Migration\Adapter\MigrationAdapter;
+use Codefy\Framework\Migration\Migration;
+use Codefy\Framework\Migration\Migrator;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use RuntimeException;
@@ -265,7 +265,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             if (!($migration instanceof Migration)) {
                 throw new TypeException(
                     message: sprintf(
-                        'The class "%s" in file "%s" must extend \Codefy\Foundation\Migration\Migration',
+                        'The class "%s" in file "%s" must extend \Codefy\Framework\Migration\Migration',
                         $class,
                         $path
                     )

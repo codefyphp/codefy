@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Helpers;
+namespace Codefy\Framework\Helpers;
 
-use Codefy\Foundation\Application;
+use Codefy\Framework\Application;
 use Qubus\Config\Collection;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;

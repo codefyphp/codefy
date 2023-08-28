@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Traits;
+namespace Codefy\Framework\Scheduler\Traits;
 
 use Qubus\Exception\Data\TypeException;
 

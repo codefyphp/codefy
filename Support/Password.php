@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Support;
+namespace Codefy\Framework\Support;
 
 use function defined;
 use function Qubus\Security\Helpers\__observer;

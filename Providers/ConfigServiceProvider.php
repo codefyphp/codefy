@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Providers;
+namespace Codefy\Framework\Providers;
 
-use Codefy\Foundation\Support\CodefyServiceProvider;
+use Codefy\Framework\Support\CodefyServiceProvider;
 use Qubus\Config\Collection;
 use Qubus\Config\Configuration;
 
-use function Codefy\Foundation\Helpers\env;
+use function Codefy\Framework\Helpers\env;
 
 final class ConfigServiceProvider extends CodefyServiceProvider
 {

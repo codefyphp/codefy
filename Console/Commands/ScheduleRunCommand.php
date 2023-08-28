@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Commands;
+namespace Codefy\Framework\Console\Commands;
 
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Console\ConsoleCommand;
-use Codefy\Foundation\Scheduler\Schedule;
+use Codefy\Framework\Application;
+use Codefy\Framework\Console\ConsoleCommand;
+use Codefy\Framework\Scheduler\Schedule;
 
 class ScheduleRunCommand extends ConsoleCommand
 {

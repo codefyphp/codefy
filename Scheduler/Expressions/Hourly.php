@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Expressions;
+namespace Codefy\Framework\Scheduler\Expressions;
 
-use Codefy\Foundation\Scheduler\Traits\ScheduleValidateAware;
+use Codefy\Framework\Scheduler\Traits\ScheduleValidateAware;
 use Cron\CronExpression;
 use Qubus\Exception\Data\TypeException;
 

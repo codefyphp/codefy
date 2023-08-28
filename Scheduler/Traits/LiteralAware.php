@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Traits;
+namespace Codefy\Framework\Scheduler\Traits;
 
-use Codefy\Foundation\Scheduler\Expressions\At;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Friday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Monday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Saturday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Sunday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Thursday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Tuesday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Wednesday;
-use Codefy\Foundation\Scheduler\Expressions\EveryMinute;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\April;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\August;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\December;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\February;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\January;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\July;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\June;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\March;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\May;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\November;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\October;
-use Codefy\Foundation\Scheduler\Expressions\MonthOfYear\September;
-use Codefy\Foundation\Scheduler\Expressions\Quarterly;
-use Codefy\Foundation\Scheduler\Expressions\WeekDays;
-use Codefy\Foundation\Scheduler\Expressions\WeekEnds;
+use Codefy\Framework\Scheduler\Expressions\At;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Friday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Monday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Saturday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Sunday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Thursday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Tuesday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Wednesday;
+use Codefy\Framework\Scheduler\Expressions\EveryMinute;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\April;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\August;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\December;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\February;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\January;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\July;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\June;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\March;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\May;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\November;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\October;
+use Codefy\Framework\Scheduler\Expressions\MonthOfYear\September;
+use Codefy\Framework\Scheduler\Expressions\Quarterly;
+use Codefy\Framework\Scheduler\Expressions\WeekDays;
+use Codefy\Framework\Scheduler\Expressions\WeekEnds;
 use Cron\CronExpression;
 
 use Qubus\Exception\Data\TypeException;

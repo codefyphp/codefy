@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Contracts;
+namespace Codefy\Framework\Contracts;
 
-use Codefy\Foundation\Application;
+use Codefy\Framework\Application;
 
 interface Kernel
 {

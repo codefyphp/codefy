@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Contracts;
+namespace Codefy\Framework\Contracts;
 
 use Psr\Log\LoggerInterface;
 

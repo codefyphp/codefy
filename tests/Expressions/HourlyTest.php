@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Codefy\Foundation\Scheduler\Expressions\At;
-use Codefy\Foundation\Scheduler\Expressions\Hourly;
+use Codefy\Framework\Scheduler\Expressions\At;
+use Codefy\Framework\Scheduler\Expressions\Hourly;
 use PHPUnit\Framework\Assert;
 
 it('should run hourly.', function () {

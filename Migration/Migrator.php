@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Migration;
+namespace Codefy\Framework\Migration;
 
 use ArrayAccess;
-use Codefy\Foundation\Migration\Adapter\MigrationAdapter;
+use Codefy\Framework\Migration\Adapter\MigrationAdapter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Migrator

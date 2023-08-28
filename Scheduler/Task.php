@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler;
+namespace Codefy\Framework\Scheduler;
 
 use DateTimeZone;
-use Codefy\Foundation\Scheduler\ValueObject\TaskId;
+use Codefy\Framework\Scheduler\ValueObject\TaskId;
 
 interface Task
 {

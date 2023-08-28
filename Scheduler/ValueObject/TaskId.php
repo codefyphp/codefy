@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\ValueObject;
+namespace Codefy\Framework\Scheduler\ValueObject;
 
 use Qubus\Exception\Data\TypeException;
 use Qubus\ValueObjects\Identity\Uuid;

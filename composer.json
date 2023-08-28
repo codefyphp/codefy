@@ -1,39 +1,37 @@
 {
-    "name": "codefyphp/foundation",
-    "type": "project",
-    "description": "Foundation package for the CodefyPHP framework.",
+    "name": "codefyphp/codefy",
+    "type": "library",
+    "description": "CodefyPHP framework core.",
     "keywords": ["codefy","codefyphp","codefy-php","routing","application","container"],
     "license": "MIT",
     "authors": [
         {
             "name": "Joshua Parker",
-            "email": "josh@joshuaparker.blog"
+            "email": "joshua@joshuaparker.dev"
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-pdo": "*",
-        "codefyphp/codefy": "^0.2.0",
-        "dragonmantank/cron-expression": "^3.3",
-        "fenom/fenom": "^2.12",
-        "fenom/providers-collection": "^1.0",
-        "qubus/cache": "^2.0",
-        "qubus/error": "^1.0",
-        "qubus/event-dispatcher": "^2.0",
-        "qubus/exception": "^2.0",
-        "qubus/expressive": "^0.1.0",
-        "qubus/filesystem": "^2.0",
-        "qubus/injector": "^2.2",
-        "qubus/mail": "^2.0",
-        "qubus/router": "^2.0",
-        "qubus/security": "^2.0",
-        "qubus/support": "^2.2",
-        "symfony/console": "^6.1",
-        "symfony/options-resolver": "^6.1"
+        "codefyphp/domain-driven-core": "^1",
+        "dragonmantank/cron-expression": "^3",
+        "qubus/cache": "^3",
+        "qubus/error": "^2",
+        "qubus/event-dispatcher": "^3",
+        "qubus/exception": "^3",
+        "qubus/expressive": "^1",
+        "qubus/filesystem": "^3",
+        "qubus/injector": "^3",
+        "qubus/mail": "^3",
+        "qubus/router": "^3",
+        "qubus/security": "^3",
+        "qubus/support": "^3",
+        "symfony/console": "^6",
+        "symfony/options-resolver": "^6"
     },
     "autoload": {
         "psr-4": {
-            "Codefy\\Foundation\\": ""
+            "Codefy\\Framework\\": ""
         },
         "files": [
           "Helpers/core.php",
@@ -41,7 +39,13 @@
         ]
     },
     "require-dev": {
-        "pestphp/pest": "^1.22"
+        "pestphp/pest": "^1.22",
+        "qubus/qubus-coding-standard": "^1.1"
+    },
+    "suggest": {
+        "fenom/fenom": "Lightweight and fast template engine for PHP.",
+        "fenom/providers-collection": "Additional providers for Fenom template engine.",
+        "foil/foil": "Write simple, clean, and concise templates with nothing more than PHP."
     },
     "scripts": {
         "test": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --min=50 --colors=always",

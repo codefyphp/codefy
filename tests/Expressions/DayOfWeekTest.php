@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Friday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Monday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Saturday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Sunday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Thursday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Tuesday;
-use Codefy\Foundation\Scheduler\Expressions\DayOfWeek\Wednesday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Friday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Monday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Saturday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Sunday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Thursday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Tuesday;
+use Codefy\Framework\Scheduler\Expressions\DayOfWeek\Wednesday;
 use PHPUnit\Framework\Assert;
 use Qubus\Exception\Data\TypeException;
 

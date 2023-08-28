@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Providers;
+namespace Codefy\Framework\Providers;
 
-use Codefy\Foundation\Support\CodefyServiceProvider;
+use Codefy\Framework\Support\CodefyServiceProvider;
 use Qubus\FileSystem\Adapter\LocalFlysystemAdapter;
 use Qubus\FileSystem\FileSystem;
 

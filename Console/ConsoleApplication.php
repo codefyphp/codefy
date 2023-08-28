@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console;
+namespace Codefy\Framework\Console;
 
-use Codefy\Foundation\Application;
+use Codefy\Framework\Application;
 use Exception;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Exception\CommandNotFoundException;

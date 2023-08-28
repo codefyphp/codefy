@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Factory;
+namespace Codefy\Framework\Factory;
 
-use Codefy\Foundation\Contracts\LoggerFactory;
-use Codefy\Foundation\Factory\Traits\FileLoggerAware;
-use Codefy\Foundation\Support\LocalStorage;
+use Codefy\Framework\Contracts\LoggerFactory;
+use Codefy\Framework\Factory\Traits\FileLoggerAware;
+use Codefy\Framework\Support\LocalStorage;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Qubus\Log\Logger;

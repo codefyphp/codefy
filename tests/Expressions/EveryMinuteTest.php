@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Codefy\Foundation\Scheduler\Expressions\At;
-use Codefy\Foundation\Scheduler\Expressions\EveryMinute;
+use Codefy\Framework\Scheduler\Expressions\At;
+use Codefy\Framework\Scheduler\Expressions\EveryMinute;
 use PHPUnit\Framework\Assert;
 
 it('should run every minute.', function () {

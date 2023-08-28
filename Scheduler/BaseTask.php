@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler;
+namespace Codefy\Framework\Scheduler;
 
-use Codefy\Foundation\Scheduler\Expressions\Expressional;
-use Codefy\Foundation\Scheduler\Processor\BaseProcessor;
-use Codefy\Foundation\Scheduler\ValueObject\TaskId;
+use Codefy\Framework\Scheduler\Expressions\Expressional;
+use Codefy\Framework\Scheduler\Processor\BaseProcessor;
+use Codefy\Framework\Scheduler\ValueObject\TaskId;
 use Closure;
 use DateTimeZone;
 use Qubus\Exception\Data\TypeException;

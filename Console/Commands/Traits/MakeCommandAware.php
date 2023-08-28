@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Commands\Traits;
+namespace Codefy\Framework\Console\Commands\Traits;
 
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Console\Exceptions\MakeCommandFileAlreadyExistsException;
-use Codefy\Foundation\Factory\FileLoggerFactory;
-use Codefy\Foundation\Support\LocalStorage;
+use Codefy\Framework\Application;
+use Codefy\Framework\Console\Exceptions\MakeCommandFileAlreadyExistsException;
+use Codefy\Framework\Factory\FileLoggerFactory;
+use Codefy\Framework\Support\LocalStorage;
 use Exception;
 use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;

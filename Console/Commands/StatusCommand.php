@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Commands;
+namespace Codefy\Framework\Console\Commands;
 
-use Codefy\Foundation\Console\ConsoleCommand;
+use Codefy\Framework\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
 use Symfony\Component\Console\Helper\Table;
 

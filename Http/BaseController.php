@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Http;
+namespace Codefy\Framework\Http;
 
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Contracts\RoutingController;
+use Codefy\Framework\Application;
+use Codefy\Framework\Contracts\RoutingController;
 use Fenom;
 use Fenom\Provider;
 use Psr\Http\Message\ResponseInterface;
@@ -13,8 +13,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Routing\Controller\Controller;
 use Qubus\Routing\Router;
 
-use function Codefy\Foundation\Helpers\app;
-use function Codefy\Foundation\Helpers\resource_path;
+use function Codefy\Framework\Helpers\app;
+use function Codefy\Framework\Helpers\resource_path;
 
 class BaseController extends Controller implements RoutingController
 {

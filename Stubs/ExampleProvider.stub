@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace {{ namespace }}
 
-use Codefy\Foundation\Support\CodefyServiceProvider;
+use Codefy\Framework\Support\CodefyServiceProvider;
 
 final class {{ class }} extends CodefyServiceProvider
 {

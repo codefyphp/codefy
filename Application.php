@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation;
+namespace Codefy\Framework;
 
-use Codefy\Foundation\Support\Paths;
+use Codefy\Framework\Support\Paths;
 use Psr\Container\ContainerInterface;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
@@ -18,7 +18,7 @@ use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 
-use function Codefy\Foundation\Helpers\env;
+use function Codefy\Framework\Helpers\env;
 use function get_class;
 use function is_string;
 use function rtrim;
@@ -624,13 +624,13 @@ class Application extends Container
                 'codefy' => self::class,
                 \Qubus\Routing\Interfaces\Collector::class => \Qubus\Routing\Route\RouteCollector::class,
                 'router' => \Qubus\Routing\Router::class,
-                \Codefy\Foundation\Contracts\Kernel::class => \Codefy\Foundation\Http\Kernel::class,
-                \Codefy\Foundation\Contracts\RoutingController::class => \Codefy\Foundation\Http\BaseController::class,
+                \Codefy\Framework\Contracts\Kernel::class => \Codefy\Framework\Http\Kernel::class,
+                \Codefy\Framework\Contracts\RoutingController::class => \Codefy\Framework\Http\BaseController::class,
                 \League\Flysystem\FilesystemOperator::class => \Qubus\FileSystem\FileSystem::class,
                 \League\Flysystem\FilesystemAdapter::class => \Qubus\FileSystem\Adapter\LocalFlysystemAdapter::class,
                 \Qubus\Cache\Adapter\CacheAdapter::class => \Qubus\Cache\Adapter\FileSystemCacheAdapter::class,
-                \Codefy\Foundation\Scheduler\Mutex\Locker::class
-                => \Codefy\Foundation\Scheduler\Mutex\CacheLocker::class,
+                \Codefy\Framework\Scheduler\Mutex\Locker::class
+                => \Codefy\Framework\Scheduler\Mutex\CacheLocker::class,
                 \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
                 \Symfony\Component\Console\Input\InputInterface::class
                 => \Symfony\Component\Console\Input\ArgvInput::class,

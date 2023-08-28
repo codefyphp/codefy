@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Expressions;
+namespace Codefy\Framework\Scheduler\Expressions;
 
 interface Expressional
 {

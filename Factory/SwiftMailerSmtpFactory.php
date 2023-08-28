@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Factory;
+namespace Codefy\Framework\Factory;
 
-use Codefy\Foundation\Contracts\MailerFactory;
+use Codefy\Framework\Contracts\MailerFactory;
 use Qubus\Exception\Exception;
 use Qubus\Mail\Mailer;
 
-use function Codefy\Foundation\Helpers\app;
+use function Codefy\Framework\Helpers\app;
 
 class SwiftMailerSmtpFactory implements MailerFactory
 {

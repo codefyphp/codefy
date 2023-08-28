@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Processor;
+namespace Codefy\Framework\Scheduler\Processor;
 
 use DateTimeZone;
 

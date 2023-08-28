@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Commands;
+namespace Codefy\Framework\Console\Commands;
 
-use Codefy\Foundation\Console\Commands\Traits\MakeCommandAware;
-use Codefy\Foundation\Console\ConsoleCommand;
-use Codefy\Foundation\Console\Exceptions\MakeCommandFileAlreadyExistsException;
+use Codefy\Framework\Console\Commands\Traits\MakeCommandAware;
+use Codefy\Framework\Console\ConsoleCommand;
+use Codefy\Framework\Console\Exceptions\MakeCommandFileAlreadyExistsException;
 use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;
 use RuntimeException;

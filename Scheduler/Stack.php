@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler;
+namespace Codefy\Framework\Scheduler;
 
-use Codefy\Foundation\Scheduler\Event\TaskCompleted;
-use Codefy\Foundation\Scheduler\Event\TaskFailed;
-use Codefy\Foundation\Scheduler\Event\TaskStarted;
-use Codefy\Foundation\Scheduler\Mutex\Locker;
-use Codefy\Foundation\Scheduler\Traits\MailerAware;
+use Codefy\Framework\Scheduler\Event\TaskCompleted;
+use Codefy\Framework\Scheduler\Event\TaskFailed;
+use Codefy\Framework\Scheduler\Event\TaskStarted;
+use Codefy\Framework\Scheduler\Mutex\Locker;
+use Codefy\Framework\Scheduler\Traits\MailerAware;
 use DateTimeZone;
 use Qubus\EventDispatcher\EventDispatcher;
 use Qubus\Exception\Exception;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Codefy\Foundation\Scheduler\Expressions\Weekly;
+use Codefy\Framework\Scheduler\Expressions\Weekly;
 use PHPUnit\Framework\Assert;
 use Qubus\Exception\Data\TypeException;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Codefy\Foundation\Scheduler\Expressions\Date;
+use Codefy\Framework\Scheduler\Expressions\Date;
 use PHPUnit\Framework\Assert;
 
 it('should run at a specific date.', function () {

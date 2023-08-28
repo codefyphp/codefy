@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Expressions\MonthOfYear;
+namespace Codefy\Framework\Scheduler\Expressions\MonthOfYear;
 
-use Codefy\Foundation\Scheduler\Expressions\Expressional;
-use Codefy\Foundation\Scheduler\Expressions\Monthly;
+use Codefy\Framework\Scheduler\Expressions\Expressional;
+use Codefy\Framework\Scheduler\Expressions\Monthly;
 use Cron\CronExpression;
 use Qubus\Exception\Data\TypeException;
 
