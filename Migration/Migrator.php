@@ -20,6 +20,8 @@ class Migrator
      * Constructor
      *
      * @param MigrationAdapter $adapter
+     * @param ArrayAccess $objectmap
+     * @param OutputInterface $output
      */
     public function __construct(MigrationAdapter $adapter, ArrayAccess $objectmap, OutputInterface $output)
     {

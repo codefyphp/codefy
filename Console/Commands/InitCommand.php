@@ -6,7 +6,6 @@ namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
-use Qubus\Exception\Exception;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -40,6 +39,8 @@ EOT
     /**
      * Create migrations dir
      *
+     * @param $migrations
+     * @param OutputInterface $output
      * @return void
      */
     protected function initMigrationsDir($migrations, OutputInterface $output): void
@@ -69,6 +70,7 @@ EOT
      *
      * @param string $bootstrap where to put bootstrap file.
      * @param string $migrations path to migrations dir relative to bootstrap.
+     * @param OutputInterface $output
      * @return void
      */
     protected function initBootstrap(string $bootstrap, string $migrations, OutputInterface $output): void

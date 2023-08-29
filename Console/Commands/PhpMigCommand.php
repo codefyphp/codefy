@@ -46,8 +46,11 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Bootstrap migration.
      *
+     * @param InputInterface $input
+     * @param OutputInterface $output
      * @return void
      * @throws Exception
+     * @throws TypeException
      */
     protected function bootstrap(InputInterface $input, OutputInterface $output): void
     {
@@ -83,7 +86,12 @@ abstract class PhpMigCommand extends ConsoleCommand
         $objectmap = $func();
 
         if (!($objectmap instanceof ArrayAccess)) {
-            throw new RuntimeException(message: $bootstrapFile . ' must return object of type ArrayAccess');
+            throw new RuntimeException(
+                message: sprintf(
+                    '%s must return object of type ArrayAccess.',
+                    $bootstrapFile
+                )
+            );
         }
 
         return $objectmap;
@@ -127,7 +135,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         if (!($adapter instanceof MigrationAdapter)) {
             throw new RuntimeException(
                 message: "phpmig.adapter or phpmig.sets must be an 
-                instance of \\Codefy\\Foundation\\Migration\\Adapter\\MigrationAdapter"
+                instance of \\Codefy\\Framework\\Migration\\Adapter\\MigrationAdapter"
             );
         }
 
@@ -141,9 +149,8 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @throws RuntimeException
+     * @return array
      * @throws TypeException
-     * @throws Exception
      */
     protected function bootstrapMigrations(InputInterface $input, OutputInterface $output): array
     {

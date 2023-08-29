@@ -15,7 +15,7 @@ final class FlysystemServiceProvider extends CodefyServiceProvider
         $this->registerFilesystem();
     }
 
-    private function registerFilesystem()
+    private function registerFilesystem(): void
     {
         $this->registerAdapter();
 

@@ -28,9 +28,7 @@ class ConsoleApplication extends SymfonyApplication
     {
         $this->getCommandName(input: $input = $input ?: new ArgvInput());
 
-        $exitCode = parent::run(input: $input, output: $output);
-
-        return $exitCode;
+        return parent::run(input: $input, output: $output);
     }
 
     /**

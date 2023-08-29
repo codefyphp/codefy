@@ -52,7 +52,7 @@ abstract class ConsoleCommand extends SymfonyCommand
     }
 
     /**
-     * @throws ReflectionException
+     * @throws ReflectionException|TypeException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

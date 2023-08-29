@@ -4,42 +4,32 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http;
 
-use Codefy\Framework\Application;
 use Codefy\Framework\Contracts\RoutingController;
-use Fenom;
-use Fenom\Provider;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Routing\Controller\Controller;
 use Qubus\Routing\Router;
+use Qubus\View\Renderer;
 
 use function Codefy\Framework\Helpers\app;
-use function Codefy\Framework\Helpers\resource_path;
 
 class BaseController extends Controller implements RoutingController
 {
     protected ServerRequestInterface $request;
     protected ResponseInterface $response;
     protected Router $router;
-    protected Fenom $view;
+    protected Renderer $view;
 
     public function __construct(
         ?ServerRequestInterface $request = null,
         ?ResponseInterface $response = null,
         ?Router $router = null,
-        ?Fenom $view = null
+        ?Renderer $view = null
     ) {
         $this->setRequest($request ?? app(name: ServerRequestInterface::class));
         $this->response = $response ?? app(name: ResponseInterface::class);
         $this->router = $router ?? app(name: 'router');
-        $this->setView(
-            view: $view ??
-            (new Fenom(
-                provider: new Provider(template_dir: resource_path(path: 'views'))
-            ))->setCompileDir(
-                dir: resource_path(path: 'views'.Application::DS.'cache')
-            )->setOptions(options: Fenom::DISABLE_CACHE)
-        );
+        $this->setView($view ?? app(name: 'view'));
     }
 
     /**
@@ -77,6 +67,7 @@ class BaseController extends Controller implements RoutingController
 
     /**
      * @param ResponseInterface $response
+     * @return BaseController
      */
     public function setResponse(ResponseInterface $response): self
     {
@@ -88,9 +79,9 @@ class BaseController extends Controller implements RoutingController
     /**
      * Gets the view instance.
      *
-     * @return Fenom
+     * @return Renderer
      */
-    public function getView(): Fenom
+    public function getView(): Renderer
     {
         return $this->view;
     }
@@ -98,9 +89,10 @@ class BaseController extends Controller implements RoutingController
     /**
      * Sets the view instance.
      *
-     * @param Fenom $view
+     * @param Renderer $view
+     * @return BaseController
      */
-    public function setView(Fenom $view): self
+    public function setView(Renderer $view): self
     {
         $this->view = $view;
 

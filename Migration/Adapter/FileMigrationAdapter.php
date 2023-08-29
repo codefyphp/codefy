@@ -92,7 +92,7 @@ class FileMigrationAdapter implements MigrationAdapter
      * @param array $versions
      * @throws TypeException
      */
-    protected function write(array $versions)
+    protected function write(array $versions): void
     {
         if (false === file_put_contents(filename: $this->filename, data: implode(separator: "\n", array: $versions))) {
             throw new TypeException(message: sprintf('The file "%s" could not be written to', $this->filename));

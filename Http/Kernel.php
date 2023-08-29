@@ -6,6 +6,7 @@ namespace Codefy\Framework\Http;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Contracts\Kernel as HttpKernel;
+use Exception;
 use Qubus\Error\Handlers\DebugErrorHandler;
 use Qubus\Error\Handlers\ErrorHandler;
 use Qubus\Error\Handlers\ProductionErrorHandler;
@@ -24,9 +25,7 @@ use const PHP_VERSION;
 final class Kernel implements HttpKernel
 {
     public readonly Application $codefy;
-
     public readonly Router $router;
-
     protected array $bootstrappers = [
         \Codefy\Framework\Bootstrap\RegisterProviders::class,
         \Codefy\Framework\Bootstrap\BootProviders::class,
@@ -48,6 +47,9 @@ final class Kernel implements HttpKernel
         return $this->codefy;
     }
 
+    /**
+     * @throws Exception
+     */
     protected function dispatchRouter(): bool
     {
         return (new HttpPublisher())->publish(
@@ -64,6 +66,9 @@ final class Kernel implements HttpKernel
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function boot(): bool
     {
         if (version_compare(

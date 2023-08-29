@@ -37,9 +37,9 @@ function app(?string $name = null, array $args = []): mixed
  *
  * @param string $key
  * @param array|bool $set
- * @return ConfigContainer
+ * @return mixed
  */
-function config(string $key, array|bool $set = false)
+function config(string $key, array|bool $set = false): mixed
 {
     if (!is_false__(var: $set)) {
         app(name: Collection::class)->setConfigKey($key, $set);

@@ -6,7 +6,6 @@ namespace Codefy\Framework\Console\Commands;
 
 use Qubus\Exception\Exception;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\InputOption;
 
 class CheckCommand extends PhpMigCommand
 {
