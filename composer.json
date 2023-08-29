@@ -26,6 +26,7 @@
         "qubus/router": "^3",
         "qubus/security": "^3",
         "qubus/support": "^3",
+        "qubus/view": "^2",
         "symfony/console": "^6",
         "symfony/options-resolver": "^6"
     },
@@ -41,11 +42,6 @@
     "require-dev": {
         "pestphp/pest": "^1.22",
         "qubus/qubus-coding-standard": "^1.1"
-    },
-    "suggest": {
-        "fenom/fenom": "Lightweight and fast template engine for PHP.",
-        "fenom/providers-collection": "Additional providers for Fenom template engine.",
-        "foil/foil": "Write simple, clean, and concise templates with nothing more than PHP."
     },
     "scripts": {
         "test": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --min=50 --colors=always",
