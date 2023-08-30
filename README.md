@@ -1,8 +1,8 @@
-<h1 style="text-align: center !important;">
+<h1 align="center">
     <a href="https://codefyphp.com/" target="_blank"><img src="https://downloads.joshuaparker.blog/images/codefyphp.png" width="400" alt="CodefyPHP Logo"></a>
 </h1> 
 
-<p style="text-align: center !important">
+<p align="center">
     <a href="https://codefyphp.com/"><img src="https://img.shields.io/packagist/v/CodefyPHP/codefy?label=CodefyPHP" alt="Latest Stable Version"></a>
     <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.2-777BB4.svg?style=flat&logo=php" alt="PHP 8.2"/></a>
     <a href="https://packagist.org/packages/codefyphp/codefy"><img src="https://img.shields.io/packagist/l/codefyphp/codefy" alt="License"></a>
