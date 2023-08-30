@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Migration\Adapter;
+namespace Codefy\Framework\Migration\Adapter;
 
-use Codefy\Foundation\Migration\Migration;
-
+use Codefy\Framework\Migration\Migration;
 use Qubus\Exception\Data\TypeException;
 
 use function in_array;
@@ -93,7 +92,7 @@ class FileMigrationAdapter implements MigrationAdapter
      * @param array $versions
      * @throws TypeException
      */
-    protected function write(array $versions)
+    protected function write(array $versions): void
     {
         if (false === file_put_contents(filename: $this->filename, data: implode(separator: "\n", array: $versions))) {
             throw new TypeException(message: sprintf('The file "%s" could not be written to', $this->filename));

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Traits;
+namespace Codefy\Framework\Scheduler\Traits;
 
 use Qubus\Exception\Exception;
 
-use function Codefy\Foundation\Helpers\app;
+use function Codefy\Framework\Helpers\app;
 use function explode;
 use function php_uname;
 use function Qubus\Support\Helpers\is_null__;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Event;
+namespace Codefy\Framework\Scheduler\Event;
 
 use Qubus\EventDispatcher\BaseEvent;
 

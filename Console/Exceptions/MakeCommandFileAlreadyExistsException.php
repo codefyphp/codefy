@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Exceptions;
+namespace Codefy\Framework\Console\Exceptions;
 
 use Qubus\Exception\Exception;
 

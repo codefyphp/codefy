@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Traits;
+namespace Codefy\Framework\Scheduler\Traits;
 
-use Codefy\Foundation\Scheduler\Schedule;
+use Codefy\Framework\Scheduler\Schedule;
 use Carbon\Carbon;
 use Closure;
 use Cron\CronExpression;

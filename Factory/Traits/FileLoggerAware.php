@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Factory\Traits;
+namespace Codefy\Framework\Factory\Traits;
 
 use Qubus\Exception\Exception;
 use ReflectionException;

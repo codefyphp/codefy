@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Expressions\DayOfWeek;
+namespace Codefy\Framework\Scheduler\Expressions\DayOfWeek;
 
-use Codefy\Foundation\Scheduler\Expressions\Expressional;
-use Codefy\Foundation\Scheduler\Expressions\Weekly;
+use Codefy\Framework\Scheduler\Expressions\Expressional;
+use Codefy\Framework\Scheduler\Expressions\Weekly;
 use Cron\CronExpression;
 use Qubus\Exception\Data\TypeException;
 

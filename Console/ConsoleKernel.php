@@ -2,24 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console;
+namespace Codefy\Framework\Console;
 
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Console\Commands\CheckCommand;
-use Codefy\Foundation\Console\Commands\DownCommand;
-use Codefy\Foundation\Console\Commands\GenerateCommand;
-use Codefy\Foundation\Console\Commands\MakeCommand;
-use Codefy\Foundation\Console\Commands\MigrateCommand;
-use Codefy\Foundation\Console\Commands\PasswordHashCommand;
-use Codefy\Foundation\Console\Commands\RedoCommand;
-use Codefy\Foundation\Console\Commands\RollbackCommand;
-use Codefy\Foundation\Console\Commands\ScheduleRunCommand;
-use Codefy\Foundation\Console\Commands\StatusCommand;
-use Codefy\Foundation\Console\Commands\UpCommand;
-use Codefy\Foundation\Console\ConsoleApplication as Codex;
-use Codefy\Foundation\Factory\FileLoggerSmtpFactory;
-use Codefy\Foundation\Scheduler\Mutex\Locker;
-use Codefy\Foundation\Scheduler\Schedule;
+use Codefy\Framework\Application;
+use Codefy\Framework\Console\ConsoleApplication as Codex;
+use Codefy\Framework\Factory\FileLoggerSmtpFactory;
+use Codefy\Framework\Scheduler\Mutex\Locker;
+use Codefy\Framework\Scheduler\Schedule;
 use Exception;
 use Qubus\Support\DateTime\QubusDateTimeZone;
 use Symfony\Component\Console\Command\Command;
@@ -41,8 +30,8 @@ class ConsoleKernel
     protected ?Schedule $schedule = null;
 
     protected array $bootstrappers = [
-        \Codefy\Foundation\Bootstrap\RegisterProviders::class,
-        \Codefy\Foundation\Bootstrap\BootProviders::class,
+        \Codefy\Framework\Bootstrap\RegisterProviders::class,
+        \Codefy\Framework\Bootstrap\BootProviders::class,
     ];
 
     public function __construct(protected Application $codefy)

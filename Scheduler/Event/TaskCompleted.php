@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Event;
+namespace Codefy\Framework\Scheduler\Event;
 
-use Codefy\Foundation\Scheduler\Task;
+use Codefy\Framework\Scheduler\Task;
 use Qubus\EventDispatcher\BaseEvent;
 
 final class TaskCompleted extends BaseEvent

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler;
+namespace Codefy\Framework\Scheduler;
 
-use Codefy\Foundation\Scheduler\Mutex\Locker;
-use Codefy\Foundation\Scheduler\Processor\Callback;
-use Codefy\Foundation\Scheduler\Processor\Processor;
-use Codefy\Foundation\Scheduler\Processor\Shell;
-use Codefy\Foundation\Scheduler\Traits\LiteralAware;
+use Codefy\Framework\Scheduler\Mutex\Locker;
+use Codefy\Framework\Scheduler\Processor\Callback;
+use Codefy\Framework\Scheduler\Processor\Processor;
+use Codefy\Framework\Scheduler\Processor\Shell;
+use Codefy\Framework\Scheduler\Traits\LiteralAware;
 
 use DateTimeZone;
 
@@ -17,8 +17,8 @@ use Qubus\Exception\Exception;
 
 use Qubus\Support\DateTime\QubusDateTimeZone;
 
-use function Codefy\Foundation\Helpers\app;
-use function Codefy\Foundation\Helpers\config;
+use function Codefy\Framework\Helpers\app;
+use function Codefy\Framework\Helpers\config;
 use function array_filter;
 use function count;
 use function escapeshellarg;

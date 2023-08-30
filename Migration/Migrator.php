@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Migration;
+namespace Codefy\Framework\Migration;
 
 use ArrayAccess;
-use Codefy\Foundation\Migration\Adapter\MigrationAdapter;
+use Codefy\Framework\Migration\Adapter\MigrationAdapter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Migrator
@@ -20,6 +20,8 @@ class Migrator
      * Constructor
      *
      * @param MigrationAdapter $adapter
+     * @param ArrayAccess $objectmap
+     * @param OutputInterface $output
      */
     public function __construct(MigrationAdapter $adapter, ArrayAccess $objectmap, OutputInterface $output)
     {

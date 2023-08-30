@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation;
+namespace Codefy\Framework;
 
-use Codefy\Foundation\Support\Paths;
+use Codefy\Framework\Support\Paths;
 use Psr\Container\ContainerInterface;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
 use Qubus\Inheritance\InvokerAware;
@@ -18,7 +19,7 @@ use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 
-use function Codefy\Foundation\Helpers\env;
+use function Codefy\Framework\Helpers\env;
 use function get_class;
 use function is_string;
 use function rtrim;
@@ -31,7 +32,7 @@ class Application extends Container
 
     public const APP_VERSION = '1.0.0';
 
-    public const MIN_PHP_VERSION = '8.1';
+    public const MIN_PHP_VERSION = '8.2';
 
     public const DS = DIRECTORY_SEPARATOR;
 
@@ -61,6 +62,9 @@ class Application extends Container
 
     protected array $bootedCallbacks = [];
 
+    /**
+     * @throws TypeException
+     */
     public function __construct(array $params)
     {
         if (isset($params['basePath'])) {
@@ -142,6 +146,9 @@ class Application extends Container
         });
     }
 
+    /**
+     * @throws TypeException
+     */
     protected function registerDefaultServiceProviders(): void
     {
         foreach ([
@@ -181,6 +188,10 @@ class Application extends Container
         return $this->booted;
     }
 
+    /**
+     * @return void
+     * @throws TypeException
+     */
     public function boot(): void
     {
         if ($this->booted) {
@@ -204,8 +215,9 @@ class Application extends Container
     /**
      * Force register a service provider with the application.
      *
-     * @param string|Serviceable|Bootable  $provider
+     * @param string|Serviceable|Bootable $provider
      * @return Serviceable|Bootable
+     * @throws TypeException
      */
     public function forceRegisterServiceProvider(string|Serviceable|Bootable $provider): Serviceable|Bootable
     {
@@ -216,6 +228,7 @@ class Application extends Container
      * Register all configured service providers via config/app.php.
      *
      * @return void
+     * @throws TypeException
      */
     public function registerConfiguredServiceProviders(): void
     {
@@ -234,6 +247,7 @@ class Application extends Container
      * @param string|Serviceable|Bootable $serviceProvider
      * @param bool $force
      * @return Serviceable|Bootable|string
+     * @throws TypeException
      */
     public function registerServiceProvider(
         string|Serviceable|Bootable $serviceProvider,
@@ -321,6 +335,7 @@ class Application extends Container
      *
      * @param Serviceable|Bootable $provider
      * @return void
+     * @throws TypeException
      */
     protected function bootServiceProvider(Serviceable|Bootable $provider): void
     {
@@ -624,13 +639,13 @@ class Application extends Container
                 'codefy' => self::class,
                 \Qubus\Routing\Interfaces\Collector::class => \Qubus\Routing\Route\RouteCollector::class,
                 'router' => \Qubus\Routing\Router::class,
-                \Codefy\Foundation\Contracts\Kernel::class => \Codefy\Foundation\Http\Kernel::class,
-                \Codefy\Foundation\Contracts\RoutingController::class => \Codefy\Foundation\Http\BaseController::class,
+                \Codefy\Framework\Contracts\Kernel::class => \Codefy\Framework\Http\Kernel::class,
+                \Codefy\Framework\Contracts\RoutingController::class => \Codefy\Framework\Http\BaseController::class,
                 \League\Flysystem\FilesystemOperator::class => \Qubus\FileSystem\FileSystem::class,
                 \League\Flysystem\FilesystemAdapter::class => \Qubus\FileSystem\Adapter\LocalFlysystemAdapter::class,
                 \Qubus\Cache\Adapter\CacheAdapter::class => \Qubus\Cache\Adapter\FileSystemCacheAdapter::class,
-                \Codefy\Foundation\Scheduler\Mutex\Locker::class
-                => \Codefy\Foundation\Scheduler\Mutex\CacheLocker::class,
+                \Codefy\Framework\Scheduler\Mutex\Locker::class
+                => \Codefy\Framework\Scheduler\Mutex\CacheLocker::class,
                 \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
                 \Symfony\Component\Console\Input\InputInterface::class
                 => \Symfony\Component\Console\Input\ArgvInput::class,

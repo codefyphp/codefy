@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Processor;
+namespace Codefy\Framework\Scheduler\Processor;
 
-use Codefy\Foundation\Scheduler\Mutex\Locker;
-use Codefy\Foundation\Scheduler\Traits\ExpressionAware;
+use Codefy\Framework\Scheduler\Mutex\Locker;
+use Codefy\Framework\Scheduler\Traits\ExpressionAware;
 use Cron\CronExpression;
 use DateTimeZone;
 

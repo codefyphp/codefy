@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console;
+namespace Codefy\Framework\Console;
 
-use Codefy\Foundation\Application;
+use Codefy\Framework\Application;
 use Exception;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
@@ -28,9 +28,7 @@ class ConsoleApplication extends SymfonyApplication
     {
         $this->getCommandName(input: $input = $input ?: new ArgvInput());
 
-        $exitCode = parent::run(input: $input, output: $output);
-
-        return $exitCode;
+        return parent::run(input: $input, output: $output);
     }
 
     /**

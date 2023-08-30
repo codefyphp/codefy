@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Commands;
+namespace Codefy\Framework\Console\Commands;
 
 use ArrayAccess;
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Console\ConsoleCommand;
-use Codefy\Foundation\Migration\Adapter\MigrationAdapter;
-use Codefy\Foundation\Migration\Migration;
-use Codefy\Foundation\Migration\Migrator;
+use Codefy\Framework\Application;
+use Codefy\Framework\Console\ConsoleCommand;
+use Codefy\Framework\Migration\Adapter\MigrationAdapter;
+use Codefy\Framework\Migration\Migration;
+use Codefy\Framework\Migration\Migrator;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use RuntimeException;
@@ -46,8 +46,11 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Bootstrap migration.
      *
+     * @param InputInterface $input
+     * @param OutputInterface $output
      * @return void
      * @throws Exception
+     * @throws TypeException
      */
     protected function bootstrap(InputInterface $input, OutputInterface $output): void
     {
@@ -83,7 +86,12 @@ abstract class PhpMigCommand extends ConsoleCommand
         $objectmap = $func();
 
         if (!($objectmap instanceof ArrayAccess)) {
-            throw new RuntimeException(message: $bootstrapFile . ' must return object of type ArrayAccess');
+            throw new RuntimeException(
+                message: sprintf(
+                    '%s must return object of type ArrayAccess.',
+                    $bootstrapFile
+                )
+            );
         }
 
         return $objectmap;
@@ -127,7 +135,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         if (!($adapter instanceof MigrationAdapter)) {
             throw new RuntimeException(
                 message: "phpmig.adapter or phpmig.sets must be an 
-                instance of \\Codefy\\Foundation\\Migration\\Adapter\\MigrationAdapter"
+                instance of \\Codefy\\Framework\\Migration\\Adapter\\MigrationAdapter"
             );
         }
 
@@ -141,9 +149,8 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @throws RuntimeException
+     * @return array
      * @throws TypeException
-     * @throws Exception
      */
     protected function bootstrapMigrations(InputInterface $input, OutputInterface $output): array
     {
@@ -265,7 +272,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             if (!($migration instanceof Migration)) {
                 throw new TypeException(
                     message: sprintf(
-                        'The class "%s" in file "%s" must extend \Codefy\Foundation\Migration\Migration',
+                        'The class "%s" in file "%s" must extend \Codefy\Framework\Migration\Migration',
                         $class,
                         $path
                     )

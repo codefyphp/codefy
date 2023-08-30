@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Support;
+namespace Codefy\Framework\Support;
 
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
 use Qubus\Config\ConfigContainer;
 use Qubus\FileSystem\FileSystem;
 
-use function Codefy\Foundation\Helpers\config;
+use function Codefy\Framework\Helpers\config;
 
 use const LOCK_EX;
 

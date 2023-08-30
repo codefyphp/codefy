@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler\Mutex;
+namespace Codefy\Framework\Scheduler\Mutex;
 
-use Codefy\Foundation\Scheduler\Processor\Processor;
+use Codefy\Framework\Scheduler\Processor\Processor;
 
 interface Locker
 {

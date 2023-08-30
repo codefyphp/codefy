@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Migration\Adapter;
+namespace Codefy\Framework\Migration\Adapter;
 
-use Codefy\Foundation\Migration\Migration;
+use Codefy\Framework\Migration\Migration;
 
 interface MigrationAdapter
 {

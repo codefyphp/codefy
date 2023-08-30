@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Commands;
+namespace Codefy\Framework\Console\Commands;
 
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Console\ConsoleCommand;
-use Qubus\Exception\Exception;
+use Codefy\Framework\Application;
+use Codefy\Framework\Console\ConsoleCommand;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -40,6 +39,8 @@ EOT
     /**
      * Create migrations dir
      *
+     * @param $migrations
+     * @param OutputInterface $output
      * @return void
      */
     protected function initMigrationsDir($migrations, OutputInterface $output): void
@@ -69,6 +70,7 @@ EOT
      *
      * @param string $bootstrap where to put bootstrap file.
      * @param string $migrations path to migrations dir relative to bootstrap.
+     * @param OutputInterface $output
      * @return void
      */
     protected function initBootstrap(string $bootstrap, string $migrations, OutputInterface $output): void
@@ -91,11 +93,11 @@ EOT
 
 declare(strict_types=1);
 
-use \Codefy\Foundation\Migration\Adapter\FileMigrationAdapter;
+use \Codefy\Framework\Migration\Adapter\FileMigrationAdapter;
 use \Qubus\Support\Container\ObjectStorageMap;
 
 \$objectmap = new ObjectStorageMap();
-// replace this with a better implementation of Codefy\Foundation\Migration\Adapter\MigrationAdapter
+// replace this with a better implementation of Codefy\Framework\Migration\Adapter\MigrationAdapter
 \$objectmap['phpmig.adapter'] = new FileMigrationAdapter('$migrations/.migrations.log');
 \$objectmap['phpmig.migrations_path'] = '$migrations';
 

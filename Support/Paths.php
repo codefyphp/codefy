@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Support;
+namespace Codefy\Framework\Support;
 
 use Qubus\Exception\Data\TypeException;
 

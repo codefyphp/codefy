@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Bootstrap;
+namespace Codefy\Framework\Bootstrap;
 
-use Codefy\Foundation\Application;
+use Codefy\Framework\Application;
 
 class RegisterProviders
 {

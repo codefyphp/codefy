@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Codefy\Foundation\Scheduler\Traits\LiteralAware;
+use Codefy\Framework\Scheduler\Traits\LiteralAware;
 use PHPUnit\Framework\Assert;
 
 $testClass = new class() {

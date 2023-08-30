@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Scheduler;
+namespace Codefy\Framework\Scheduler;
 
-use Codefy\Foundation\Scheduler\Processor\Processor;
+use Codefy\Framework\Scheduler\Processor\Processor;
 use Qubus\Exception\Exception;
 
 final class FailedProcessor

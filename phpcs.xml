@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+
+    <arg name="basepath" value="."/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+
+    <!-- Show progress -->
+    <arg value="p"/>
+
+    <!-- Paths to check -->
+    <file>Bootstrap</file>
+    <file>Console</file>
+    <file>Contracts</file>
+    <file>Factory</file>
+    <file>Helpers</file>
+    <file>Http</file>
+    <file>Migration</file>
+    <file>Providers</file>
+    <file>Scheduler</file>
+    <file>Support</file>
+    <file>Application.php</file>
+
+    <!-- Include rules from the Qubus Coding Standard -->
+    <rule ref="QubusCodingStandard"/>
+</ruleset>

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Console\Commands\Traits;
+namespace Codefy\Framework\Console\Commands\Traits;
 
-use Codefy\Foundation\Application;
-use Codefy\Foundation\Console\Exceptions\MakeCommandFileAlreadyExistsException;
-use Codefy\Foundation\Factory\FileLoggerFactory;
-use Codefy\Foundation\Support\LocalStorage;
+use Codefy\Framework\Application;
+use Codefy\Framework\Console\Exceptions\MakeCommandFileAlreadyExistsException;
+use Codefy\Framework\Factory\FileLoggerFactory;
+use Codefy\Framework\Support\LocalStorage;
 use Exception;
 use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;
@@ -23,8 +23,7 @@ use function str_replace;
 trait MakeCommandAware
 {
     /**
-     * @throws FilesystemException
-     * @throws TypeException
+     * @throws TypeException|MakeCommandFileAlreadyExistsException
      */
     private function resolveResource(string $resource, mixed $options): void
     {
@@ -45,8 +44,9 @@ trait MakeCommandAware
     /**
      * @param string $classNameSuffix
      * @param string $classNamePrefix
+     * @param mixed|null $options
+     * @throws MakeCommandFileAlreadyExistsException
      * @throws TypeException
-     * @throws Exception|FilesystemException
      */
     private function resolveClassNameSuffix(
         string $classNameSuffix,
@@ -102,7 +102,6 @@ trait MakeCommandAware
      * @param mixed|null $options
      * @param string|null $qualifiedNamespaces - will return the namespace for the stub command
      * @return void
-     * @throws FilesystemException
      * @throws MakeCommandFileAlreadyExistsException
      */
     public function createClassFromStub(
@@ -127,6 +126,8 @@ trait MakeCommandAware
             try {
                 LocalStorage::disk()->createDirectory(location: $normalizePath);
             } catch (FilesystemException $ex) {
+                FileLoggerFactory::error(message: $ex->getMessage());
+            } catch (Exception $ex) {
                 FileLoggerFactory::error(message: $ex->getMessage());
             }
         }
@@ -172,7 +173,7 @@ trait MakeCommandAware
      */
     private function getStubFiles(string $classNameSuffix): string|false
     {
-        $files = glob(pattern: Application::$ROOT_PATH. '/vendor/codefyphp/foundation/Stubs/*.stub');
+        $files = glob(pattern: Application::$ROOT_PATH. '/vendor/codefyphp/framework/Stubs/*.stub');
         if (is_array(value: $files) && count($files)) {
             foreach ($files as $file) {
                 if (is_file(filename: $file)) {

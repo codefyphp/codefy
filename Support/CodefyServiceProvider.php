@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Foundation\Support;
+namespace Codefy\Framework\Support;
 
-use Codefy\Foundation\Application;
+use Codefy\Framework\Application;
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 
 abstract class CodefyServiceProvider extends BaseServiceProvider
