@@ -9,16 +9,10 @@ use Codefy\Framework\Scheduler\Processor\Callback;
 use Codefy\Framework\Scheduler\Processor\Processor;
 use Codefy\Framework\Scheduler\Processor\Shell;
 use Codefy\Framework\Scheduler\Traits\LiteralAware;
-
-use DateTimeZone;
-
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
-
 use Qubus\Support\DateTime\QubusDateTimeZone;
 
-use function Codefy\Framework\Helpers\app;
-use function Codefy\Framework\Helpers\config;
 use function array_filter;
 use function count;
 use function escapeshellarg;
