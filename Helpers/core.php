@@ -6,7 +6,7 @@ namespace Codefy\Framework\Helpers;
 
 use Codefy\Framework\Application;
 use Qubus\Config\Collection;
-use Qubus\Config\ConfigContainer;
+use Qubus\Dbal\Connection;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
 
@@ -62,9 +62,10 @@ function get_fresh_bootstrap(): mixed
         return require($file);
     } elseif (file_exists(filename: $file = __DIR__ . '/../../bootstrap/app.php')) {
         return require($file);
-    } elseif (file_exists(
-        filename: $file = rtrim(string: (string) env(key: 'APP_BASE_PATH'), characters: '/') . '/bootstrap/app.php'
-    )
+    } elseif (
+        file_exists(
+            filename: $file = rtrim(string: (string) env(key: 'APP_BASE_PATH'), characters: '/') . '/bootstrap/app.php'
+        )
     ) {
         return require($file);
     } else {
@@ -85,12 +86,23 @@ function env(string $key, mixed $default = null): mixed
 }
 
 /**
- * Database Instance.
+ * OrmBuilder database instance.
  *
- * @return OrmBuilder
+ * @return OrmBuilder|null
  * @throws Exception
  */
-function db(): OrmBuilder
+function orm(): ?OrmBuilder
 {
     return Application::$APP->getDB();
+}
+
+/**
+ * Dbal database instance.
+ *
+ * @return Connection
+ * @throws Exception
+ */
+function dbal(): Connection
+{
+    return Application::$APP->getDbConnection();
 }

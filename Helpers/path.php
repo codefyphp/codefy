@@ -19,7 +19,7 @@ use function str_replace;
  */
 function base_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->base.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->base . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -30,7 +30,7 @@ function base_path(?string $path = null): string
  */
 function src_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->path.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->path . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -41,7 +41,7 @@ function src_path(?string $path = null): string
  */
 function bootstrap_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->bootstrap.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->bootstrap . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -52,7 +52,7 @@ function bootstrap_path(?string $path = null): string
  */
 function config_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->config.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->config . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -63,7 +63,7 @@ function config_path(?string $path = null): string
  */
 function database_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->database.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->database . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -74,7 +74,7 @@ function database_path(?string $path = null): string
  */
 function locale_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->locale.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->locale . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -85,7 +85,7 @@ function locale_path(?string $path = null): string
  */
 function public_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->public.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->public . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -96,7 +96,7 @@ function public_path(?string $path = null): string
  */
 function storage_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->storage.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->storage . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -107,7 +107,7 @@ function storage_path(?string $path = null): string
  */
 function resource_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->resource.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->resource . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -118,7 +118,7 @@ function resource_path(?string $path = null): string
  */
 function view_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->view.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->view . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 /**
@@ -129,7 +129,7 @@ function view_path(?string $path = null): string
  */
 function vendor_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->vendor.(!is_null__(var: $path) ? Application::DS.$path : '');
+    return app(name: 'dir.path')->vendor . (!is_null__(var: $path) ? Application::DS . $path : '');
 }
 
 function router_basepath(string $path): string
