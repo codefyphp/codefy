@@ -43,7 +43,8 @@ trait ScheduleValidateAware
 
         if (is_array($value)) {
             foreach ($value as $v) {
-                if (! is_numeric($v) ||
+                if (
+                    ! is_numeric($v) ||
                     ! ($v >= $min && $v <= $max)
                 ) {
                     throw new TypeException(
@@ -60,7 +61,8 @@ trait ScheduleValidateAware
             return $value;
         }
 
-        if (null !== $value && (! is_numeric($value) ||
+        if (
+            null !== $value && (! is_numeric($value) ||
             ! ($value >= $min && $value <= $max))
         ) {
             throw new TypeException(

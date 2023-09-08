@@ -114,12 +114,13 @@ abstract class BaseTask extends BaseProcessor implements Task
 
     /**
      * Check if the Task is overlapping.
+     * @throws TypeException
      */
     public function isOverlapping(): bool
     {
         return $this->acquireLock &&
-            $this->cache->hasItem($this->pid()) &&
-            call_user_func($this->whenOverlapping, $this->lockValue) === false;
+        $this->cache->hasItem($this->pid()) &&
+        call_user_func($this->whenOverlapping, $this->lockValue) === false;
     }
 
     /**
@@ -172,6 +173,7 @@ abstract class BaseTask extends BaseProcessor implements Task
 
     /**
      * Acquires the Task lock.
+     * @throws TypeException
      */
     protected function acquireTaskLock(): void
     {
@@ -190,12 +192,17 @@ abstract class BaseTask extends BaseProcessor implements Task
 
     /**
      * Removes the Task lock.
+     * @throws TypeException
      */
     protected function removeTaskLock(): bool
     {
         return $this->cache->deleteItem($this->pid());
     }
 
+    /**
+     * @throws TypeException
+     * @throws Exception
+     */
     public function checkMaxRuntime(): void
     {
         $maxRuntime = $this->options['maxRuntime'];
@@ -233,6 +240,7 @@ abstract class BaseTask extends BaseProcessor implements Task
 
     /**
      * Checks whether the task can and should run.
+     * @throws TypeException
      */
     private function shouldRun(): bool
     {
@@ -250,6 +258,7 @@ abstract class BaseTask extends BaseProcessor implements Task
 
     /**
      * Checks whether the task can and should run.
+     * @throws TypeException
      */
     public function isDue(string|DateTimeZone|null $timeZone = null): bool
     {

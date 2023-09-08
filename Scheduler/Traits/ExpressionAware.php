@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Closure;
 use Cron\CronExpression;
 use DateTimeZone;
+use Exception;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Inheritance\InvokerAware;
 use Qubus\Support\DateTime\QubusDateTime;
@@ -120,6 +121,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run hourly.
+     * @throws TypeException
      */
     public function hourly(int|string $minute = 1): self
     {
@@ -132,6 +134,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run daily.
+     * @throws TypeException
      */
     public function daily(?string $time = null): self
     {
@@ -148,6 +151,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run on a certain date.
+     * @throws TypeException
      */
     public function on(string $date): self
     {
@@ -173,6 +177,7 @@ trait ExpressionAware
 
     /**
      * Schedule the command at a given time.
+     * @throws TypeException
      */
     public function at(?string $time = null): self
     {
@@ -181,6 +186,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run daily at a given time (10:00, 19:30, etc).
+     * @throws TypeException
      */
     public function dailyAt(?string $time = null): self
     {
@@ -200,6 +206,7 @@ trait ExpressionAware
      *
      * @param int $first First hour.
      * @param int $second Second hour.
+     * @throws TypeException
      */
     public function twiceDaily(int $first = 1, int $second = 13): self
     {
@@ -212,6 +219,7 @@ trait ExpressionAware
      * @param int $first First hour.
      * @param int $second Second hour.
      * @param int $minute Minute.
+     * @throws TypeException
      */
     public function twiceDailyAt(int $first = 1, int $second = 13, int $minute = 0): self
     {
@@ -224,6 +232,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on weekdays.
+     * @throws TypeException
      */
     public function weekdays(?string $time = null): self
     {
@@ -243,6 +252,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on weekdays.
+     * @throws TypeException
      */
     public function weekends(?string $time = null): self
     {
@@ -262,6 +272,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on Mondays.
+     * @throws TypeException
      */
     public function mondays(?string $time = null): self
     {
@@ -270,6 +281,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on Tuesdays.
+     * @throws TypeException
      */
     public function tuesdays(?string $time = null): self
     {
@@ -278,6 +290,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on Wednesdays.
+     * @throws TypeException
      */
     public function wednesdays(?string $time = null): self
     {
@@ -286,6 +299,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on Thursdays.
+     * @throws TypeException
      */
     public function thursdays(?string $time = null): self
     {
@@ -294,6 +308,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on Fridays.
+     * @throws TypeException
      */
     public function fridays(?string $time = null): self
     {
@@ -302,6 +317,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on Saturdays.
+     * @throws TypeException
      */
     public function saturdays(?string $time = null): self
     {
@@ -310,6 +326,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run only on Sundays.
+     * @throws TypeException
      */
     public function sundays(?string $time = null): self
     {
@@ -318,6 +335,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run weekly.
+     * @throws TypeException
      */
     public function weekly(): self
     {
@@ -329,6 +347,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run weekly on a given day and time.
+     * @throws TypeException
      */
     public function weeklyOn(int|string $day, string $time = '0:0'): self
     {
@@ -339,6 +358,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run monthly.
+     * @throws TypeException
      */
     public function monthly(): self
     {
@@ -350,6 +370,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run monthly on a given day and time.
+     * @throws TypeException
      */
     public function monthlyOn(int|string $dayOfMonth, string $time = '0:0'): self
     {
@@ -360,6 +381,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run monthly on a given day and time.
+     * @throws TypeException
      */
     public function lastDayOfTheMonth(string $time = '0:0'): self
     {
@@ -373,6 +395,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run quarterly.
+     * @throws TypeException
      */
     public function quarterly(int|string|array $day = 1, ?string $time = null): self
     {
@@ -393,6 +416,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run yearly.
+     * @throws TypeException
      */
     public function yearly(): self
     {
@@ -405,6 +429,7 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run yearly.
+     * @throws TypeException
      */
     public function yearlyOn(int $month, int $day, ?string $time = null): self
     {
@@ -417,6 +442,7 @@ trait ExpressionAware
 
     /**
      * Set the days of the week the command should run on.
+     * @throws TypeException
      */
     public function days(mixed $days): self
     {
@@ -427,6 +453,7 @@ trait ExpressionAware
 
     /**
      * Set hour for the cron job.
+     * @throws TypeException
      */
     public function hour(mixed $value): self
     {
@@ -437,6 +464,7 @@ trait ExpressionAware
 
     /**
      * Set minute for the cron job.
+     * @throws TypeException
      */
     public function minute(mixed $value): self
     {
@@ -447,6 +475,7 @@ trait ExpressionAware
 
     /**
      * Set day of the month for the cron job.
+     * @throws TypeException
      */
     public function dayOfMonth(mixed $value): self
     {
@@ -457,6 +486,7 @@ trait ExpressionAware
 
     /**
      * Set month for the cron job.
+     * @throws TypeException
      */
     public function month(mixed $value): self
     {
@@ -467,6 +497,7 @@ trait ExpressionAware
 
     /**
      * Set dah of the week for the cron job.
+     * @throws TypeException
      */
     public function dayOfWeek(mixed $value): self
     {
@@ -491,6 +522,7 @@ trait ExpressionAware
      * Another way to the frequency of the cron job.
      *
      * @param string|null $unit (minute, hour, day, month or weekday)
+     * @throws TypeException
      */
     public function every(?string $unit = null, float|int|null $value = null): self
     {
@@ -505,6 +537,7 @@ trait ExpressionAware
 
     /**
      * Schedule task to run every minute of every $minute minutes.
+     * @throws TypeException
      */
     public function everyMinute(string|int $minute = 1): self
     {
@@ -515,6 +548,7 @@ trait ExpressionAware
 
     /**
      * Schedule task to run every hour or every $hour hour and $minute minutes.
+     * @throws TypeException
      */
     public function everyHour(string|int $hour = 1, int $minute = 0): self
     {
@@ -528,6 +562,7 @@ trait ExpressionAware
 
     /**
      * Determine if the Cron expression passes.
+     * @throws Exception
      */
     protected function expressionPasses(string|DateTimeZone|null $timezone = null): bool
     {
@@ -552,6 +587,7 @@ trait ExpressionAware
 
     /**
      * Splice the given value into the given position of the expression.
+     * @throws TypeException
      */
     protected function spliceIntoPosition(int $position, string $value): self
     {
@@ -577,6 +613,7 @@ trait ExpressionAware
 
     /**
      * Internal function used by the everyMonday, etc functions.
+     * @throws TypeException
      */
     protected function setDayOfWeek(int|string $day, ?string $time = null): self
     {

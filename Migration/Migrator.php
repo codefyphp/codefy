@@ -61,7 +61,7 @@ class Migrator
      */
     protected function run(Migration $migration, string $direction = 'up'): void
     {
-        $direction = ($direction == 'down' ? 'down' :'up');
+        $direction = ($direction == 'down' ? 'down' : 'up');
         $this->getOutput()?->writeln(
             messages: sprintf(
                 ' == <info>' .

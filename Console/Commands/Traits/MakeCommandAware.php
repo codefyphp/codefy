@@ -55,17 +55,17 @@ trait MakeCommandAware
     ): void {
         /* throw an exception if the argument is empty */
         (
-            !empty($classNameSuffix) ?: throw new TypeException(
-                message: 'Your stub file is invalid or no argument is supplied.'
-            )
+        !empty($classNameSuffix) ?: throw new TypeException(
+            message: 'Your stub file is invalid or no argument is supplied.'
+        )
         );
 
         (
-            in_array(needle: $classNameSuffix, haystack: array_keys(array: self::STUBS))
-            ?: throw new TypeException(
-                message: 'Your stub is an invalid stub. Please refer to the allowable Stubs you can create. '
+        in_array(needle: $classNameSuffix, haystack: array_keys(array: self::STUBS))
+        ?: throw new TypeException(
+            message: 'Your stub is an invalid stub. Please refer to the allowable Stubs you can create. '
                 . implode(separator: ', ', array: array_keys(array: self::STUBS))
-            )
+        )
         );
 
         $file = $this->getStubFiles(classNameSuffix: $classNameSuffix);
@@ -117,8 +117,8 @@ trait MakeCommandAware
             );
         }
 
-        $filePath = Application::$ROOT_PATH. Application::DS
-            . $qualifiedNamespaces . $this->addOptionalDirFlag(options: $options);
+        $filePath = Application::$ROOT_PATH . Application::DS
+        . $qualifiedNamespaces . $this->addOptionalDirFlag(options: $options);
 
         $normalizePath = str_replace(search: '\\', replace: Application::DS, subject: $filePath);
 
@@ -158,8 +158,8 @@ trait MakeCommandAware
     private function addOptionalDirFlag(mixed $options): string
     {
         return (isset($options) && $options !== '' || $options !== null)
-            ? Application::DS . Inflector::wordsToUpper(class: $options) :
-            '';
+        ? Application::DS . Inflector::wordsToUpper(class: $options) :
+        '';
     }
 
     /**
@@ -173,7 +173,7 @@ trait MakeCommandAware
      */
     private function getStubFiles(string $classNameSuffix): string|false
     {
-        $files = glob(pattern: Application::$ROOT_PATH. '/vendor/codefyphp/framework/Stubs/*.stub');
+        $files = glob(pattern: Application::$ROOT_PATH . '/vendor/codefyphp/framework/Stubs/*.stub');
         if (is_array(value: $files) && count($files)) {
             foreach ($files as $file) {
                 if (is_file(filename: $file)) {
@@ -200,7 +200,7 @@ trait MakeCommandAware
     ): array|bool {
         if ($file) {
             $contentStream = file_get_contents(filename: $file);
-            if ($contentStream !='') {
+            if ($contentStream != '') {
                 $patterns = [
                     '{{ class }}',
                     '{{ namespace }}',
@@ -212,7 +212,7 @@ trait MakeCommandAware
 
                 foreach ($patterns as $pattern) {
                     if (str_contains($contentStream, $pattern)) {
-                        if (isset($pattern) && $pattern !='') {
+                        if (isset($pattern) && $pattern != '') {
                             $qualifiedClass = studly_case(string: $classNamePrefix . ucwords(string: $classNameSuffix));
 
                             $qualifiedNamespace = array_filter(

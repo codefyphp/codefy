@@ -36,8 +36,8 @@ final class LocalStorage
         );
 
         $links = ($configArray['links'] ?? null) === 'skip'
-            ? LocalFilesystemAdapter::SKIP_LINKS
-            : LocalFilesystemAdapter::DISALLOW_LINKS;
+        ? LocalFilesystemAdapter::SKIP_LINKS
+        : LocalFilesystemAdapter::DISALLOW_LINKS;
 
         $adapter = new LocalFilesystemAdapter(
             location: $configArray['root'],

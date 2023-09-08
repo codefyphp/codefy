@@ -12,7 +12,8 @@ class Callback extends BaseProcessor implements Stringable, Processor
 {
     public function run(): mixed
     {
-        if ($this->preventOverlapping &&
+        if (
+            $this->preventOverlapping &&
             ! $this->mutex->tryLock($this)
         ) {
             return false;
