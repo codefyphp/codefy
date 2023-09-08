@@ -1,8 +1,8 @@
 {
     "name": "codefyphp/codefy",
     "type": "library",
-    "description": "CodefyPHP framework core.",
-    "keywords": ["codefy","codefyphp","codefy-php","routing","application","container"],
+    "description": "CodefyPHP Framework.",
+    "keywords": ["codefy","codefyphp","codefy-php","routing","application","container","framework","php-framework"],
     "license": "MIT",
     "authors": [
         {
