@@ -29,7 +29,6 @@ use Codefy\Framework\Scheduler\Expressions\Quarterly;
 use Codefy\Framework\Scheduler\Expressions\WeekDays;
 use Codefy\Framework\Scheduler\Expressions\WeekEnds;
 use Cron\CronExpression;
-
 use Qubus\Exception\Data\TypeException;
 
 use function is_string;

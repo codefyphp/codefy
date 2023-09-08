@@ -18,7 +18,8 @@ class Dispatcher extends BaseProcessor implements Stringable, Processor
 
     public function run(): bool
     {
-        if ($this->preventOverlapping &&
+        if (
+            $this->preventOverlapping &&
             ! $this->mutex->tryLock($this)
         ) {
             return false;

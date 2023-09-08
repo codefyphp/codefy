@@ -33,6 +33,7 @@ class FileMigrationAdapter implements MigrationAdapter
 
     /**
      * {@inheritdoc}
+     * @throws TypeException
      */
     public function up(Migration $migration): MigrationAdapter
     {
@@ -48,6 +49,7 @@ class FileMigrationAdapter implements MigrationAdapter
 
     /**
      * {@inheritdoc}
+     * @throws TypeException
      */
     public function down(Migration $migration): MigrationAdapter
     {

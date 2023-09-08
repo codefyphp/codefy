@@ -7,11 +7,13 @@ namespace Codefy\Framework\Scheduler\Expressions\MonthOfYear;
 use Codefy\Framework\Scheduler\Expressions\Expressional;
 use Codefy\Framework\Scheduler\Expressions\Monthly;
 use Cron\CronExpression;
+use Qubus\Exception\Data\TypeException;
 
 final class April implements Expressional
 {
     /**
      * Sets the job execution time to run once every April.
+     * @throws TypeException
      */
     public static function make(
         int|string|array $day = 1,

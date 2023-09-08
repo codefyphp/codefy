@@ -8,9 +8,7 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
-
 use RuntimeException;
-
 use Symfony\Component\Console\Input\InputArgument;
 
 use function Qubus\Support\Helpers\is_writable;
@@ -90,9 +88,11 @@ EOT
 
         $className = $this->migrationToClassName(migrationName: $migrationName);
 
-        if (isset($this->objectmap['phpmig.migrations_template_path'])
+        if (
+            isset($this->objectmap['phpmig.migrations_template_path'])
             || (isset($this->objectmap['phpmig.sets'])
-                && isset($this->objectmap['phpmig.sets'][$set]['migrations_template_path']))) {
+                && isset($this->objectmap['phpmig.sets'][$set]['migrations_template_path']))
+        ) {
             if (true === isset($this->objectmap['phpmig.migrations_template_path'])) {
                 $migrationsTemplatePath = $this->objectmap['phpmig.migrations_template_path'];
             } else {

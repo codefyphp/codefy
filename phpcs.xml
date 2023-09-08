@@ -22,6 +22,7 @@
     <file>Providers</file>
     <file>Scheduler</file>
     <file>Support</file>
+    <file>View</file>
     <file>Application.php</file>
 
     <!-- Include rules from the Qubus Coding Standard -->

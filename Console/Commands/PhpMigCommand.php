@@ -157,10 +157,12 @@ abstract class PhpMigCommand extends ConsoleCommand
         $objectmap = $this->getObjectMap();
         $set = $input->getOption(name: 'set');
 
-        if (!isset($objectmap['phpmig.migrations'])
+        if (
+            !isset($objectmap['phpmig.migrations'])
             && !isset($objectmap['phpmig.migrations_path'])
             && (isset($objectmap['phpmig.sets'])
-                && !isset($objectmap['phpmig.sets'][$set]['migrations_path']))) {
+                && !isset($objectmap['phpmig.sets'][$set]['migrations_path']))
+        ) {
             throw new RuntimeException(
                 message: $this->getBootstrap() . ' must return phpmig.migrations array 
                 or migrations default path at phpmig.migrations_path 
@@ -234,8 +236,10 @@ abstract class PhpMigCommand extends ConsoleCommand
 
             $class = $this->migrationToClassName(migrationName: $migrationName);
 
-            if ($this instanceof GenerateCommand
-                && $class == $this->migrationToClassName(migrationName: $input->getArgument(name: 'name'))) {
+            if (
+                $this instanceof GenerateCommand
+                && $class == $this->migrationToClassName(migrationName: $input->getArgument(name: 'name'))
+            ) {
                 throw new TypeException(
                     message: sprintf(
                         'Migration Class "%s" already exists',

@@ -63,9 +63,9 @@ class MakeCommand extends ConsoleCommand
 
         try {
             $this->resolveResource(resource: $stub, options: $option);
-            $this->terminalQuestion(string: 'Your file was created successfully');
+            $this->terminalQuestion(string: 'Your file was created successfully.');
             return ConsoleCommand::SUCCESS;
-        } catch (MakeCommandFileAlreadyExistsException|TypeException|RuntimeException|FilesystemException $e) {
+        } catch (MakeCommandFileAlreadyExistsException | TypeException | RuntimeException | FilesystemException $e) {
             $this->terminalError(string: sprintf('%s', $e->getMessage()));
         } finally {
             return ConsoleCommand::FAILURE;

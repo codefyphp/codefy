@@ -46,7 +46,7 @@ final class Password
          */
         return __observer()->filter->applyFilter(
             'password.hash.options',
-            (array) ['memory_cost' => 1<<12, 'time_cost' => 2, 'threads' => 2]
+            (array) ['memory_cost' => 1 << 12, 'time_cost' => 2, 'threads' => 2]
         );
     }
 

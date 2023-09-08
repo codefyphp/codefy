@@ -151,10 +151,12 @@ class Application extends Container
      */
     protected function registerDefaultServiceProviders(): void
     {
-        foreach ([
+        foreach (
+            [
              Providers\ConfigServiceProvider::class,
              Providers\FlysystemServiceProvider::class,
-         ] as $serviceProvider) {
+            ] as $serviceProvider
+        ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
         }
     }
@@ -465,7 +467,7 @@ class Application extends Container
      */
     public function path(): string
     {
-        return $this->appPath ?: $this->basePath.self::DS.'app';
+        return $this->appPath ?: $this->basePath . self::DS . 'app';
     }
 
     /**
@@ -485,7 +487,7 @@ class Application extends Container
      */
     public function bootStrapPath(): string
     {
-        return $this->basePath.self::DS.'bootstrap';
+        return $this->basePath . self::DS . 'bootstrap';
     }
 
     /**
@@ -495,7 +497,7 @@ class Application extends Container
      */
     public function configPath(): string
     {
-        return $this->basePath.self::DS.'config';
+        return $this->basePath . self::DS . 'config';
     }
 
     /**
@@ -505,7 +507,7 @@ class Application extends Container
      */
     public function databasePath(): string
     {
-        return $this->basePath.self::DS.'database';
+        return $this->basePath . self::DS . 'database';
     }
 
     /**
@@ -515,7 +517,7 @@ class Application extends Container
      */
     public function localePath(): string
     {
-        return $this->basePath.self::DS.'locale';
+        return $this->basePath . self::DS . 'locale';
     }
 
     /**
@@ -525,7 +527,7 @@ class Application extends Container
      */
     public function publicPath(): string
     {
-        return $this->basePath.self::DS.'public';
+        return $this->basePath . self::DS . 'public';
     }
 
     /**
@@ -535,7 +537,7 @@ class Application extends Container
      */
     public function storagePath(): string
     {
-        return $this->basePath.self::DS.'storage';
+        return $this->basePath . self::DS . 'storage';
     }
 
     /**
@@ -545,7 +547,7 @@ class Application extends Container
      */
     public function resourcePath(): string
     {
-        return $this->basePath.self::DS.'resources';
+        return $this->basePath . self::DS . 'resources';
     }
 
     /**
@@ -555,7 +557,7 @@ class Application extends Container
      */
     public function viewPath(): string
     {
-        return $this->basePath.self::DS.'views';
+        return $this->basePath . self::DS . 'views';
     }
 
     /**

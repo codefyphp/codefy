@@ -71,11 +71,13 @@ final class Kernel implements HttpKernel
      */
     public function boot(): bool
     {
-        if (version_compare(
-            version1: $current = PHP_VERSION,
-            version2: (string) $required = Application::MIN_PHP_VERSION,
-            operator: '<'
-        )) {
+        if (
+            version_compare(
+                version1: $current = PHP_VERSION,
+                version2: (string) $required = Application::MIN_PHP_VERSION,
+                operator: '<'
+            )
+        ) {
             die(
                 sprintf(
                     'You are running PHP %s, but CodefyPHP requires at least <strong>PHP %s</strong> to run.',

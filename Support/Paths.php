@@ -28,18 +28,19 @@ final class Paths
      */
     public function __construct(array $paths)
     {
-        if (! isset(
-            $paths['path'],
-            $paths['base'],
-            $paths['bootstrap'],
-            $paths['config'],
-            $paths['database'],
-            $paths['locale'],
-            $paths['public'],
-            $paths['storage'],
-            $paths['resource'],
-            $paths['view']
-        )
+        if (
+            ! isset(
+                $paths['path'],
+                $paths['base'],
+                $paths['bootstrap'],
+                $paths['config'],
+                $paths['database'],
+                $paths['locale'],
+                $paths['public'],
+                $paths['storage'],
+                $paths['resource'],
+                $paths['view']
+            )
         ) {
             throw new TypeException(
                 message: 'Paths array requires the following keys: path, base, bootstrap, config, database,
@@ -52,7 +53,7 @@ final class Paths
         }, array: $paths);
 
         // Assume a standard Composer directory structure unless specified
-        $this->paths['vendor'] = $this->vendor ?? $this->base.'/vendor';
+        $this->paths['vendor'] = $this->vendor ?? $this->base . '/vendor';
     }
 
     public function __get(mixed $name): ?string

@@ -76,7 +76,7 @@ class ConsoleApplication extends SymfonyApplication
     public function output(): string
     {
         return $this->lastOutput && method_exists($this->lastOutput, 'fetch')
-            ? $this->lastOutput->fetch()
-            : '';
+        ? $this->lastOutput->fetch()
+        : '';
     }
 }
