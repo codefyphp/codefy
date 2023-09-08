@@ -40,6 +40,9 @@
         ]
     },
     "require-dev": {
+        "fenom/fenom": "^3.0",
+        "fenom/providers-collection": "^1.0",
+        "foil/foil": "^0.6.7",
         "pestphp/pest": "^1.22",
         "qubus/qubus-coding-standard": "^1.1"
     },
