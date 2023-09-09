@@ -51,6 +51,8 @@ composer require codefyphp/codefy
 |---------|---------------------|----------------|-----------------|----------------------|
 | 1       | 8.2                 | September 2023 | July 2024       | March 2025           |
 | 2 - LTS | 8.2                 | January 2024   | January 2027    | January 2028         |
+| 3       | 8.3                 | January 2024   | November 2024   | July 2025            |
+| 4 - LTS | 8.3                 | May 2024       | May 2027        | May 2028             |
 
 ## 📘 Documentation
 
