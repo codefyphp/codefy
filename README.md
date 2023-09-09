@@ -29,13 +29,17 @@ none of the features and instead use the interfaces to build your own implementa
 - PHP 8.2+
 - Additional constraints based on which components are used.
 
-## 🏆 Features
+## 🏆 Highlighted Features
 - A powerful [routing engine](https://docs.qubusphp.com/routing/)
 - Robust [dependency injector](https://docs.qubusphp.com/dependency-injector/) for bootstrapping
 - Adapters for cookies, sessions and cache storage
 - Provides a simple hook and event system without affecting core code
 - Encourages object-oriented programming
 - Multiple PSR implementations
+- Dual query builders with migrations
+- Scheduler for scheduling tasks/jobs
+- Security and sanitizing helpers
+- Dual templating engines
 
 ## 📦 Installation
 
