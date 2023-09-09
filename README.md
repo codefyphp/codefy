@@ -31,7 +31,7 @@ none of the features and instead use the interfaces to build your own implementa
 
 ## 🏆 Features
 - A powerful [routing engine](https://docs.qubusphp.com/routing/)
-- Robust [dependency injector](https://docs.qubusphp.com/injector/dependency-injector/) for bootstrapping
+- Robust [dependency injector](https://docs.qubusphp.com/dependency-injector/) for bootstrapping
 - Adapters for cookies, sessions and cache storage
 - Provides a simple hook and event system without affecting core code
 - Encourages object-oriented programming
