@@ -8,6 +8,7 @@ use Codefy\Framework\Scheduler\Mutex\Locker;
 use Codefy\Framework\Scheduler\Traits\ExpressionAware;
 use Cron\CronExpression;
 use DateTimeZone;
+use Exception;
 
 use function escapeshellarg;
 use function is_callable;
@@ -228,6 +229,16 @@ abstract class BaseProcessor implements Processor
         });
     }
 
+    /**
+     * Check if process con only have one instance.
+     *
+     * @return bool
+     */
+    public function canRunOnlyOneInstance(): bool
+    {
+        return $this->preventOverlapping;
+    }
+
     public function maxRuntime(): int
     {
         return $this->expiresAfter;
@@ -250,6 +261,7 @@ abstract class BaseProcessor implements Processor
 
     /**
      * Determine if the given command should run based on the Cron expression.
+     * @throws Exception
      */
     public function isDue(string|DateTimeZone|null $timeZone = null): bool
     {

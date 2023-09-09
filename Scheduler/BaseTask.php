@@ -9,6 +9,7 @@ use Codefy\Framework\Scheduler\Processor\BaseProcessor;
 use Codefy\Framework\Scheduler\ValueObject\TaskId;
 use Closure;
 use DateTimeZone;
+use Exception as NativeException;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 
@@ -259,6 +260,7 @@ abstract class BaseTask extends BaseProcessor implements Task
     /**
      * Checks whether the task can and should run.
      * @throws TypeException
+     * @throws NativeException
      */
     public function isDue(string|DateTimeZone|null $timeZone = null): bool
     {
