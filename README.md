@@ -7,6 +7,7 @@
     <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.2-777BB4.svg?style=flat&logo=php" alt="PHP 8.2"/></a>
     <a href="https://packagist.org/packages/codefyphp/codefy"><img src="https://img.shields.io/packagist/l/codefyphp/codefy" alt="License"></a>
     <a href="https://packagist.org/packages/codefyphp/codefy"><img src="https://img.shields.io/packagist/dt/codefyphp/codefy" alt="Total Downloads"></a>
+    <a href="https://codefyphp.com/community/"><img src="https://img.shields.io/badge/Forum-AE508D.svg?label=Support&style=flat" alt="CodefyPHP Support Forum"></a>
 </p>
 
 ---
@@ -20,7 +21,7 @@ CQRS, Event Sourcing and implementations of [PSR-3](https://www.php-fig.org/psr/
 and [PSR-17](https://www.php-fig.org/psr/psr-17).
 
 The philosophy of Codefy is that code should be systematized, maintainable, and follow OOP (Object-Oriented Programming). 
-CodefyPHP tries not be too opinionated, yet encourages best practices and coding standards by following [Qubus Coding 
+CodefyPHP tries not to be too opinionated, yet encourages best practices and coding standards by following [Qubus Coding 
 Standards](https://github.com/QubusPHP/qubus-coding-standard). Use Codefy as you see fit. You can tap into all, some or 
 none of the features and instead use the interfaces to build your own implementations for a domain driven project.
 
