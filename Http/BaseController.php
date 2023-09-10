@@ -9,27 +9,25 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Routing\Controller\Controller;
 use Qubus\Routing\Router;
+use Qubus\View\Native\NativeLoader;
 use Qubus\View\Renderer;
 
 use function Codefy\Framework\Helpers\app;
+use function Codefy\Framework\Helpers\config;
 
 class BaseController extends Controller implements RoutingController
 {
-    protected ServerRequestInterface $request;
-    protected ResponseInterface $response;
-    protected Router $router;
-    protected Renderer $view;
-
     public function __construct(
-        ?ServerRequestInterface $request = null,
-        ?ResponseInterface $response = null,
-        ?Router $router = null,
-        ?Renderer $view = null
+        protected ?ServerRequestInterface $request = null,
+        protected ?ResponseInterface $response = null,
+        protected ?Router $router = null,
+        protected ?Renderer $view = null,
+
     ) {
         $this->setRequest($request ?? app(name: ServerRequestInterface::class));
         $this->response = $response ?? app(name: ResponseInterface::class);
         $this->router = $router ?? app(name: 'router');
-        $this->setView($view ?? app(name: 'view'));
+        $this->setView($view ?? new NativeLoader(config('view.path')));
     }
 
     /**
