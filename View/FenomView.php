@@ -7,24 +7,21 @@ namespace Codefy\Framework\View;
 use Fenom;
 use Fenom\Error\CompileException;
 use Fenom\Provider;
-use Qubus\Config\ConfigContainer;
-use Qubus\Exception\Exception;
 use Qubus\View\Renderer;
+
+use function Codefy\Framework\Helpers\config;
 
 final class FenomView implements Renderer
 {
-    private Fenom $view;
+    private Fenom $fenom;
 
-    /**
-     * @throws Exception
-     */
-    public function __construct(ConfigContainer $config)
+    public function __construct()
     {
-        $this->view = (new Fenom(
-            provider: new Provider(template_dir: $config->getConfigKey('view.path'))
+        $this->fenom = (new Fenom(
+            provider: new Provider(template_dir: config(key: 'view.path'))
         ))->setCompileDir(
-            dir: $config->getConfigKey('view.cache')
-        )->setOptions(options: $config->getConfigKey('view.options'));
+            dir: config(key: 'view.cache')
+        )->setOptions(options: config(key: 'view.options'));
     }
 
     /**
@@ -32,6 +29,6 @@ final class FenomView implements Renderer
      */
     public function render(array|string $template, array $data = []): string|array
     {
-        return $this->view->display(template: $template, vars: $data);
+        return $this->fenom->display(template: $template, vars: $data);
     }
 }
