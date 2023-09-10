@@ -7,6 +7,8 @@ namespace Codefy\Framework\Console\Commands;
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
 use Codefy\Framework\Scheduler\Schedule;
+use Cron\CronExpression;
+use Exception;
 use Symfony\Component\Console\Helper\Table;
 
 class ListCommand extends ConsoleCommand
@@ -22,6 +24,9 @@ class ListCommand extends ConsoleCommand
         parent::__construct(codefy: $codefy);
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(): int
     {
         $table = new Table($this->output);
@@ -35,10 +40,12 @@ class ListCommand extends ConsoleCommand
         $jobs = $this->schedule->allProcessors();
 
         foreach ($jobs as $job) {
+            $nextRun = new CronExpression($job->getExpression());
+
             $table->addRow([
                 get_class($job),
-                $job->getExpression(),
-                $job->getExpression()->getNextRunDate(),
+                $nextRun->getExpression(),
+                $nextRun->getNextRunDate()->format(format: 'd F Y h:i A'),
                 $job->canRunOnlyOneInstance() ? 'yes' : 'no',
             ]);
         }
