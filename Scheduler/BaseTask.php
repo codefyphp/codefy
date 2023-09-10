@@ -30,9 +30,9 @@ abstract class BaseTask extends BaseProcessor implements Task
 
     protected TaskId $pid;
 
-    protected array $options;
+    protected array $options = [];
 
-    protected bool $truthy;
+    protected bool $truthy = false;
 
     protected string|null $timeZone = null;
 

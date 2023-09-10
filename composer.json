@@ -1,7 +1,7 @@
 {
     "name": "codefyphp/codefy",
     "type": "library",
-    "description": "CodefyPHP Framework.",
+    "description": "PHP framework for Domain Driven Development, CQRS, and Event Sourcing.",
     "keywords": ["codefy","codefyphp","codefy-php","routing","application","container","framework","php-framework"],
     "license": "MIT",
     "authors": [
