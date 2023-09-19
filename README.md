@@ -1,5 +1,5 @@
 <h1 align="center">
-    <a href="https://codefyphp.com/" target="_blank"><img src="https://downloads.joshuaparker.blog/images/codefyphp-logo.png" width="400" alt="CodefyPHP Logo"></a>
+    <a href="https://codefyphp.com/" target="_blank"><img src="https://downloads.joshuaparker.blog/images/codefyphp.png" width="400" alt="CodefyPHP Logo"></a>
 </h1>
 
 <p align="center">
