@@ -62,7 +62,7 @@ composer require codefyphp/codefy
 ## 📘 Documentation
 
 Documentation is still a work in progress. Between the [Qubus Components](https://docs.qubusphp.com/) documentation 
-and [CodefyPHP's](https://github.com/codefyphp/docs) documentation, that should help you get started. If you have questions or 
+and [CodefyPHP's](https://codefyphp.com/documentation/) documentation, that should help you get started. If you have questions or 
 need help, feel free to ask for help in the [forums](https://codefyphp.com/community/).
 
 ## 🙌 Sponsors
