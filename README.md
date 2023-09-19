@@ -1,5 +1,5 @@
 <h1 align="center">
-    <a href="https://codefyphp.com/" target="_blank"><img src="https://downloads.joshuaparker.blog/images/codefyphp-logo.png" width="400" alt="CodefyPHP Logo"></a>
+    <a href="https://codefyphp.com/" target="_blank"><img src="https://downloads.joshuaparker.blog/images/codefyphp.png" width="400" alt="CodefyPHP Logo"></a>
 </h1>
 
 <p align="center">
@@ -62,7 +62,7 @@ composer require codefyphp/codefy
 ## 📘 Documentation
 
 Documentation is still a work in progress. Between the [Qubus Components](https://docs.qubusphp.com/) documentation 
-and [CodefyPHP's](https://codefyphp.com/) documentation, that should help you get started. If you have questions or 
+and [CodefyPHP's](https://codefyphp.com/documentation/) documentation, that should help you get started. If you have questions or 
 need help, feel free to ask for help in the [forums](https://codefyphp.com/community/).
 
 ## 🙌 Sponsors
