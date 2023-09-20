@@ -29,10 +29,6 @@ none of the features and instead use the interfaces to build your own implementa
     <img src="https://downloads.joshuaparker.blog/images/UserId.png" width="660" alt="UserId ValueObject">
 </h3>
 
-<h3 align="center">
-    <img src="https://downloads.joshuaparker.blog/images/UserAggregate.png" width="660" alt="User Aggregate">
-</h3>
-
 ## 📍 Requirement
 - PHP 8.2+
 - Additional constraints based on which components are used.
