@@ -25,6 +25,14 @@ CodefyPHP tries not to be too opinionated, yet encourages best practices and cod
 Standards](https://github.com/QubusPHP/qubus-coding-standard). Use Codefy as you see fit. You can tap into all, some or 
 none of the features and instead use the interfaces to build your own implementations for a domain driven project.
 
+<h3 align="center">
+    <img src="https://downloads.joshuaparker.blog/images/UserId.png" width="860" alt="UserId ValueObject">
+</h3>
+
+<h3 align="center">
+    <img src="https://downloads.joshuaparker.blog/images/User.png" width="860" alt="User Aggregate">
+</h3>
+
 ## 📍 Requirement
 - PHP 8.2+
 - Additional constraints based on which components are used.
