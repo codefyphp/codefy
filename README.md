@@ -26,11 +26,11 @@ Standards](https://github.com/QubusPHP/qubus-coding-standard). Use Codefy as you
 none of the features and instead use the interfaces to build your own implementations for a domain driven project.
 
 <h3 align="center">
-    <img src="https://downloads.joshuaparker.blog/images/UserId.png" width="860" alt="UserId ValueObject">
+    <img src="https://downloads.joshuaparker.blog/images/UserId.png" width="660" alt="UserId ValueObject">
 </h3>
 
 <h3 align="center">
-    <img src="https://downloads.joshuaparker.blog/images/User.png" width="860" alt="User Aggregate">
+    <img src="https://downloads.joshuaparker.blog/images/UserAggregate.png" width="660" alt="User Aggregate">
 </h3>
 
 ## 📍 Requirement
