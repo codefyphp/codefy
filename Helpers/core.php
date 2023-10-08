@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Helpers;
 
-use Codefy\Framework\Application;
+use Codefy\Framework\Codefy;
 use Qubus\Config\Collection;
 use Qubus\Dbal\Connection;
 use Qubus\Exception\Exception;
@@ -93,7 +93,7 @@ function env(string $key, mixed $default = null): mixed
  */
 function orm(): ?OrmBuilder
 {
-    return Application::$APP->getDB();
+    return Codefy::$PHP->getDB();
 }
 
 /**
@@ -104,5 +104,5 @@ function orm(): ?OrmBuilder
  */
 function dbal(): Connection
 {
-    return Application::$APP->getDbConnection();
+    return Codefy::$PHP->getDbConnection();
 }

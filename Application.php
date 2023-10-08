@@ -6,6 +6,8 @@ namespace Codefy\Framework;
 
 use Codefy\Framework\Support\Paths;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
 use Qubus\Exception\Data\TypeException;
@@ -18,6 +20,8 @@ use Qubus\Injector\ServiceContainer;
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
+use Qubus\Mail\Mailer;
+use Qubus\Support\Assets;
 
 use function Codefy\Framework\Helpers\env;
 use function get_class;
@@ -26,17 +30,31 @@ use function rtrim;
 
 use const DIRECTORY_SEPARATOR;
 
-class Application extends Container
+final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '1.0.0';
+    public const APP_VERSION = '2.0.0';
 
     public const MIN_PHP_VERSION = '8.2';
 
     public const DS = DIRECTORY_SEPARATOR;
 
     public static ?Application $APP = null;
+
+    public readonly RequestInterface $request;
+
+    public readonly ResponseInterface $response;
+
+    public readonly Assets $assets;
+
+    public readonly Mailer $mailer;
+
+    public string $charset = 'UTF-8';
+
+    public string $locale = 'en';
+
+    public string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers';
 
     public static string $ROOT_PATH;
 
@@ -47,10 +65,6 @@ class Application extends Container
     protected array $serviceProviders = [];
 
     protected array $serviceProvidersRegistered = [];
-
-    protected string $locale = 'en';
-
-    protected string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers';
 
     protected array $baseMiddlewares = [];
 
@@ -76,6 +90,13 @@ class Application extends Container
 
         parent::__construct(InjectorFactory::create($this->coreAliases()));
         $this->registerDefaultServiceProviders();
+
+        $this->request = $this->make(name: RequestInterface::class);
+        $this->response = $this->make(name: ResponseInterface::class);
+        $this->assets = $this->make(name: Assets::class);
+        $this->mailer = $this->make(name: Mailer::class);
+
+        Codefy::$PHP = $this;
     }
 
     /**
@@ -155,6 +176,7 @@ class Application extends Container
             [
              Providers\ConfigServiceProvider::class,
              Providers\FlysystemServiceProvider::class,
+             Providers\SmtpMailerServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
