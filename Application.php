@@ -8,6 +8,8 @@ use Codefy\Framework\Support\Paths;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\SimpleCache\CacheInterface;
+use Qubus\Cache\Psr16\SimpleCache;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
 use Qubus\Exception\Data\TypeException;
@@ -49,6 +51,8 @@ final class Application extends Container
     public readonly Assets $assets;
 
     public readonly Mailer $mailer;
+
+    public readonly SimpleCache $psr16Cache;
 
     public string $charset = 'UTF-8';
 
@@ -95,6 +99,7 @@ final class Application extends Container
         $this->response = $this->make(name: ResponseInterface::class);
         $this->assets = $this->make(name: Assets::class);
         $this->mailer = $this->make(name: Mailer::class);
+        $this->psr16Cache = $this->make(name: CacheInterface::class);
 
         Codefy::$PHP = $this;
     }
@@ -670,6 +675,7 @@ final class Application extends Container
                 \Qubus\Cache\Adapter\CacheAdapter::class => \Qubus\Cache\Adapter\FileSystemCacheAdapter::class,
                 \Codefy\Framework\Scheduler\Mutex\Locker::class
                 => \Codefy\Framework\Scheduler\Mutex\CacheLocker::class,
+                \Psr\SimpleCache\CacheInterface::class => \Qubus\Cache\Psr16\SimpleCache::class,
                 \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
                 \Symfony\Component\Console\Input\InputInterface::class
                 => \Symfony\Component\Console\Input\ArgvInput::class,

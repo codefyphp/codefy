@@ -1,6 +1,7 @@
 .idea
 config
 Scheduler/Tests
+storage
 vendor
 .env
 .php-cs-fixer.cache
