@@ -21,7 +21,7 @@ class ConsoleApplication extends SymfonyApplication
 
     public function __construct(protected Application $codefy)
     {
-        parent::__construct(name: 'CodefyPHP', version: '1.0.0');
+        parent::__construct(name: 'CodefyPHP', version: Application::APP_VERSION);
     }
 
     public function run(InputInterface $input = null, OutputInterface $output = null): int
