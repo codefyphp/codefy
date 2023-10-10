@@ -9,12 +9,13 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\CacheInterface;
-use Qubus\Cache\Psr16\SimpleCache;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
+use Qubus\Http\Session\Flash;
+use Qubus\Http\Session\PhpSession;
 use Qubus\Inheritance\InvokerAware;
 use Qubus\Injector\Config\InjectorFactory;
 use Qubus\Injector\Psr11\Container;
@@ -52,7 +53,11 @@ final class Application extends Container
 
     public readonly Mailer $mailer;
 
-    public readonly SimpleCache $psr16Cache;
+    public readonly CacheInterface $psr16Cache;
+
+    public readonly PhpSession $session;
+
+    public readonly Flash $flash;
 
     public string $charset = 'UTF-8';
 
@@ -95,11 +100,20 @@ final class Application extends Container
         parent::__construct(InjectorFactory::create($this->coreAliases()));
         $this->registerDefaultServiceProviders();
 
+        /** @var $this RequestInterface */
         $this->request = $this->make(name: RequestInterface::class);
+        /** @var $this ResponseInterface */
         $this->response = $this->make(name: ResponseInterface::class);
+        /** @var $this Assets */
         $this->assets = $this->make(name: Assets::class);
+        /** @var $this Mailer */
         $this->mailer = $this->make(name: Mailer::class);
+        /** @var $this CacheInterface */
         $this->psr16Cache = $this->make(name: CacheInterface::class);
+        /** @var $this PhpSession */
+        $this->session = $this->make(name: PhpSession::class);
+        /** @var $this Flash */
+        $this->flash = $this->make(name: Flash::class);
 
         Codefy::$PHP = $this;
     }
@@ -149,7 +163,7 @@ final class Application extends Container
      */
     public function version(): string
     {
-        return static::APP_VERSION;
+        return Application::APP_VERSION;
     }
 
     /**
@@ -654,6 +668,7 @@ final class Application extends Container
                 \Psr\Http\Message\ServerRequestInterface::class => \Qubus\Http\ServerRequest::class,
                 \Psr\Http\Message\ServerRequestFactoryInterface::class => \Qubus\Http\ServerRequestFactory::class,
                 \Psr\Http\Message\RequestInterface::class => \Qubus\Http\Request::class,
+                \Psr\Http\Server\RequestHandlerInterface::class => \Relay\Runner::class,
                 \Psr\Http\Message\ResponseInterface::class => \Qubus\Http\Response::class,
                 \Psr\Cache\CacheItemInterface::class => \Qubus\Cache\Psr6\Item::class,
                 \Psr\Cache\CacheItemPoolInterface::class => \Qubus\Cache\Psr6\ItemPool::class,
@@ -676,11 +691,14 @@ final class Application extends Container
                 \Codefy\Framework\Scheduler\Mutex\Locker::class
                 => \Codefy\Framework\Scheduler\Mutex\CacheLocker::class,
                 \Psr\SimpleCache\CacheInterface::class => \Qubus\Cache\Psr16\SimpleCache::class,
+                \Qubus\Http\Session\PhpSession::class => \Qubus\Http\Session\NativeSession::class,
                 \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
                 \Symfony\Component\Console\Input\InputInterface::class
                 => \Symfony\Component\Console\Input\ArgvInput::class,
                 \Symfony\Component\Console\Output\OutputInterface::class
                 => \Symfony\Component\Console\Output\ConsoleOutput::class,
+                \Qubus\Http\Cookies\Factory\HttpCookieFactory::class => \Qubus\Http\Cookies\Factory\CookieFactory::class,
+                \Qubus\Http\Session\Storage\SessionStorage::class => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
             ]
         ];
     }
