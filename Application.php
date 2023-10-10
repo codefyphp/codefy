@@ -627,6 +627,7 @@ class Application extends Container
                 \Psr\Http\Message\ServerRequestInterface::class => \Qubus\Http\ServerRequest::class,
                 \Psr\Http\Message\ServerRequestFactoryInterface::class => \Qubus\Http\ServerRequestFactory::class,
                 \Psr\Http\Message\RequestInterface::class => \Qubus\Http\Request::class,
+                \Psr\Http\Server\RequestHandlerInterface::class => \Relay\Runner::class,
                 \Psr\Http\Message\ResponseInterface::class => \Qubus\Http\Response::class,
                 \Psr\Cache\CacheItemInterface::class => \Qubus\Cache\Psr6\Item::class,
                 \Psr\Cache\CacheItemPoolInterface::class => \Qubus\Cache\Psr6\ItemPool::class,
@@ -648,11 +649,15 @@ class Application extends Container
                 \Qubus\Cache\Adapter\CacheAdapter::class => \Qubus\Cache\Adapter\FileSystemCacheAdapter::class,
                 \Codefy\Framework\Scheduler\Mutex\Locker::class
                 => \Codefy\Framework\Scheduler\Mutex\CacheLocker::class,
+                \Psr\SimpleCache\CacheInterface::class => \Qubus\Cache\Psr16\SimpleCache::class,
+                \Qubus\Http\Session\PhpSession::class => \Qubus\Http\Session\NativeSession::class,
                 \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
                 \Symfony\Component\Console\Input\InputInterface::class
                 => \Symfony\Component\Console\Input\ArgvInput::class,
                 \Symfony\Component\Console\Output\OutputInterface::class
                 => \Symfony\Component\Console\Output\ConsoleOutput::class,
+                \Qubus\Http\Cookies\Factory\HttpCookieFactory::class => \Qubus\Http\Cookies\Factory\CookieFactory::class,
+                \Qubus\Http\Session\Storage\SessionStorage::class => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
             ]
         ];
     }
