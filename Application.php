@@ -30,7 +30,7 @@ class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '1.0.2';
+    public const APP_VERSION = '1.0.3';
 
     public const MIN_PHP_VERSION = '8.2';
 
@@ -656,8 +656,11 @@ class Application extends Container
                 => \Symfony\Component\Console\Input\ArgvInput::class,
                 \Symfony\Component\Console\Output\OutputInterface::class
                 => \Symfony\Component\Console\Output\ConsoleOutput::class,
-                \Qubus\Http\Cookies\Factory\HttpCookieFactory::class => \Qubus\Http\Cookies\Factory\CookieFactory::class,
-                \Qubus\Http\Session\Storage\SessionStorage::class => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
+                \Qubus\Http\Cookies\Factory\HttpCookieFactory::class
+                => \Qubus\Http\Cookies\Factory\CookieFactory::class,
+                \Qubus\Http\Session\Storage\SessionStorage::class
+                => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
+                \Qubus\Http\Session\HttpSession::class => \Qubus\Http\Session\SessionData::class,
             ]
         ];
     }
