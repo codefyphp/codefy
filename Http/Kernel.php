@@ -7,6 +7,7 @@ namespace Codefy\Framework\Http;
 use Codefy\Framework\Application;
 use Codefy\Framework\Contracts\Kernel as HttpKernel;
 use Exception;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Qubus\Error\Handlers\DebugErrorHandler;
 use Qubus\Error\Handlers\ErrorHandler;
 use Qubus\Error\Handlers\ProductionErrorHandler;
@@ -62,7 +63,7 @@ final class Kernel implements HttpKernel
                     files: $_FILES
                 )
             ),
-            emitter: null
+            emitter: new SapiEmitter()
         );
     }
 
