@@ -193,9 +193,9 @@ final class Application extends Container
     {
         foreach (
             [
-             Providers\ConfigServiceProvider::class,
-             Providers\FlysystemServiceProvider::class,
-             Providers\SmtpMailerServiceProvider::class,
+                Providers\ConfigServiceProvider::class,
+                Providers\FlysystemServiceProvider::class,
+                Providers\SmtpMailerServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
@@ -697,8 +697,10 @@ final class Application extends Container
                 => \Symfony\Component\Console\Input\ArgvInput::class,
                 \Symfony\Component\Console\Output\OutputInterface::class
                 => \Symfony\Component\Console\Output\ConsoleOutput::class,
-                \Qubus\Http\Cookies\Factory\HttpCookieFactory::class => \Qubus\Http\Cookies\Factory\CookieFactory::class,
-                \Qubus\Http\Session\Storage\SessionStorage::class => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
+                \Qubus\Http\Cookies\Factory\HttpCookieFactory::class
+                => \Qubus\Http\Cookies\Factory\CookieFactory::class,
+                \Qubus\Http\Session\Storage\SessionStorage::class
+                => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
             ]
         ];
     }
