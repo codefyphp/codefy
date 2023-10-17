@@ -13,24 +13,18 @@ use Qubus\Routing\Router;
 use Qubus\View\Native\NativeLoader;
 use Qubus\View\Renderer;
 
-use function Codefy\Framework\Helpers\app;
 use function Codefy\Framework\Helpers\config;
 
 class BaseController extends Controller implements RoutingController
 {
     public function __construct(
-        protected ?ServerRequestInterface $request = null,
-        protected ?ResponseInterface $response = null,
-        protected ?Router $router = null,
+        protected SessionService $sessionService,
+        protected ServerRequestInterface $request,
+        protected ResponseInterface $response,
+        protected Router $router,
         protected ?Renderer $view = null,
-        protected ?SessionService $sessionService = null,
     ) {
-        $this->setRequest(request: $request ?? app(name: ServerRequestInterface::class));
-        $this->response = $response ?? app(name: ResponseInterface::class);
-        $this->router = $router ?? app(name: 'router');
         $this->setView(view: $view ?? new NativeLoader(config(key: 'view.path')));
-        $this->sessionService = $sessionService ?? app(name: SessionService::class);
-
     }
 
     /**
