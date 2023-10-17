@@ -7,7 +7,7 @@ namespace Codefy\Framework\Http;
 use Codefy\Framework\Contracts\RoutingController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Qubus\Http\Session\HttpSession;
+use Qubus\Http\Session\SessionService;
 use Qubus\Routing\Controller\Controller;
 use Qubus\Routing\Router;
 use Qubus\View\Native\NativeLoader;
@@ -23,12 +23,14 @@ class BaseController extends Controller implements RoutingController
         protected ?ResponseInterface $response = null,
         protected ?Router $router = null,
         protected ?Renderer $view = null,
-        protected ?HttpSession $httpSession = null,
+        protected ?SessionService $sessionService = null,
     ) {
-        $this->setRequest($request ?? app(name: ServerRequestInterface::class));
+        $this->setRequest(request: $request ?? app(name: ServerRequestInterface::class));
         $this->response = $response ?? app(name: ResponseInterface::class);
         $this->router = $router ?? app(name: 'router');
-        $this->setView($view ?? new NativeLoader(config('view.path')));
+        $this->setView(view: $view ?? new NativeLoader(config(key: 'view.path')));
+        $this->sessionService = $sessionService ?? app(name: SessionService::class);
+
     }
 
     /**
