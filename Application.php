@@ -193,9 +193,9 @@ final class Application extends Container
     {
         foreach (
             [
-            Providers\ConfigServiceProvider::class,
-            Providers\FlysystemServiceProvider::class,
-            Providers\SmtpMailerServiceProvider::class,
+                Providers\ConfigServiceProvider::class,
+                Providers\FlysystemServiceProvider::class,
+                Providers\SmtpMailerServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
