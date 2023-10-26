@@ -9,6 +9,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\CacheInterface;
+use Qubus\Config\ConfigContainer;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
 use Qubus\Exception\Data\TypeException;
@@ -97,7 +98,7 @@ final class Application extends Container
         self::$APP = $this;
         self::$ROOT_PATH = $this->basePath;
 
-        parent::__construct(InjectorFactory::create($this->coreAliases()));
+        parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
         $this->registerDefaultServiceProviders();
 
         /** @var $this RequestInterface */
@@ -123,20 +124,21 @@ final class Application extends Container
      */
     public function getDbConnection(): Connection
     {
+        /** @var $config ConfigContainer */
         $config = $this->make(name: 'codefy.config');
 
         $connection = env(key: 'DB_CONNECTION', default: 'default');
 
         return DB::connection([
-            'driver' => $config->getConfigKey("database.connections.{$connection}.driver"),
-            'host' => $config->getConfigKey("database.connections.{$connection}.host", 'localhost'),
-            'port' => $config->getConfigKey("database.connections.{$connection}.port", 3306),
-            'charset' => $config->getConfigKey("database.connections.{$connection}.charset", 'utf8mb4'),
-            'collation' => $config->getConfigKey("database.connections.{$connection}.collation", 'utf8mb4_unicode_ci'),
-            'username' => $config->getConfigKey("database.connections.{$connection}.username"),
-            'password' => $config->getConfigKey("database.connections.{$connection}.password"),
-            'dbname' => $config->getConfigKey("database.connections.{$connection}.dbname"),
-            'prefix' => $config->getConfigKey("database.connections.{$connection}.prefix", ''),
+            'driver' => $config->getConfigKey(key: "database.connections.{$connection}.driver"),
+            'host' => $config->getConfigKey(key: "database.connections.{$connection}.host", default: 'localhost'),
+            'port' => $config->getConfigKey(key: "database.connections.{$connection}.port", default: 3306),
+            'charset' => $config->getConfigKey(key: "database.connections.{$connection}.charset", default: 'utf8mb4'),
+            'collation' => $config->getConfigKey(key: "database.connections.{$connection}.collation", default: 'utf8mb4_unicode_ci'),
+            'username' => $config->getConfigKey(key: "database.connections.{$connection}.username"),
+            'password' => $config->getConfigKey(key: "database.connections.{$connection}.password"),
+            'dbname' => $config->getConfigKey(key: "database.connections.{$connection}.dbname"),
+            'prefix' => $config->getConfigKey(key: "database.connections.{$connection}.prefix", default: ''),
         ]);
     }
 
@@ -146,13 +148,14 @@ final class Application extends Container
      */
     public function getDB(): ?OrmBuilder
     {
+        /** @var $config ConfigContainer */
         $config = $this->make(name: 'codefy.config');
 
         $connection = env(key: 'DB_CONNECTION', default: 'default');
 
         return new OrmBuilder(
             connection: $this->getDbConnection(),
-            tablePrefix: $config->getConfigKey("database.connections.{$connection}.prefix", '')
+            tablePrefix: $config->getConfigKey(key: "database.connections.{$connection}.prefix", default: '')
         );
     }
 
@@ -272,15 +275,17 @@ final class Application extends Container
      *
      * @return void
      * @throws TypeException
+     * @throws Exception
      */
     public function registerConfiguredServiceProviders(): void
     {
+        /** @var $config ConfigContainer */
         $config = $this->make(name: 'codefy.config');
 
-        $providers = $config->getConfigKey('app.providers');
+        $providers = $config->getConfigKey(key: 'app.providers');
 
         foreach ($providers as $serviceProvider) {
-            $this->registerServiceProvider($serviceProvider);
+            $this->registerServiceProvider(serviceProvider: $serviceProvider);
         }
     }
 
@@ -633,9 +638,15 @@ final class Application extends Container
         $this->baseMiddlewares = $middlewares;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getBaseMiddlewares(): array
     {
-        return array_merge([], $this->baseMiddlewares);
+        /** @var $config ConfigContainer */
+        $config = $this->make(name: 'codefy.config');
+
+        return array_merge($config->getConfigKey(key: 'app.base_middlewares'), $this->baseMiddlewares);
     }
 
     public function isRunningInConsole(): bool
@@ -647,12 +658,14 @@ final class Application extends Container
      * Determine if the application is running with debug mode enabled.
      *
      * @return bool
+     * @throws Exception
      */
     public function hasDebugModeEnabled(): bool
     {
+        /** @var $config ConfigContainer */
         $config = $this->make(name: 'codefy.config');
 
-        if ($config->getConfigKey('app.debug') === 'true') {
+        if ($config->getConfigKey(key: 'app.debug') === 'true') {
             return true;
         }
 
