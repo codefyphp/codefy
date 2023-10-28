@@ -23,7 +23,6 @@ class BaseController extends Controller implements RoutingController
         protected ResponseInterface $response,
         protected Router $router,
         protected ?Renderer $view = null,
-
     ) {
         $this->setView(view: $view ?? new NativeLoader(config('view.path')));
     }
