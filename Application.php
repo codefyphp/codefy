@@ -6,12 +6,13 @@ namespace Codefy\Framework;
 
 use Codefy\Framework\Support\Paths;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\SimpleCache\CacheInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
+use Qubus\EventDispatcher\EventDispatcher;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
@@ -25,6 +26,7 @@ use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Mail\Mailer;
+use Qubus\Routing\Router;
 use Qubus\Support\Assets;
 
 use function Codefy\Framework\Helpers\env;
@@ -46,7 +48,9 @@ final class Application extends Container
 
     public static ?Application $APP = null;
 
-    public readonly RequestInterface $request;
+    public readonly Router $router;
+
+    public readonly ServerRequestInterface $request;
 
     public readonly ResponseInterface $response;
 
@@ -59,6 +63,8 @@ final class Application extends Container
     public readonly PhpSession $session;
 
     public readonly Flash $flash;
+
+    public readonly EventDispatcher $event;
 
     public string $charset = 'UTF-8';
 
@@ -101,8 +107,10 @@ final class Application extends Container
         parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
         $this->registerDefaultServiceProviders();
 
-        /** @var $this RequestInterface */
-        $this->request = $this->make(name: RequestInterface::class);
+        /** @var $this Router */
+        $this->router = $this->make(name: 'router');
+        /** @var $this ServerRequestInterface */
+        $this->request = $this->make(name: ServerRequestInterface::class);
         /** @var $this ResponseInterface */
         $this->response = $this->make(name: ResponseInterface::class);
         /** @var $this Assets */
@@ -115,6 +123,8 @@ final class Application extends Container
         $this->session = $this->make(name: PhpSession::class);
         /** @var $this Flash */
         $this->flash = $this->make(name: Flash::class);
+        /** @var $this EventDispatcher */
+        $this->event = $this->make(name: EventDispatcher::class);
 
         Codefy::$PHP = $this;
     }
@@ -134,7 +144,10 @@ final class Application extends Container
             'host' => $config->getConfigKey(key: "database.connections.{$connection}.host", default: 'localhost'),
             'port' => $config->getConfigKey(key: "database.connections.{$connection}.port", default: 3306),
             'charset' => $config->getConfigKey(key: "database.connections.{$connection}.charset", default: 'utf8mb4'),
-            'collation' => $config->getConfigKey(key: "database.connections.{$connection}.collation", default: 'utf8mb4_unicode_ci'),
+            'collation' => $config->getConfigKey(
+                key: "database.connections.{$connection}.collation",
+                default: 'utf8mb4_unicode_ci'
+            ),
             'username' => $config->getConfigKey(key: "database.connections.{$connection}.username"),
             'password' => $config->getConfigKey(key: "database.connections.{$connection}.password"),
             'dbname' => $config->getConfigKey(key: "database.connections.{$connection}.dbname"),
@@ -691,7 +704,7 @@ final class Application extends Container
                 \Qubus\Config\ConfigContainer::class => \Qubus\Config\Collection::class,
                 \Qubus\EventDispatcher\EventDispatcher::class => \Qubus\EventDispatcher\Dispatcher::class,
                 'mailer' => \Qubus\Mail\Mailer::class,
-                'dir.path' => Support\Paths::class,
+                'dir.path' => \Codefy\Framework\Support\Paths::class,
                 'container' => self::class,
                 'codefy' => self::class,
                 \Qubus\Routing\Interfaces\Collector::class => \Qubus\Routing\Route\RouteCollector::class,
@@ -705,7 +718,8 @@ final class Application extends Container
                 => \Codefy\Framework\Scheduler\Mutex\CacheLocker::class,
                 \Psr\SimpleCache\CacheInterface::class => \Qubus\Cache\Psr16\SimpleCache::class,
                 \Qubus\Http\Session\PhpSession::class => \Qubus\Http\Session\NativeSession::class,
-                \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
+                \DateTimeInterface::class => \Qubus\Support\DateTime\QubusDateTimeImmutable::class,
+                \Qubus\Support\DateTime\Date::class => \Qubus\Support\DateTime\QubusDate::class,
                 \Symfony\Component\Console\Input\InputInterface::class
                 => \Symfony\Component\Console\Input\ArgvInput::class,
                 \Symfony\Component\Console\Output\OutputInterface::class
