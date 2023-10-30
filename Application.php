@@ -26,7 +26,6 @@ use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Mail\Mailer;
-use Qubus\Routing\Router;
 use Qubus\Support\Assets;
 
 use function Codefy\Framework\Helpers\env;
@@ -47,8 +46,6 @@ final class Application extends Container
     public const DS = DIRECTORY_SEPARATOR;
 
     public static ?Application $APP = null;
-
-    public readonly Router $router;
 
     public readonly ServerRequestInterface $request;
 
@@ -92,6 +89,8 @@ final class Application extends Container
 
     protected array $bootedCallbacks = [];
 
+    private array $param = [];
+
     /**
      * @throws TypeException
      */
@@ -107,8 +106,6 @@ final class Application extends Container
         parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
         $this->registerDefaultServiceProviders();
 
-        /** @var $this Router */
-        $this->router = $this->make(name: 'router');
         /** @var $this ServerRequestInterface */
         $this->request = $this->make(name: ServerRequestInterface::class);
         /** @var $this ResponseInterface */
@@ -730,6 +727,25 @@ final class Application extends Container
                 => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
             ]
         ];
+    }
+
+    public function __get(mixed $name)
+    {
+        return $this->param[$name];
+    }
+
+    public function __isset(mixed $name): bool
+    {
+        return isset($this->data[$name]);
+    }
+    public function __set(mixed $name, mixed $value): void
+    {
+        $this->param[$name] = $value;
+    }
+
+    public function __unset(mixed $name): void
+    {
+        unset($this->param[$name]);
     }
 
     public function __destruct()
