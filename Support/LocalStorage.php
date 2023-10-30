@@ -53,12 +53,12 @@ final class LocalStorage
     {
         return [
             'file' => [
-                'public'  => self::getConfigForDriverName(name: $name)['visibility']['file']['public'],
-                'private' => self::getConfigForDriverName(name: $name)['visibility']['file']['private'],
+                'public'  => self::getConfigForDriverName(name: $name)['permission']['file']['public'],
+                'private' => self::getConfigForDriverName(name: $name)['permission']['file']['private'],
             ],
             'dir'  => [
-                'public'  => self::getConfigForDriverName(name: $name)['visibility']['dir']['public'],
-                'private' => self::getConfigForDriverName(name: $name)['visibility']['dir']['private'],
+                'public'  => self::getConfigForDriverName(name: $name)['permission']['dir']['public'],
+                'private' => self::getConfigForDriverName(name: $name)['permission']['dir']['private'],
             ],
         ];
     }
