@@ -1,6 +1,7 @@
 .idea
 .env
 config
+files
 Scheduler/Tests
 vendor
 .php-cs-fixer.cache
