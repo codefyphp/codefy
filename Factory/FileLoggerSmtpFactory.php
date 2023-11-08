@@ -9,10 +9,9 @@ use Codefy\Framework\Factory\Traits\FileLoggerAware;
 use Codefy\Framework\Support\LocalStorage;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Qubus\Exception\Exception;
 use Qubus\Log\Logger;
 use Qubus\Log\Loggers\FileLogger;
-use Qubus\Log\Loggers\SwiftMailerLogger;
+use Qubus\Log\Loggers\PHPMailerLogger;
 use ReflectionException;
 use SplObjectStorage;
 
@@ -24,7 +23,6 @@ class FileLoggerSmtpFactory implements LoggerFactory
 
     /**
      * @throws ReflectionException
-     * @throws Exception
      */
     public static function getLogger(): LoggerInterface
     {
@@ -36,10 +34,10 @@ class FileLoggerSmtpFactory implements LoggerFactory
             object: new FileLogger(filesystem: $filesystem, threshold: LogLevel::INFO)
         );
 
-        $mail = SwiftMailerSmtpFactory::create();
+        $mail = PHPMailerSmtpFactory::create();
 
         if (env(key: 'LOGGER_FROM_EMAIL') !== null && env(key: 'LOGGER_TO_EMAIL') !== null) {
-            $storage->attach(object: new SwiftMailerLogger(mailer: $mail, threshold: LogLevel::INFO, params: [
+            $storage->attach(object: new PHPMailerLogger(mailer: $mail, threshold: LogLevel::INFO, params: [
                 'from' => env(key: 'LOGGER_FROM_EMAIL'),
                 'to' => env(key: 'LOGGER_TO_EMAIL'),
                 'subject' => env(key: 'LOGGER_EMAIL_SUBJECT'),
