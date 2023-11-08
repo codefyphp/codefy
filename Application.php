@@ -649,6 +649,7 @@ class Application extends Container
                 \Qubus\Config\Path\Path::class => \Qubus\Config\Path\ConfigPath::class,
                 \Qubus\Config\ConfigContainer::class => \Qubus\Config\Collection::class,
                 \Qubus\EventDispatcher\EventDispatcher::class => \Qubus\EventDispatcher\Dispatcher::class,
+                \Qubus\Mail\Mailer::class => \Codefy\Framework\Support\CodefyMailer::class,
                 'mailer' => \Qubus\Mail\Mailer::class,
                 'dir.path' => Support\Paths::class,
                 'container' => self::class,
