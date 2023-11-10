@@ -4,6 +4,7 @@ config
 files
 Scheduler/Tests
 vendor
+.phpcs-cache
 .php-cs-fixer.cache
 .phpunit.result.cache
 composer.lock
