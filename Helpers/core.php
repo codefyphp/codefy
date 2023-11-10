@@ -151,7 +151,7 @@ function mail(string|array $to, string $subject, string $message, array $headers
     $fromName = __observer()->filter->applyFilter('mail.from.name', env(key: 'MAILER_FROM_NAME'));
     $fromEmail = __observer()->filter->applyFilter('mail.from.email', env(key: 'MAILER_FROM_EMAIL'));
     // Set charset
-    $charset = __observer()->filter->applyFilter('mail.charset', fn() => 'utf-8');
+    $charset = __observer()->filter->applyFilter('mail.charset', 'utf-8');
 
     // Set email subject and body.
     $instance = $instance->withSubject(subject: $subject)->withBody(data: $message);
