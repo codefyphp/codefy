@@ -5,6 +5,7 @@ Scheduler/Tests
 storage
 vendor
 .env
+.phpcs-cache
 .php-cs-fixer.cache
 .phpunit.result.cache
 composer.lock
