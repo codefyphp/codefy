@@ -14,10 +14,15 @@ use Qubus\Expressive\OrmBuilder;
 use ReflectionException;
 
 use function file_exists;
+use function in_array;
+use function is_string;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
 use function rtrim;
+use function sprintf;
+use function substr_count;
+use function ucfirst;
 
 /**
  * Get the available container instance.
@@ -86,7 +91,7 @@ function get_fresh_bootstrap(): mixed
  */
 function env(string $key, mixed $default = null): mixed
 {
-    return $_ENV[$key] ?? $default;
+    return $_ENV[$key] ?: $default;
 }
 
 /**
@@ -131,7 +136,8 @@ function mail(string|array $to, string $subject, string $message, array $headers
     $instance = new CodefyMailer(config: app(name: 'codefy.config'));
 
     // Set the mailer transport.
-    $instance = config(key: 'mailer.mail_transport') === 'smtp' ? $instance->withSmtp() : $instance->withIsMail();
+    $func = sprintf('with%s', ucfirst(config(key: 'mailer.mail_transport')));
+    $instance = $instance->{$func}();
 
     // Detect HTML markdown.
     if (substr_count(haystack: $message, needle: '</') >= 1) {
