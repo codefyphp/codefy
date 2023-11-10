@@ -148,25 +148,10 @@ function mail(string|array $to, string $subject, string $message, array $headers
     $instance = $instance->withTo(address: $to);
 
     // Set from name and from email from environment variables.
-    __observer()->filter->addFilter('mail.from.name', fn() => env(key: 'MAILER_FROM_NAME'));
-    __observer()->filter->addFilter('mail.from.email', fn() => env(key: 'MAILER_FROM_EMAIL'));
+    $fromName = __observer()->filter->applyFilter('mail.from.name', env(key: 'MAILER_FROM_NAME'));
+    $fromEmail = __observer()->filter->applyFilter('mail.from.email', env(key: 'MAILER_FROM_EMAIL'));
     // Set charset
-    __observer()->filter->addFilter('mail.charset', fn() => 'utf-8');
-
-    // Loop through the filters.
-    foreach (__observer()->filter->getHooks() as $hook) {
-        if ($hook['hook'] === 'mail.from.name') {
-            $fromName = $hook['callback']();
-        }
-
-        if ($hook['hook'] === 'mail.from.email') {
-            $fromEmail = $hook['callback']();
-        }
-
-        if ($hook['hook'] === 'mail.charset') {
-            $charset = $hook['callback']();
-        }
-    }
+    $charset = __observer()->filter->applyFilter('mail.charset', fn() => 'utf-8');
 
     // Set email subject and body.
     $instance = $instance->withSubject(subject: $subject)->withBody(data: $message);
@@ -196,7 +181,7 @@ function mail(string|array $to, string $subject, string $message, array $headers
     $instance = $instance->withXMailer(xmailer: 'CodefyPHP Framework ' . Application::APP_VERSION);
 
     // Set email charset
-    $instance = $instance->withCharset(charset: $charset ?? 'utf-8');
+    $instance = $instance->withCharset(charset: $charset ?: 'utf-8');
 
     // Check if there are attachments and loop through them.
     if (!empty($attachments)) {
@@ -207,7 +192,7 @@ function mail(string|array $to, string $subject, string $message, array $headers
     }
 
     // Set sender.
-    $instance = $instance->withFrom(address: $fromEmail ?? '', name: $fromName ?? '');
+    $instance = $instance->withFrom(address: $fromEmail, name: $fromName ?: '');
 
     try {
         return $instance->send();
