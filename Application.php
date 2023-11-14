@@ -213,7 +213,6 @@ final class Application extends Container
             [
                 Providers\ConfigServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
-                Providers\SmtpMailerServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
