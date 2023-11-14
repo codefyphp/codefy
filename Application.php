@@ -106,6 +106,11 @@ final class Application extends Container
         parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
         $this->registerDefaultServiceProviders();
 
+        $this->init();
+    }
+
+    private function init(): void
+    {
         /** @var $this ServerRequestInterface */
         $this->request = $this->make(name: ServerRequestInterface::class);
         /** @var $this ResponseInterface */
