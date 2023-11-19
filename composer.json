@@ -22,7 +22,7 @@
         "qubus/expressive": "^1",
         "qubus/filesystem": "^3",
         "qubus/injector": "^3",
-        "qubus/mail": "^3",
+        "qubus/mail": "^4",
         "qubus/router": "^3",
         "qubus/security": "^3",
         "qubus/support": "^3",
