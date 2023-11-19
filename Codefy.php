@@ -33,7 +33,6 @@ final class Codefy
      * FileLogger with SMTP support.
      *
      * @throws ReflectionException
-     * @throws Exception
      */
     public static function getSmtpLogger(): LoggerInterface
     {
