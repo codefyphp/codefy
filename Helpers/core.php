@@ -92,7 +92,7 @@ function get_fresh_bootstrap(): mixed
  */
 function env(string $key, mixed $default = null): mixed
 {
-    return $_ENV[$key] ?: $default;
+    return $_ENV[$key] ?? $default;
 }
 
 /**
