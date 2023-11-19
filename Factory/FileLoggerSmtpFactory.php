@@ -9,7 +9,6 @@ use Codefy\Framework\Factory\Traits\FileLoggerAware;
 use Codefy\Framework\Support\LocalStorage;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Qubus\Exception\Exception;
 use Qubus\Log\Logger;
 use Qubus\Log\Loggers\FileLogger;
 use Qubus\Log\Loggers\PHPMailerLogger;
@@ -24,7 +23,6 @@ class FileLoggerSmtpFactory implements LoggerFactory
 
     /**
      * @throws ReflectionException
-     * @throws Exception
      */
     public static function getLogger(): LoggerInterface
     {
