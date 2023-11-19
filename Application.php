@@ -8,16 +8,12 @@ use Codefy\Framework\Support\Paths;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\SimpleCache\CacheInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
-use Qubus\EventDispatcher\EventDispatcher;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
-use Qubus\Http\Session\Flash;
-use Qubus\Http\Session\PhpSession;
 use Qubus\Inheritance\InvokerAware;
 use Qubus\Injector\Config\InjectorFactory;
 use Qubus\Injector\Psr11\Container;
@@ -25,8 +21,6 @@ use Qubus\Injector\ServiceContainer;
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
-use Qubus\Mail\Mailer;
-use Qubus\Support\Assets;
 
 use function Codefy\Framework\Helpers\env;
 use function get_class;
@@ -35,6 +29,18 @@ use function rtrim;
 
 use const DIRECTORY_SEPARATOR;
 
+/**
+ * @property-read ServerRequestInterface $request
+ * @property-read ResponseInterface $response
+ * @property-read \Qubus\Support\Assets $assets
+ * @property-read \Qubus\Mail\Mailer $mailer
+ * @property-read \Qubus\Http\Session\PhpSession $session
+ * @property-read \Qubus\Http\Session\Flash $flash
+ * @property-read \Qubus\EventDispatcher\EventDispatcher $event
+ * @property-read \Qubus\Http\Cookies\Factory\HttpCookieFactory $httpCookie
+ * @property-read Support\LocalStorage $localStorage
+ * @property-read \Qubus\Config\ConfigContainer $configContainer
+ */
 final class Application extends Container
 {
     use InvokerAware;
@@ -46,22 +52,6 @@ final class Application extends Container
     public const DS = DIRECTORY_SEPARATOR;
 
     public static ?Application $APP = null;
-
-    public readonly ServerRequestInterface $request;
-
-    public readonly ResponseInterface $response;
-
-    public readonly Assets $assets;
-
-    public readonly Mailer $mailer;
-
-    public readonly CacheInterface $psr16Cache;
-
-    public readonly PhpSession $session;
-
-    public readonly Flash $flash;
-
-    public readonly EventDispatcher $event;
 
     public string $charset = 'UTF-8';
 
@@ -111,22 +101,22 @@ final class Application extends Container
 
     private function init(): void
     {
-        /** @var $this ServerRequestInterface */
-        $this->request = $this->make(name: ServerRequestInterface::class);
-        /** @var $this ResponseInterface */
-        $this->response = $this->make(name: ResponseInterface::class);
-        /** @var $this Assets */
-        $this->assets = $this->make(name: Assets::class);
-        /** @var $this Mailer */
-        $this->mailer = $this->make(name: Mailer::class);
-        /** @var $this CacheInterface */
-        $this->psr16Cache = $this->make(name: CacheInterface::class);
-        /** @var $this PhpSession */
-        $this->session = $this->make(name: PhpSession::class);
-        /** @var $this Flash */
-        $this->flash = $this->make(name: Flash::class);
-        /** @var $this EventDispatcher */
-        $this->event = $this->make(name: EventDispatcher::class);
+        $contracts = [
+            'request' => ServerRequestInterface::class,
+            'response' => ResponseInterface::class,
+            'assets' => \Qubus\Support\Assets::class,
+            'mailer' => \Qubus\Mail\Mailer::class,
+            'session' => \Qubus\Http\Session\PhpSession::class,
+            'flash' => \Qubus\Http\Session\Flash::class,
+            'event' => \Qubus\EventDispatcher\EventDispatcher::class,
+            'httpCookie' => \Qubus\Http\Cookies\Factory\HttpCookieFactory::class,
+            'localStorage' => Support\LocalStorage::class,
+            'configContainer' => \Qubus\Config\ConfigContainer::class,
+        ];
+
+        foreach ($contracts as $property => $name) {
+            $this->{$property} = $this->make(name: $name);
+        }
 
         Codefy::$PHP = $this;
     }
