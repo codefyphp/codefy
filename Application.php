@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Codefy\Framework;
 
+use Codefy\Framework\Factory\FileLoggerFactory;
+use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Support\Paths;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
@@ -18,9 +21,11 @@ use Qubus\Inheritance\InvokerAware;
 use Qubus\Injector\Config\InjectorFactory;
 use Qubus\Injector\Psr11\Container;
 use Qubus\Injector\ServiceContainer;
+
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
+use ReflectionException;
 
 use function Codefy\Framework\Helpers\env;
 use function get_class;
@@ -122,11 +127,31 @@ final class Application extends Container
     }
 
     /**
+     * FileLogger
+     *
+     * @throws ReflectionException
+     */
+    public static function getLogger(): LoggerInterface
+    {
+        return FileLoggerFactory::getLogger();
+    }
+
+    /**
+     * FileLogger with SMTP support.
+     *
+     * @throws ReflectionException
+     */
+    public static function getSmtpLogger(): LoggerInterface
+    {
+        return FileLoggerSmtpFactory::getLogger();
+    }
+
+    /**
      * @throws Exception
      */
     public function getDbConnection(): Connection
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         $connection = env(key: 'DB_CONNECTION', default: 'default');
@@ -153,7 +178,7 @@ final class Application extends Container
      */
     public function getDB(): ?OrmBuilder
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         $connection = env(key: 'DB_CONNECTION', default: 'default');
@@ -283,7 +308,7 @@ final class Application extends Container
      */
     public function registerConfiguredServiceProviders(): void
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         $providers = $config->getConfigKey(key: 'app.providers');
@@ -647,7 +672,7 @@ final class Application extends Container
      */
     public function getBaseMiddlewares(): array
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         return array_merge($config->getConfigKey(key: 'app.base_middlewares'), $this->baseMiddlewares);
@@ -666,7 +691,7 @@ final class Application extends Container
      */
     public function hasDebugModeEnabled(): bool
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         if ($config->getConfigKey(key: 'app.debug') === 'true') {
