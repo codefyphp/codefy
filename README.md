@@ -73,7 +73,7 @@ need help, feel free to ask for help in the [forums](https://codefyphp.com/commu
 ## 🙌 Sponsors
 
 If you use CodefyPHP or you are interested in supporting the continued development of my opensource projects, 
-please consider sponsoring me via [Github](https://github.com/sponsors/parkerj) or [Ko-fi](https://ko-fi.com/nomadicjosh). 
+please consider sponsoring me via [Github](https://github.com/sponsors/nomadicjosh). 
 
 ## 🖋 Contributing
 
