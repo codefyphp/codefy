@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Codefy\Framework;
 
+use Codefy\Framework\Factory\FileLoggerFactory;
+use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Support\Paths;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
@@ -19,6 +24,7 @@ use Qubus\Injector\ServiceContainer;
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
+use ReflectionException;
 
 use function Codefy\Framework\Helpers\env;
 use function get_class;
@@ -27,17 +33,35 @@ use function rtrim;
 
 use const DIRECTORY_SEPARATOR;
 
-class Application extends Container
+/**
+ * @property-read ServerRequestInterface $request
+ * @property-read ResponseInterface $response
+ * @property-read \Qubus\Support\Assets $assets
+ * @property-read \Qubus\Mail\Mailer $mailer
+ * @property-read \Qubus\Http\Session\PhpSession $session
+ * @property-read \Qubus\Http\Session\Flash $flash
+ * @property-read \Qubus\EventDispatcher\EventDispatcher $event
+ * @property-read \Qubus\Http\Cookies\Factory\HttpCookieFactory $httpCookie
+ * @property-read Support\LocalStorage $localStorage
+ * @property-read \Qubus\Config\ConfigContainer $configContainer
+ */
+final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '1.0.9';
+    public const APP_VERSION = '2.0.0';
 
     public const MIN_PHP_VERSION = '8.2';
 
     public const DS = DIRECTORY_SEPARATOR;
 
     public static ?Application $APP = null;
+
+    public string $charset = 'UTF-8';
+
+    public string $locale = 'en';
+
+    public string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers';
 
     public static string $ROOT_PATH;
 
@@ -49,10 +73,6 @@ class Application extends Container
 
     protected array $serviceProvidersRegistered = [];
 
-    protected string $locale = 'en';
-
-    protected string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers';
-
     protected array $baseMiddlewares = [];
 
     private bool $booted = false;
@@ -62,6 +82,8 @@ class Application extends Container
     protected array $bootingCallbacks = [];
 
     protected array $bootedCallbacks = [];
+
+    private array $param = [];
 
     /**
      * @throws TypeException
@@ -77,6 +99,50 @@ class Application extends Container
 
         parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
         $this->registerDefaultServiceProviders();
+
+        $this->init();
+    }
+
+    private function init(): void
+    {
+        $contracts = [
+            'request' => ServerRequestInterface::class,
+            'response' => ResponseInterface::class,
+            'assets' => \Qubus\Support\Assets::class,
+            'mailer' => \Qubus\Mail\Mailer::class,
+            'session' => \Qubus\Http\Session\PhpSession::class,
+            'flash' => \Qubus\Http\Session\Flash::class,
+            'event' => \Qubus\EventDispatcher\EventDispatcher::class,
+            'httpCookie' => \Qubus\Http\Cookies\Factory\HttpCookieFactory::class,
+            'localStorage' => Support\LocalStorage::class,
+            'configContainer' => \Qubus\Config\ConfigContainer::class,
+        ];
+
+        foreach ($contracts as $property => $name) {
+            $this->{$property} = $this->make(name: $name);
+        }
+
+        Codefy::$PHP = $this;
+    }
+
+    /**
+     * FileLogger
+     *
+     * @throws ReflectionException
+     */
+    public static function getLogger(): LoggerInterface
+    {
+        return FileLoggerFactory::getLogger();
+    }
+
+    /**
+     * FileLogger with SMTP support.
+     *
+     * @throws ReflectionException
+     */
+    public static function getSmtpLogger(): LoggerInterface
+    {
+        return FileLoggerSmtpFactory::getLogger();
     }
 
     /**
@@ -84,7 +150,7 @@ class Application extends Container
      */
     public function getDbConnection(): Connection
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         $connection = env(key: 'DB_CONNECTION', default: 'default');
@@ -94,7 +160,10 @@ class Application extends Container
             'host' => $config->getConfigKey(key: "database.connections.{$connection}.host", default: 'localhost'),
             'port' => $config->getConfigKey(key: "database.connections.{$connection}.port", default: 3306),
             'charset' => $config->getConfigKey(key: "database.connections.{$connection}.charset", default: 'utf8mb4'),
-            'collation' => $config->getConfigKey(key: "database.connections.{$connection}.collation", default: 'utf8mb4_unicode_ci'),
+            'collation' => $config->getConfigKey(
+                key: "database.connections.{$connection}.collation",
+                default: 'utf8mb4_unicode_ci'
+            ),
             'username' => $config->getConfigKey(key: "database.connections.{$connection}.username"),
             'password' => $config->getConfigKey(key: "database.connections.{$connection}.password"),
             'dbname' => $config->getConfigKey(key: "database.connections.{$connection}.dbname"),
@@ -108,7 +177,7 @@ class Application extends Container
      */
     public function getDB(): ?OrmBuilder
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         $connection = env(key: 'DB_CONNECTION', default: 'default');
@@ -126,7 +195,7 @@ class Application extends Container
      */
     public function version(): string
     {
-        return static::APP_VERSION;
+        return Application::APP_VERSION;
     }
 
     /**
@@ -156,8 +225,8 @@ class Application extends Container
     {
         foreach (
             [
-             Providers\ConfigServiceProvider::class,
-             Providers\FlysystemServiceProvider::class,
+                Providers\ConfigServiceProvider::class,
+                Providers\FlysystemServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
@@ -238,7 +307,7 @@ class Application extends Container
      */
     public function registerConfiguredServiceProviders(): void
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         $providers = $config->getConfigKey(key: 'app.providers');
@@ -602,7 +671,7 @@ class Application extends Container
      */
     public function getBaseMiddlewares(): array
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         return array_merge($config->getConfigKey(key: 'app.base_middlewares'), $this->baseMiddlewares);
@@ -621,7 +690,7 @@ class Application extends Container
      */
     public function hasDebugModeEnabled(): bool
     {
-        /** @var $config ConfigContainer */
+        /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
         if ($config->getConfigKey(key: 'app.debug') === 'true') {
@@ -651,7 +720,7 @@ class Application extends Container
                 \Qubus\EventDispatcher\EventDispatcher::class => \Qubus\EventDispatcher\Dispatcher::class,
                 \Qubus\Mail\Mailer::class => \Codefy\Framework\Support\CodefyMailer::class,
                 'mailer' => \Qubus\Mail\Mailer::class,
-                'dir.path' => Support\Paths::class,
+                'dir.path' => \Codefy\Framework\Support\Paths::class,
                 'container' => self::class,
                 'codefy' => self::class,
                 \Qubus\Routing\Interfaces\Collector::class => \Qubus\Routing\Route\RouteCollector::class,
@@ -665,7 +734,8 @@ class Application extends Container
                 => \Codefy\Framework\Scheduler\Mutex\CacheLocker::class,
                 \Psr\SimpleCache\CacheInterface::class => \Qubus\Cache\Psr16\SimpleCache::class,
                 \Qubus\Http\Session\PhpSession::class => \Qubus\Http\Session\NativeSession::class,
-                \DateTimeZone::class => \Qubus\Support\DateTime\QubusDateTimeZone::class,
+                \DateTimeInterface::class => \Qubus\Support\DateTime\QubusDateTimeImmutable::class,
+                \Qubus\Support\DateTime\Date::class => \Qubus\Support\DateTime\QubusDate::class,
                 \Symfony\Component\Console\Input\InputInterface::class
                 => \Symfony\Component\Console\Input\ArgvInput::class,
                 \Symfony\Component\Console\Output\OutputInterface::class
@@ -674,9 +744,46 @@ class Application extends Container
                 => \Qubus\Http\Cookies\Factory\CookieFactory::class,
                 \Qubus\Http\Session\Storage\SessionStorage::class
                 => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
-                \Qubus\Http\Session\HttpSession::class => \Qubus\Http\Session\SessionData::class,
             ]
         ];
+    }
+
+    public function __get(mixed $name)
+    {
+        return $this->param[$name];
+    }
+
+    public function __isset(mixed $name): bool
+    {
+        return isset($this->data[$name]);
+    }
+    public function __set(mixed $name, mixed $value): void
+    {
+        $this->param[$name] = $value;
+    }
+
+    public function __unset(mixed $name): void
+    {
+        unset($this->param[$name]);
+    }
+
+    public function __get(mixed $name)
+    {
+        return $this->param[$name];
+    }
+
+    public function __isset(mixed $name): bool
+    {
+        return isset($this->data[$name]);
+    }
+    public function __set(mixed $name, mixed $value): void
+    {
+        $this->param[$name] = $value;
+    }
+
+    public function __unset(mixed $name): void
+    {
+        unset($this->param[$name]);
     }
 
     public function __destruct()

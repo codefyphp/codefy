@@ -32,6 +32,9 @@ final class Kernel implements HttpKernel
         \Codefy\Framework\Bootstrap\BootProviders::class,
     ];
 
+    /**
+     * @throws \Qubus\Exception\Exception
+     */
     public function __construct(Application $codefy, Router $router)
     {
         $this->codefy = $codefy;
@@ -107,6 +110,9 @@ final class Kernel implements HttpKernel
         return $this->bootstrappers;
     }
 
+    /**
+     * @throws \Qubus\Exception\Exception
+     */
     protected function registerErrorHandler(): ErrorHandler
     {
         if ($this->codefy()->hasDebugModeEnabled()) {

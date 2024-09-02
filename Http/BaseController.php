@@ -24,7 +24,7 @@ class BaseController extends Controller implements RoutingController
         protected Router $router,
         protected ?Renderer $view = null,
     ) {
-        $this->setView(view: $view ?? new NativeLoader(config(key: 'view.path')));
+        $this->setView(view: $view ?? new NativeLoader(config('view.path')));
     }
 
     /**

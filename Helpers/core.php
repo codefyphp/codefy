@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Helpers;
 
 use Codefy\Framework\Application;
+use Codefy\Framework\Codefy;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Support\CodefyMailer;
 use Qubus\Config\Collection;
@@ -13,12 +14,12 @@ use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
 use ReflectionException;
 
-use function file_exists;
-use function in_array;
-use function is_string;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
+use function file_exists;
+use function in_array;
+use function is_string;
 use function rtrim;
 use function sprintf;
 use function substr_count;
@@ -102,7 +103,7 @@ function env(string $key, mixed $default = null): mixed
  */
 function orm(): ?OrmBuilder
 {
-    return Application::$APP->getDB();
+    return Codefy::$PHP->getDB();
 }
 
 /**
@@ -113,7 +114,7 @@ function orm(): ?OrmBuilder
  */
 function dbal(): Connection
 {
-    return Application::$APP->getDbConnection();
+    return Codefy::$PHP->getDbConnection();
 }
 
 /**
