@@ -21,7 +21,6 @@ use Qubus\Inheritance\InvokerAware;
 use Qubus\Injector\Config\InjectorFactory;
 use Qubus\Injector\Psr11\Container;
 use Qubus\Injector\ServiceContainer;
-
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
