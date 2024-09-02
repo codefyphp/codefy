@@ -1,5 +1,5 @@
 .idea
-config
+/config/
 files
 Scheduler/Tests
 storage
