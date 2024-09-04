@@ -6,6 +6,7 @@ namespace Codefy\Framework\Http;
 
 use Codefy\Framework\Contracts\RoutingController;
 use Psr\Http\Message\ResponseInterface;
+use Qubus\Http\Factories\RedirectResponseFactory;
 use Qubus\Http\Session\SessionService;
 use Qubus\Routing\Controller\Controller;
 use Qubus\Routing\Router;
@@ -56,16 +57,6 @@ class BaseController extends Controller implements RoutingController
      */
     public function redirect(string $url, int $status = 302): ?ResponseInterface
     {
-        if ($status) {
-            $this->response = $this->response->withStatus($status);
-        }
-
-        $response = $this->response;
-
-        if (!$response->getHeaderLine('Location')) {
-            $response = $response->withHeader('Location', $url);
-        }
-
-        return $this->response = $response;
+        return RedirectResponseFactory::create(uri: $url, status: $status);
     }
 }
