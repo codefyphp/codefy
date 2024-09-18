@@ -14,12 +14,12 @@ use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
 use ReflectionException;
 
-use function file_exists;
-use function in_array;
-use function is_string;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
+use function file_exists;
+use function in_array;
+use function is_string;
 use function rtrim;
 use function sprintf;
 use function substr_count;
@@ -34,6 +34,7 @@ use function ucfirst;
  */
 function app(?string $name = null, array $args = []): mixed
 {
+    /** @var Application $app */
     $app = get_fresh_bootstrap();
 
     if (is_null__(var: $name)) {
@@ -179,7 +180,8 @@ function mail(string|array $to, string $subject, string $message, array $headers
     }
 
     // Set X-Mailer header
-    $instance = $instance->withXMailer(xmailer: 'CodefyPHP Framework ' . Application::APP_VERSION);
+    $xMailer = __observer()->filter->applyFilter('mail.xmailer', sprintf('CodefyPHP Framework %s', Application::APP_VERSION));
+    $instance = $instance->withXMailer(xmailer: $xMailer);
 
     // Set email charset
     $instance = $instance->withCharset(charset: $charset ?: 'utf-8');
