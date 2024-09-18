@@ -12,6 +12,16 @@ use Qubus\Exception\Exception;
 
 final class RbacServiceProvider extends CodefyServiceProvider
 {
+    public function register(): void
+    {
+        if ($this->codefy->isRunningInConsole()) {
+            return;
+        }
+
+        $this->codefy->alias(original: StorageResource::class, alias: ConfigStorageResource::class);
+        $this->codefy->share(nameOrInstance: StorageResource::class);
+    }
+
     /**
      * @throws Exception
      */
@@ -20,9 +30,6 @@ final class RbacServiceProvider extends CodefyServiceProvider
         if ($this->codefy->isRunningInConsole()) {
             return;
         }
-
-        $this->codefy->alias(original: StorageResource::class, alias: ConfigStorageResource::class);
-        $this->codefy->share(nameOrInstance: StorageResource::class);
 
         /** @var RbacLoader $rbac */
         $rbac = $this->codefy->make(name: RbacLoader::class);
