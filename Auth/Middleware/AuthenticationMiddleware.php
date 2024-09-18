@@ -30,6 +30,6 @@ final class AuthenticationMiddleware implements MiddlewareInterface
         if (is_null__(var: $user) || !$user instanceof SessionEntity) {
             return $this->auth->unauthorized($request);
         }
-        return $handler->handle(request: $request->withAttribute(name: self::AUTH_ATTRIBUTE, value: $user));
+        return $handler->handle($request->withAttribute(self::AUTH_ATTRIBUTE, $user));
     }
 }

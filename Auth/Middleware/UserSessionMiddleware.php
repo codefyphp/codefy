@@ -29,7 +29,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $userDetails = $request->getAttribute(name: AuthenticationMiddleware::AUTH_ATTRIBUTE);
+        $userDetails = $request->getAttribute(AuthenticationMiddleware::AUTH_ATTRIBUTE);
 
         $this->sessionService::$options = [
             'cookie-name' => 'USERSESSID',
@@ -43,7 +43,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
             ->withToken(token: $userDetails->token)
             ->withRole(role: $userDetails->role);
 
-        $request = $request->withAttribute(name: self::SESSION_ATTRIBUTE, value: $user);
+        $request = $request->withAttribute(self::SESSION_ATTRIBUTE, $user);
 
         $response = $handler->handle($request);
 
