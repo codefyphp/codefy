@@ -12,6 +12,7 @@
     <arg value="p"/>
 
     <!-- Paths to check -->
+    <file>Auth</file>
     <file>Bootstrap</file>
     <file>Console</file>
     <file>Contracts</file>
@@ -24,6 +25,7 @@
     <file>Support</file>
     <file>View</file>
     <file>Application.php</file>
+    <file>Codefy.php</file>
 
     <!-- Include rules from the Qubus Coding Standard -->
     <rule ref="QubusCodingStandard"/>
