@@ -49,7 +49,7 @@ final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '2.0.0';
+    public const APP_VERSION = '2.0.3';
 
     public const MIN_PHP_VERSION = '8.2';
 
@@ -207,7 +207,7 @@ final class Application extends Container
      */
     public function singleton(string $key, callable $value): void
     {
-        $this->proxy($key, function ($c) use ($value) {
+        $this->proxy(name: $key, callableOrMethodStr: function ($c) use ($value) {
             static $object;
 
             if (null === $object) {
@@ -223,10 +223,10 @@ final class Application extends Container
      */
     protected function registerDefaultServiceProviders(): void
     {
-        foreach (
-            [
+        foreach ([
                 Providers\ConfigServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
+                Providers\PdoServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
@@ -711,6 +711,7 @@ final class Application extends Container
                 \Psr\Http\Message\RequestInterface::class => \Qubus\Http\Request::class,
                 \Psr\Http\Server\RequestHandlerInterface::class => \Relay\Runner::class,
                 \Psr\Http\Message\ResponseInterface::class => \Qubus\Http\Response::class,
+                \Psr\Http\Message\ResponseFactoryInterface::class => \Laminas\Diactoros\ResponseFactory::class,
                 \Psr\Cache\CacheItemInterface::class => \Qubus\Cache\Psr6\Item::class,
                 \Psr\Cache\CacheItemPoolInterface::class => \Qubus\Cache\Psr6\ItemPool::class,
                 \Qubus\Cache\Psr6\TaggableCacheItem::class => \Qubus\Cache\Psr6\TaggablePsr6ItemAdapter::class,
@@ -727,6 +728,9 @@ final class Application extends Container
                 'router' => \Qubus\Routing\Router::class,
                 \Codefy\Framework\Contracts\Kernel::class => \Codefy\Framework\Http\Kernel::class,
                 \Codefy\Framework\Contracts\RoutingController::class => \Codefy\Framework\Http\BaseController::class,
+                \Codefy\Framework\Auth\Sentinel::class => \Codefy\Framework\Auth\Auth::class,
+                \Codefy\Framework\Auth\Repository\AuthUserRepository::class
+                => \Codefy\Framework\Auth\Repository\PdoRepository::class,
                 \League\Flysystem\FilesystemOperator::class => \Qubus\FileSystem\FileSystem::class,
                 \League\Flysystem\FilesystemAdapter::class => \Qubus\FileSystem\Adapter\LocalFlysystemAdapter::class,
                 \Qubus\Cache\Adapter\CacheAdapter::class => \Qubus\Cache\Adapter\FileSystemCacheAdapter::class,
