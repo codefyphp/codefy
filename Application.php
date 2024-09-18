@@ -727,9 +727,6 @@ final class Application extends Container
                 'router' => \Qubus\Routing\Router::class,
                 \Codefy\Framework\Contracts\Kernel::class => \Codefy\Framework\Http\Kernel::class,
                 \Codefy\Framework\Contracts\RoutingController::class => \Codefy\Framework\Http\BaseController::class,
-                \Codefy\Framework\Auth\Sentinel::class => \Codefy\Framework\Auth\Auth::class,
-                \Codefy\Framework\Auth\Repository\AuthUserRepository::class
-                => \Codefy\Framework\Auth\Repository\PdoRepository::class,
                 \League\Flysystem\FilesystemOperator::class => \Qubus\FileSystem\FileSystem::class,
                 \League\Flysystem\FilesystemAdapter::class => \Qubus\FileSystem\Adapter\LocalFlysystemAdapter::class,
                 \Qubus\Cache\Adapter\CacheAdapter::class => \Qubus\Cache\Adapter\FileSystemCacheAdapter::class,
