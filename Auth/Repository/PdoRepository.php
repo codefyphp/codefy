@@ -27,7 +27,7 @@ class PdoRepository implements AuthUserRepository
         $fields = $this->config->getConfigKey(key: 'auth.pdo.fields');
 
         $sql = sprintf(
-            "SELECT * FROM %s WHERE %s = :login",
+            "SELECT * FROM %s WHERE %s = :identity",
             $this->config->getConfigKey('auth.pdo.table'),
             $fields['identity']
         );
