@@ -3,14 +3,10 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\Assert;
-use Qubus\Config\Collection;
 
-$config = Collection::factory([
-    'path' => __DIR__ . '/../config',
-]);
 $resource = Mockery::mock(\Codefy\Framework\Auth\Rbac\Resource\StorageResource::class);
 
-it('should get the role name.', function () use ($resource) {
+it('should create Role instance.', function () use ($resource) {
     $role = new \Codefy\Framework\Auth\Rbac\Entity\RbacRole(
         roleName: 'admin',
         description: 'Super administrator.',
