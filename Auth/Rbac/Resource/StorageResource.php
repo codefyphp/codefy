@@ -8,5 +8,5 @@ use Codefy\Framework\Auth\Rbac\Guard;
 
 interface StorageResource extends Guard
 {
-    public function load();
+    public function load(): void;
 }
