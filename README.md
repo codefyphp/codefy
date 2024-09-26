@@ -44,6 +44,7 @@ none of the features and instead use the interfaces to build your own implementa
 - Scheduler for scheduling tasks/jobs
 - Security and sanitizing helpers
 - Dual templating engines
+- NIST Level 2 Standard Role-Based Access Control
 
 ## 📦 Installation
 
