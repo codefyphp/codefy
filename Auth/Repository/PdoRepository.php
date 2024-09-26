@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Auth\Repository;
 
+use Codefy\Framework\Support\Password;
 use PDO;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
 use Qubus\Http\Session\SessionEntity;
 
-use function password_verify;
 use function sprintf;
 
 class PdoRepository implements AuthUserRepository
@@ -47,7 +47,7 @@ class PdoRepository implements AuthUserRepository
 
         $passwordHash = (string) ($result->{$fields['password']} ?? '');
 
-        if (password_verify(password: $password ?? '', hash: $passwordHash)) {
+        if (Password::verify(password: $password ?? '', hash: $passwordHash)) {
             $user = new class () implements SessionEntity {
                 public ?string $token = null;
                 public ?string $role = null;

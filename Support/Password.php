@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Codefy\Framework\Support;
 
 use function defined;
+use function password_hash;
+use function password_verify;
 use function Qubus\Security\Helpers\__observer;
 
 use const PASSWORD_ARGON2ID;
@@ -59,5 +61,17 @@ final class Password
     public static function hash(string $password): string
     {
         return password_hash(password: $password, algo: self::algorithm(), options: self::options());
+    }
+
+    /**
+     * Checks if the given hash matches the given options.
+     *
+     * @param string $password
+     * @param string $hash
+     * @return bool
+     */
+    public static function verify(string $password, string $hash): bool
+    {
+        return password_verify($password, $hash);
     }
 }
