@@ -75,12 +75,11 @@ final class Kernel implements HttpKernel
      */
     public function boot(): bool
     {
-        if (
-            version_compare(
-                version1: $current = PHP_VERSION,
-                version2: (string) $required = Application::MIN_PHP_VERSION,
-                operator: '<'
-            )
+        if (version_compare(
+            version1: $current = PHP_VERSION,
+            version2: (string) $required = Application::MIN_PHP_VERSION,
+            operator: '<'
+        )
         ) {
             die(
                 sprintf(
