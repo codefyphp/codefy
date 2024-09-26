@@ -25,7 +25,7 @@ it('should create role and return Role instance.', function () use ($resource) {
 
     $rbac = new Rbac($resource);
 
-    Assert::assertInstanceOf(Role::class, $rbac->addRole('role1', 'desc1'));
+    Assert::assertInstanceOf(Role::class, $rbac->addRole(name: 'role1', description: 'desc1'));
 });
 
 it('should create Permission and return Permission instance.', function () use ($resource) {
@@ -38,7 +38,7 @@ it('should create Permission and return Permission instance.', function () use (
 
     Assert::assertInstanceOf(
         Permission::class,
-        $rbac->addPermission('dashboard:view', 'Access dashboard.')
+        $rbac->addPermission(name: 'dashboard:view', description: 'Access dashboard.')
     );
 });
 
@@ -81,5 +81,5 @@ it('should get permission.', function () use ($resource) {
 
     $rbac = new Rbac($resource);
 
-    Assert::assertInstanceOf(Permission::class, $rbac->getPermission('perm1'));
+    Assert::assertInstanceOf(Permission::class, $rbac->getPermission(name: 'perm1'));
 });
