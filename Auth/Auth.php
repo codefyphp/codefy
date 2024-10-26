@@ -29,8 +29,8 @@ class Auth implements Sentinel
     public function authenticate(ServerRequestInterface $request): ?SessionEntity
     {
         $params   = $request->getParsedBody();
-        $identity = $this->configContainer->getConfigKey(key: 'auth.pdo.identity', default: 'username');
-        $password = $this->configContainer->getConfigKey(key: 'auth.pdo.password', default: 'password');
+        $identity = $this->configContainer->getConfigKey(key: 'auth.pdo.fields.identity', default: 'username');
+        $password = $this->configContainer->getConfigKey(key: 'auth.pdo.fields.password', default: 'password');
 
         if (! isset($params[$identity]) || ! isset($params[$password])) {
             return null;
