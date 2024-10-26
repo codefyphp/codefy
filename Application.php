@@ -26,7 +26,6 @@ use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 use ReflectionException;
 
-use function Codefy\Framework\Helpers\env;
 use function get_class;
 use function is_string;
 use function rtrim;
@@ -153,7 +152,7 @@ final class Application extends Container
         /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
-        $connection = env(key: 'DB_CONNECTION', default: 'default');
+        $connection = $config->getConfigKey(key: 'database.default');
 
         return DB::connection([
             'driver' => $config->getConfigKey(key: "database.connections.{$connection}.driver"),
@@ -167,7 +166,6 @@ final class Application extends Container
             'username' => $config->getConfigKey(key: "database.connections.{$connection}.username"),
             'password' => $config->getConfigKey(key: "database.connections.{$connection}.password"),
             'dbname' => $config->getConfigKey(key: "database.connections.{$connection}.dbname"),
-            'prefix' => $config->getConfigKey(key: "database.connections.{$connection}.prefix", default: ''),
         ]);
     }
 
@@ -177,15 +175,7 @@ final class Application extends Container
      */
     public function getDB(): ?OrmBuilder
     {
-        /** @var ConfigContainer $config */
-        $config = $this->make(name: 'codefy.config');
-
-        $connection = env(key: 'DB_CONNECTION', default: 'default');
-
-        return new OrmBuilder(
-            connection: $this->getDbConnection(),
-            tablePrefix: $config->getConfigKey(key: "database.connections.{$connection}.prefix", default: '')
-        );
+        return new OrmBuilder(connection: $this->getDbConnection());
     }
 
     /**
