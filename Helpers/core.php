@@ -14,6 +14,7 @@ use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
 use ReflectionException;
 
+use function is_int;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
@@ -173,8 +174,11 @@ function mail(string|array $to, string $subject, string $message, array $headers
                 $instance = $instance->withReplyTo(address: $content);
             }
 
-            if (! in_array(needle: $name, haystack: ['MIME-Version','to','cc','bcc','replyTo'], strict: true)) {
-                $instance = $instance->withCustomHeader(name: $name, value: $content);
+            if (
+                    ! in_array(needle: $name, haystack: ['MIME-Version','to','cc','bcc','replyTo'], strict: true)
+                    && !is_int($name)
+            ) {
+                $instance = $instance->withCustomHeader(name: (string) $name, value: $content);
             }
         }
     }
