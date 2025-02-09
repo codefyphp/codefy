@@ -14,6 +14,8 @@ use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
 use ReflectionException;
 
+use function dirname;
+use function getcwd;
 use function is_int;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_false__;
@@ -21,6 +23,7 @@ use function Qubus\Support\Helpers\is_null__;
 use function file_exists;
 use function in_array;
 use function is_string;
+use function realpath;
 use function rtrim;
 use function sprintf;
 use function substr_count;
@@ -68,20 +71,12 @@ function config(string $key, array|bool $set = false): mixed
  */
 function get_fresh_bootstrap(): mixed
 {
-    if (file_exists(filename: $file = __DIR__ . '/../../../../../bootstrap/app.php')) {
-        return require($file);
-    } elseif (file_exists(filename: $file = __DIR__ . '/../../../../bootstrap/app.php')) {
-        return require($file);
-    } elseif (file_exists(filename: $file = __DIR__ . '/../../bootstrap/app.php')) {
-        return require($file);
-    } elseif (
-        file_exists(
-            filename: $file = rtrim(string: (string) env(key: 'APP_BASE_PATH'), characters: '/') . '/bootstrap/app.php'
-        )
-    ) {
-        return require($file);
+    if(file_exists(filename: $file = getcwd() . '/bootstrap/app.php')) {
+        return require(realpath(path: $file));
+    } elseif(file_exists(filename: $file = dirname(path: getcwd()) . '/bootstrap/app.php')) {
+        return require(realpath(path: $file));
     } else {
-        return require(__DIR__ . '/../bootstrap/app.php');
+        return require(realpath(path: dirname(path: getcwd()) . '/bootstrap/app.php'));
     }
 }
 
