@@ -6,6 +6,7 @@ namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
+use Codefy\Framework\Scheduler\Processor\Callback;
 use Codefy\Framework\Scheduler\Schedule;
 use Cron\CronExpression;
 use Exception;
@@ -32,6 +33,7 @@ class ListCommand extends ConsoleCommand
         $table = new Table($this->output);
         $table->setHeaders([
             "Class",
+            "Command",
             "Expression",
             "Next Execution",
             "Run Only One Instance",
@@ -42,8 +44,14 @@ class ListCommand extends ConsoleCommand
         foreach ($jobs as $job) {
             $nextRun = new CronExpression($job->getExpression());
 
+            $fullCommand = $job->getCommand();
+            if($job instanceof Callback) {
+                $fullCommand = $job->__toString();
+            }
+
             $table->addRow([
                 get_class($job),
+                $fullCommand,
                 $nextRun->getExpression(),
                 $nextRun->getNextRunDate()->format(format: 'd F Y h:i A'),
                 $job->canRunOnlyOneInstance() ? 'yes' : 'no',

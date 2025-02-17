@@ -289,4 +289,14 @@ abstract class BaseProcessor implements Processor
 
         return $compiled;
     }
+
+    /**
+     * Returns the command.
+     *
+     * @return callable|string
+     */
+    public function getCommand(): callable|string
+    {
+        return $this->command;
+    }
 }
