@@ -232,23 +232,3 @@ function route(string $name, array $params = []): string
     $route = app('router');
     return $route->url($name, $params);
 }
-
-/**
- * Join the given paths together.
- *
- * @param  string|null  $basePath
- * @param  string  ...$paths
- * @return string
- */
-function join_paths(?string $basePath = null, ...$paths): string
-{
-    foreach ($paths as $index => $path) {
-        if (empty($path) && $path !== '0') {
-            unset($paths[$index]);
-        } else {
-            $paths[$index] = DIRECTORY_SEPARATOR . ltrim(string: $path, characters: DIRECTORY_SEPARATOR);
-        }
-    }
-
-    return $basePath . implode(array: $paths);
-}

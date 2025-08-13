@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Codefy\Framework\Helpers;
 
 use Codefy\Framework\Application;
+use Qubus\Exception\Data\TypeException;
+use Qubus\Exception\Exception;
 
+use function implode;
 use function ltrim;
 use function Qubus\Security\Helpers\__observer;
-use function Qubus\Support\Helpers\is_null__;
 use function str_replace;
 
 /**
@@ -16,10 +18,11 @@ use function str_replace;
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function base_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->base . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->base, $path);
 }
 
 /**
@@ -27,10 +30,11 @@ function base_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function src_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->path . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->base, $path);
 }
 
 /**
@@ -38,10 +42,11 @@ function src_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function bootstrap_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->bootstrap . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->bootstrap, $path);
 }
 
 /**
@@ -49,10 +54,11 @@ function bootstrap_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function config_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->config . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->config, $path);
 }
 
 /**
@@ -60,10 +66,11 @@ function config_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function database_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->database . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->database, $path);
 }
 
 /**
@@ -71,10 +78,11 @@ function database_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function locale_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->locale . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->locale, $path);
 }
 
 /**
@@ -82,10 +90,11 @@ function locale_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function public_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->public . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->public, $path);
 }
 
 /**
@@ -93,10 +102,11 @@ function public_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function storage_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->storage . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->storage, $path);
 }
 
 /**
@@ -104,10 +114,11 @@ function storage_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function resource_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->resource . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->resource, $path);
 }
 
 /**
@@ -115,10 +126,11 @@ function resource_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function view_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->view . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->view, $path);
 }
 
 /**
@@ -126,12 +138,16 @@ function view_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
+ * @throws TypeException
  */
 function vendor_path(?string $path = null): string
 {
-    return app(name: 'dir.path')->vendor . (!is_null__(var: $path) ? Application::DS . $path : '');
+    return join_paths(app(name: 'dir.path')->vendor, $path);
 }
 
+/**
+ * @throws Exception
+ */
 function router_basepath(string $path): string
 {
     $fullPath = str_replace(search: $_SERVER['DOCUMENT_ROOT'], replace: '', subject: $path);
@@ -139,4 +155,24 @@ function router_basepath(string $path): string
     $filteredPath = __observer()->filter->applyFilter('router.basepath', $fullPath);
 
     return ltrim(string: $filteredPath, characters: '/') . '/';
+}
+
+/**
+ * Join the given paths together.
+ *
+ * @param  string|null  $basePath
+ * @param  string  ...$paths
+ * @return string
+ */
+function join_paths(?string $basePath = null, ...$paths): string
+{
+    foreach ($paths as $index => $path) {
+        if (empty($path) && $path !== '0') {
+            unset($paths[$index]);
+        } else {
+            $paths[$index] = Application::DS . ltrim(string: $path, characters: Application::DS);
+        }
+    }
+
+    return $basePath . implode(separator: '', array: $paths);
 }
