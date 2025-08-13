@@ -7,6 +7,9 @@ namespace Codefy\Framework\View;
 use Fenom;
 use Fenom\Error\CompileException;
 use Fenom\Provider;
+use Qubus\Config\ConfigContainer;
+use Qubus\Exception\Data\TypeException;
+use Qubus\Exception\Exception;
 use Qubus\View\Renderer;
 
 use function Codefy\Framework\Helpers\config;
@@ -15,13 +18,17 @@ final class FenomView implements Renderer
 {
     private Fenom $fenom;
 
-    public function __construct()
+    /**
+     * @throws TypeException
+     * @throws Exception
+     */
+    public function __construct(protected ConfigContainer $configContainer)
     {
         $this->fenom = (new Fenom(
-            provider: new Provider(template_dir: config(key: 'view.path'))
+            provider: new Provider(template_dir: $this->configContainer->getConfigKey(key: 'view.path'))
         ))->setCompileDir(
-            dir: config(key: 'view.cache')
-        )->setOptions(options: config(key: 'view.options'));
+            dir: $this->configContainer->getConfigKey(key: 'view.cache')
+        )->setOptions(options: $this->configContainer->getConfigKey(key: 'view.options'));
     }
 
     /**

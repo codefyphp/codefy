@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Codefy\Framework\View;
 
 use Foil\Engine;
+use Qubus\Config\ConfigContainer;
+use Qubus\Exception\Data\TypeException;
+use Qubus\Exception\Exception;
 use Qubus\View\Renderer;
 
 use function Codefy\Framework\Helpers\config;
@@ -14,9 +17,13 @@ final class FoilView implements Renderer
 {
     private Engine $engine;
 
-    public function __construct()
+    /**
+     * @throws TypeException
+     * @throws Exception
+     */
+    public function __construct(protected ConfigContainer $configContainer)
     {
-        $this->engine = engine(config(key: 'view.options'));
+        $this->engine = engine($this->configContainer->getConfigKey(key: 'view.options'));
     }
 
     public function render(array|string $template, array $data = []): string|array
