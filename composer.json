@@ -21,6 +21,7 @@
         "qubus/exception": "^3",
         "qubus/expressive": "^1",
         "qubus/filesystem": "^3",
+        "qubus/inheritance": "^3",
         "qubus/injector": "^3",
         "qubus/mail": "^4",
         "qubus/router": "^3",
