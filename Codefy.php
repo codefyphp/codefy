@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Codefy\Framework;
 
-final class Codefy
+use stdClass;
+
+class Codefy extends stdClass
 {
     /**
      * Application instance.
      *
-     * @var Application $php
+     * @var ?Application $php
      */
-    public static Application $PHP;
+    public static ?Application $PHP = null;
 }
