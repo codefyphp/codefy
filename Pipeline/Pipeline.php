@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Codefy\Framework\Pipeline;
 
 use Closure;
-use Codefy\Framework\Support\Traits\ActionAware;
 use Codefy\Framework\Support\Traits\DbTransactionsAware;
 use Exception;
+use Qubus\Inheritance\ActionAware;
 use Qubus\Injector\ServiceContainer;
 use RuntimeException;
 use Throwable;
