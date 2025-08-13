@@ -10,8 +10,12 @@ use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Support\CodefyMailer;
 use Qubus\Config\Collection;
 use Qubus\Dbal\Connection;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
+use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
+use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
+use Qubus\Routing\Router;
 use ReflectionException;
 
 use function dirname;
@@ -24,7 +28,6 @@ use function file_exists;
 use function in_array;
 use function is_string;
 use function realpath;
-use function rtrim;
 use function sprintf;
 use function substr_count;
 use function ucfirst;
@@ -32,18 +35,23 @@ use function ucfirst;
 /**
  * Get the available container instance.
  *
- * @param  string|null  $name
- * @param  array  $args
+ * @param string|null $name
+ * @param array $args
  * @return mixed
+ * @throws TypeException
  */
 function app(?string $name = null, array $args = []): mixed
 {
-    /** @var Application $app */
-    $app = get_fresh_bootstrap();
+    $app = Application::getInstance();
+
+    if (is_null__($app)) {
+        $app = get_fresh_bootstrap();
+    }
 
     if (is_null__(var: $name)) {
         return $app->getContainer();
     }
+
     return $app->getContainer()->make($name, $args);
 }
 
@@ -53,6 +61,7 @@ function app(?string $name = null, array $args = []): mixed
  * @param string $key
  * @param array|bool $set
  * @return mixed
+ * @throws TypeException
  */
 function config(string $key, array|bool $set = false): mixed
 {
@@ -71,9 +80,9 @@ function config(string $key, array|bool $set = false): mixed
  */
 function get_fresh_bootstrap(): mixed
 {
-    if(file_exists(filename: $file = getcwd() . '/bootstrap/app.php')) {
+    if (file_exists(filename: $file = getcwd() . '/bootstrap/app.php')) {
         return require(realpath(path: $file));
-    } elseif(file_exists(filename: $file = dirname(path: getcwd()) . '/bootstrap/app.php')) {
+    } elseif (file_exists(filename: $file = dirname(path: getcwd()) . '/bootstrap/app.php')) {
         return require(realpath(path: $file));
     } else {
         return require(realpath(path: dirname(path: getcwd()) . '/bootstrap/app.php'));
@@ -179,7 +188,10 @@ function mail(string|array $to, string $subject, string $message, array $headers
     }
 
     // Set X-Mailer header
-    $xMailer = __observer()->filter->applyFilter('mail.xmailer', sprintf('CodefyPHP Framework %s', Application::APP_VERSION));
+    $xMailer = __observer()->filter->applyFilter(
+        'mail.xmailer',
+        sprintf('CodefyPHP Framework %s', Application::APP_VERSION)
+    );
     $instance = $instance->withXMailer(xmailer: $xMailer);
 
     // Set email charset
@@ -202,4 +214,41 @@ function mail(string|array $to, string $subject, string $message, array $headers
         FileLoggerFactory::getLogger()->error($e->getMessage(), ['function' => '\Codefy\Framework\Helpers\mail']);
         return false;
     }
+}
+
+/**
+ * Generate url's from named routes.
+ *
+ * @param string $name Name of the route.
+ * @param array $params Data parameters.
+ * @return string The url.
+ * @throws TypeException
+ * @throws NamedRouteNotFoundException
+ * @throws RouteParamFailedConstraintException
+ */
+function route(string $name, array $params = []): string
+{
+    /** @var Router $route */
+    $route = app('router');
+    return $route->url($name, $params);
+}
+
+/**
+ * Join the given paths together.
+ *
+ * @param  string|null  $basePath
+ * @param  string  ...$paths
+ * @return string
+ */
+function join_paths(?string $basePath = null, ...$paths): string
+{
+    foreach ($paths as $index => $path) {
+        if (empty($path) && $path !== '0') {
+            unset($paths[$index]);
+        } else {
+            $paths[$index] = DIRECTORY_SEPARATOR . ltrim(string: $path, characters: DIRECTORY_SEPARATOR);
+        }
+    }
+
+    return $basePath . implode(array: $paths);
 }
