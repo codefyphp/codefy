@@ -6,7 +6,11 @@ namespace Codefy\Framework;
 
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Factory\FileLoggerSmtpFactory;
+use Codefy\Framework\Pipeline\PipelineBuilder;
+use Codefy\Framework\Support\BasePathDetector;
+use Codefy\Framework\Support\LocalStorage;
 use Codefy\Framework\Support\Paths;
+use Dotenv\Dotenv;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,9 +18,14 @@ use Psr\Log\LoggerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
+use Qubus\EventDispatcher\ActionFilter\Observer;
+use Qubus\EventDispatcher\EventDispatcher;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
+use Qubus\Http\Cookies\Factory\HttpCookieFactory;
+use Qubus\Http\Session\Flash;
+use Qubus\Http\Session\PhpSession;
 use Qubus\Inheritance\InvokerAware;
 use Qubus\Injector\Config\InjectorFactory;
 use Qubus\Injector\Psr11\Container;
@@ -24,10 +33,17 @@ use Qubus\Injector\ServiceContainer;
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
+use Qubus\Mail\Mailer;
+use Qubus\Support\ArrayHelper;
+use Qubus\Support\Assets;
+use Qubus\Support\StringHelper;
 use ReflectionException;
 
+use function dirname;
 use function get_class;
 use function is_string;
+use function Qubus\Config\Helpers\env;
+use function Qubus\Support\Helpers\is_null__;
 use function rtrim;
 
 use const DIRECTORY_SEPARATOR;
@@ -35,25 +51,34 @@ use const DIRECTORY_SEPARATOR;
 /**
  * @property-read ServerRequestInterface $request
  * @property-read ResponseInterface $response
- * @property-read \Qubus\Support\Assets $assets
- * @property-read \Qubus\Mail\Mailer $mailer
- * @property-read \Qubus\Http\Session\PhpSession $session
- * @property-read \Qubus\Http\Session\Flash $flash
- * @property-read \Qubus\EventDispatcher\EventDispatcher $event
- * @property-read \Qubus\Http\Cookies\Factory\HttpCookieFactory $httpCookie
- * @property-read Support\LocalStorage $localStorage
- * @property-read \Qubus\Config\ConfigContainer $configContainer
+ * @property-read Assets $assets
+ * @property-read Mailer $mailer
+ * @property-read PhpSession $session
+ * @property-read Flash $flash
+ * @property-read EventDispatcher $event
+ * @property-read HttpCookieFactory $httpCookie
+ * @property-read LocalStorage $localStorage
+ * @property-read ConfigContainer $configContainer
+ * @property-read PipelineBuilder $pipeline
+ * @property-read Observer $hook
+ * @property-read StringHelper $string
+ * @property-read ArrayHelper $array
  */
 final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '2.0.9';
+    public const APP_VERSION = '2.1.0';
 
     public const MIN_PHP_VERSION = '8.2';
 
     public const DS = DIRECTORY_SEPARATOR;
 
+    /**
+     * The current globally available Application (if any).
+     *
+     * @var ?self
+     */
     public static ?Application $APP = null;
 
     public string $charset = 'UTF-8';
@@ -62,9 +87,9 @@ final class Application extends Container
 
     public string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers';
 
-    public static string $ROOT_PATH;
+    public static string $ROOT_PATH = '';
 
-    protected ?string $basePath = null;
+    protected string $basePath = '';
 
     protected ?string $appPath = null;
 
@@ -93,35 +118,66 @@ final class Application extends Container
             $this->withBasePath(basePath: $params['basePath']);
         }
 
-        self::$APP = $this;
-        self::$ROOT_PATH = $this->basePath;
-
         parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
+        $this->registerBaseBindings();
         $this->registerDefaultServiceProviders();
-
-        $this->init();
+        $this->registerPropertyBindings();
     }
 
-    private function init(): void
+    private function registerBaseBindings(): void
+    {
+        self::$APP = $this;
+        self::$ROOT_PATH = $this->basePath;
+        $this->alias(original: 'app', alias: self::class);
+    }
+
+    /**
+     * Dynamically created properties.
+     *
+     * @return void
+     * @throws TypeException
+     */
+    private function registerPropertyBindings(): void
     {
         $contracts = [
             'request' => ServerRequestInterface::class,
             'response' => ResponseInterface::class,
-            'assets' => \Qubus\Support\Assets::class,
-            'mailer' => \Qubus\Mail\Mailer::class,
-            'session' => \Qubus\Http\Session\PhpSession::class,
-            'flash' => \Qubus\Http\Session\Flash::class,
-            'event' => \Qubus\EventDispatcher\EventDispatcher::class,
-            'httpCookie' => \Qubus\Http\Cookies\Factory\HttpCookieFactory::class,
+            'assets' => Assets::class,
+            'mailer' => Mailer::class,
+            'session' => PhpSession::class,
+            'flash' => Flash::class,
+            'event' => EventDispatcher::class,
+            'httpCookie' => HttpCookieFactory::class,
             'localStorage' => Support\LocalStorage::class,
-            'configContainer' => \Qubus\Config\ConfigContainer::class,
+            'configContainer' => ConfigContainer::class,
+            'pipeline' => PipelineBuilder::class,
+            'hook' => Observer::class,
+            'string' => StringHelper::class,
+            'array' => ArrayHelper::class,
         ];
 
         foreach ($contracts as $property => $name) {
             $this->{$property} = $this->make(name: $name);
         }
 
-        Codefy::$PHP = $this;
+        Codefy::$PHP = $this::getInstance();
+    }
+
+    /**
+     * Infer the application's base directory
+     * from the environment and server.
+     *
+     * @return string|null
+     */
+    protected static function inferBasePath(): ?string
+    {
+        $basePath = (new BasePathDetector())->getBasePath();
+
+        return match (true) {
+            (env('APP_BASE_PATH') !== null && env('APP_BASE_PATH') !== false) => env('APP_BASE_PATH'),
+            $basePath !== '' => $basePath,
+            default => dirname(path: __FILE__, levels: 2),
+        };
     }
 
     /**
@@ -138,6 +194,7 @@ final class Application extends Container
      * FileLogger with SMTP support.
      *
      * @throws ReflectionException
+     * @throws TypeException
      */
     public static function getSmtpLogger(): LoggerInterface
     {
@@ -213,8 +270,10 @@ final class Application extends Container
      */
     protected function registerDefaultServiceProviders(): void
     {
-        foreach ([
+        foreach (
+            [
                 Providers\ConfigServiceProvider::class,
+                Providers\PdoServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
             ] as $serviceProvider
         ) {
@@ -228,11 +287,11 @@ final class Application extends Container
         $this->hasBeenBootstrapped = true;
 
         foreach ($bootstrappers as $bootstrapper) {
-            $this->make(name: \Qubus\EventDispatcher\EventDispatcher::class)->dispatch("bootstrapping.{$bootstrapper}");
+            $this->make(name: EventDispatcher::class)->dispatch("bootstrapping.{$bootstrapper}");
 
             $this->make(name: $bootstrapper)->bootstrap($this);
 
-            $this->make(name: \Qubus\EventDispatcher\EventDispatcher::class)->dispatch("bootstrapped.{$bootstrapper}");
+            $this->make(name: EventDispatcher::class)->dispatch("bootstrapped.{$bootstrapper}");
         }
     }
 
@@ -668,7 +727,7 @@ final class Application extends Container
 
     public function isRunningInConsole(): bool
     {
-        return php_sapi_name() === 'cli' || php_sapi_name() == 'phpdbg';
+        return in_array(php_sapi_name(), ['cli', 'phpdbg']);
     }
 
     /**
@@ -709,7 +768,7 @@ final class Application extends Container
                 \Qubus\Config\ConfigContainer::class => \Qubus\Config\Collection::class,
                 \Qubus\EventDispatcher\EventDispatcher::class => \Qubus\EventDispatcher\Dispatcher::class,
                 \Qubus\Mail\Mailer::class => \Codefy\Framework\Support\CodefyMailer::class,
-                'mailer' => \Qubus\Mail\Mailer::class,
+                'mailer' => Mailer::class,
                 'dir.path' => \Codefy\Framework\Support\Paths::class,
                 'container' => self::class,
                 'codefy' => self::class,
@@ -738,6 +797,21 @@ final class Application extends Container
         ];
     }
 
+    /**
+     * Load environment file(s).
+     *
+     * @return void
+     */
+    private function loadEnvironment(): void
+    {
+        $dotenv = Dotenv::createImmutable(
+            paths: $this->basePath(),
+            names: ['.env','.env.local','.env.staging','.env.development','.env.production'],
+            shortCircuit: false
+        );
+        $dotenv->safeLoad();
+    }
+
     public function __get(mixed $name)
     {
         return $this->param[$name];
@@ -764,5 +838,49 @@ final class Application extends Container
         $this->serviceProviders = [];
         $this->serviceProvidersRegistered = [];
         $this->baseMiddlewares = [];
+    }
+
+    /**
+     * Determine if the application is in production.
+     *
+     * @return bool
+     */
+    public function isProduction(): bool
+    {
+        return env(key: 'APP_ENV') === 'production';
+    }
+
+    /**
+     * Determine if the application is in development.
+     *
+     * @return bool
+     */
+    public function isDevelopment(): bool
+    {
+        return env(key: 'APP_ENV') === 'development';
+    }
+
+    /**
+     * Get the globally available instance of the container.
+     *
+     * @return static
+     * @throws TypeException
+     */
+    public static function getInstance(?string $path = null): self
+    {
+        $basePath = match (true) {
+            is_string($path) && $path !== '' => $path,
+            default => self::inferBasePath(),
+        };
+
+        if (is_null__(self::$APP)) {
+            self::$APP = new self(
+                params: [
+                    'basePath' => $basePath,
+                ]
+            );
+        }
+
+        return self::$APP;
     }
 }
