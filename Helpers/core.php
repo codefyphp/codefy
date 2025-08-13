@@ -38,20 +38,15 @@ use function ucfirst;
  * @param string|null $name
  * @param array $args
  * @return mixed
- * @throws TypeException
  */
 function app(?string $name = null, array $args = []): mixed
 {
-    $app = Application::getInstance();
-
-    if (is_null__($app)) {
-        $app = get_fresh_bootstrap();
-    }
+    /** @var Application $app */
+    $app = get_fresh_bootstrap();
 
     if (is_null__(var: $name)) {
         return $app->getContainer();
     }
-
     return $app->getContainer()->make($name, $args);
 }
 

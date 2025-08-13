@@ -68,7 +68,7 @@ final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '2.1.0';
+    public const APP_VERSION = '2.1.1';
 
     public const MIN_PHP_VERSION = '8.2';
 
@@ -869,6 +869,7 @@ final class Application extends Container
     public static function getInstance(?string $path = null): self
     {
         $basePath = match (true) {
+            self::$ROOT_PATH !== '' => self::$ROOT_PATH,
             is_string($path) && $path !== '' => $path,
             default => self::inferBasePath(),
         };
