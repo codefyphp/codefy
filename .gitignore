@@ -3,7 +3,7 @@
 files
 Scheduler/Tests
 storage
-vendor
+/vendor/
 .env
 .phpcs-cache
 .php-cs-fixer.cache
