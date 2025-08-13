@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Support;
 
+use Qubus\Exception\Exception;
+
 use function defined;
 use function password_hash;
 use function password_verify;
@@ -18,6 +20,7 @@ final class Password
      * Algorithm to use when hashing the password (i.e. PASSWORD_DEFAULT, PASSWORD_ARGON2ID).
      *
      * @return string Password algorithm.
+     * @throws Exception
      */
     private static function algorithm(): string
     {
@@ -38,6 +41,7 @@ final class Password
      * An associative array containing options.
      *
      * @return array Array of options.
+     * @throws Exception
      */
     private static function options(): array
     {
@@ -57,6 +61,7 @@ final class Password
      *
      * @param string $password Plain text password
      * @return string Hashed password.
+     * @throws Exception
      */
     public static function hash(string $password): string
     {
