@@ -22,31 +22,33 @@ final class UserSessionMiddleware implements MiddlewareInterface
     {
     }
 
-    /**
-     * @throws TypeException
-     * @throws Exception
-     * @throws \Exception
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $userDetails = $request->getAttribute(AuthenticationMiddleware::AUTH_ATTRIBUTE);
+        try {
+            $userDetails = $request->getAttribute(AuthenticationMiddleware::AUTH_ATTRIBUTE);
 
-        $this->sessionService::$options = [
-            'cookie-name' => 'USERSESSID',
-            'cookie-lifetime' => (int) $this->configContainer->getConfigKey(key: 'cookies.lifetime', default: 86400),
-        ];
-        $session = $this->sessionService->makeSession($request);
+            $this->sessionService::$options = [
+                'cookie-name' => 'USERSESSID',
+                'cookie-lifetime' => (int) $this->configContainer->getConfigKey(
+                    key: 'cookies.lifetime',
+                    default: 86400
+                ),
+            ];
+            $session = $this->sessionService->makeSession($request);
 
-        /** @var UserSession $user */
-        $user = $session->get(type: UserSession::class);
-        $user
-            ->withToken(token: $userDetails->token)
-            ->withRole(role: $userDetails->role);
+            /** @var UserSession $user */
+            $user = $session->get(type: UserSession::class);
+            $user
+                    ->withToken(token: $userDetails->token)
+                    ->withRole(role: $userDetails->role);
 
-        $request = $request->withAttribute(self::SESSION_ATTRIBUTE, $user);
+            $request = $request->withAttribute(self::SESSION_ATTRIBUTE, $user);
 
-        $response = $handler->handle($request);
+            $response = $handler->handle($request);
 
-        return $this->sessionService->commitSession($response, $session);
+            return $this->sessionService->commitSession($response, $session);
+        } catch (TypeException | \Exception $e) {
+            return $handler->handle($request);
+        }
     }
 }
