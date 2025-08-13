@@ -6,26 +6,43 @@ namespace Codefy\Framework\Providers;
 
 use Codefy\Framework\Support\CodefyServiceProvider;
 use PDO;
+use Qubus\Config\ConfigContainer;
+use Qubus\Exception\Exception;
 
-use function Codefy\Framework\Helpers\config;
 use function sprintf;
 
 final class PdoServiceProvider extends CodefyServiceProvider
 {
+    /**
+     * @throws Exception
+     */
     public function register(): void
     {
-        $default = config(key: 'database.default');
+        /** @var ConfigContainer $config */
+        $config = $this->codefy->make('codefy.config');
+
+        $default = $config->getConfigKey(key: 'database.default');
         $dsn = sprintf(
-            '%s:dbname=%s;host=%s',
-            config(key: "database.connections.{$default}.driver"),
-            config(key: "database.connections.{$default}.dbname"),
-            config(key: "database.connections.{$default}.host")
+            '%s:dbname=%s;host=%s;charset=utf8mb4',
+            $config->getConfigKey(key: "database.connections.{$default}.driver"),
+            $config->getConfigKey(key: "database.connections.{$default}.dbname"),
+            $config->getConfigKey(key: "database.connections.{$default}.host")
         );
 
         $this->codefy->define(name: PDO::class, args: [
             ':dsn' => $dsn,
-            ':username' => config(key: "database.connections.{$default}.username"),
-            ':passwd' => config(key: "database.connections.{$default}.password"),
+            ':username' => $config->getConfigKey(
+                key: "database.connections.{$default}.username"
+            ),
+            ':password' => $config->getConfigKey(
+                key: "database.connections.{$default}.password"
+            ),
+            ':options' => [
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_PERSISTENT => false,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+            ],
         ]);
 
         $this->codefy->share(nameOrInstance: PDO::class);
