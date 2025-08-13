@@ -8,5 +8,4 @@ use Qubus\Exception\Exception;
 
 class BadPropertyCallException extends Exception
 {
-
 }

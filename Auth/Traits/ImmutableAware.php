@@ -25,7 +25,8 @@ trait ImmutableAware
             );
         }
 
-        if ((isset($this->{$property}) && $this->{$property} === $value) ||
+        if (
+            (isset($this->{$property}) && $this->{$property} === $value) ||
             (!isset($this->{$property}) && $value === null)
         ) {
             return $this;
