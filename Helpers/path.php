@@ -18,7 +18,6 @@ use function str_replace;
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function base_path(?string $path = null): string
 {
@@ -30,7 +29,6 @@ function base_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function src_path(?string $path = null): string
 {
@@ -42,7 +40,6 @@ function src_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function bootstrap_path(?string $path = null): string
 {
@@ -54,7 +51,6 @@ function bootstrap_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function config_path(?string $path = null): string
 {
@@ -66,7 +62,6 @@ function config_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function database_path(?string $path = null): string
 {
@@ -78,7 +73,6 @@ function database_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function locale_path(?string $path = null): string
 {
@@ -90,7 +84,6 @@ function locale_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function public_path(?string $path = null): string
 {
@@ -102,7 +95,6 @@ function public_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function storage_path(?string $path = null): string
 {
@@ -114,7 +106,6 @@ function storage_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function resource_path(?string $path = null): string
 {
@@ -126,7 +117,6 @@ function resource_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function view_path(?string $path = null): string
 {
@@ -138,7 +128,6 @@ function view_path(?string $path = null): string
  *
  * @param string|null $path
  * @return string
- * @throws TypeException
  */
 function vendor_path(?string $path = null): string
 {
