@@ -217,7 +217,6 @@ function mail(string|array $to, string $subject, string $message, array $headers
  * @param string $name Name of the route.
  * @param array $params Data parameters.
  * @return string The url.
- * @throws TypeException
  * @throws NamedRouteNotFoundException
  * @throws RouteParamFailedConstraintException
  */
