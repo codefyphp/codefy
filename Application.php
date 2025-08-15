@@ -68,7 +68,7 @@ final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '2.1.1';
+    public const APP_VERSION = '2.1.2';
 
     public const MIN_PHP_VERSION = '8.2';
 
@@ -250,9 +250,9 @@ final class Application extends Container
      *
      * @param string $key The value or object name
      * @param callable $value The closure that defines the object
-     * @return void
+     * @return Application
      */
-    public function singleton(string $key, callable $value): void
+    public function singleton(string $key, callable $value): self
     {
         $this->proxy(name: $key, callableOrMethodStr: function ($c) use ($value) {
             static $object;
@@ -263,6 +263,8 @@ final class Application extends Container
 
             return $object;
         });
+
+        return $this;
     }
 
     /**
@@ -741,7 +743,7 @@ final class Application extends Container
         /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
-        if ($config->getConfigKey(key: 'app.debug') === 'true') {
+        if ($config->getConfigKey(key: 'app.debug') === true) {
             return true;
         }
 
