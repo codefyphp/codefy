@@ -19,7 +19,7 @@ use Throwable;
 
 use function Qubus\Inheritance\Helpers\tap;
 
-class ConsoleKernel
+class ConsoleKernel implements Kernel
 {
     protected ?Codex $codex = null;
 
@@ -61,6 +61,7 @@ class ConsoleKernel
     }
 
     /**
+     * {@inheritDoc}
      * @throws Exception
      */
     public function handle(InputInterface $input, ?OutputInterface $output = null): int
@@ -97,9 +98,7 @@ class ConsoleKernel
     }
 
     /**
-     * Gets all the commands registered.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function all(): array
     {
@@ -109,9 +108,7 @@ class ConsoleKernel
     }
 
     /**
-     * Get the output for the last run command.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function output(): string
     {
@@ -121,9 +118,7 @@ class ConsoleKernel
     }
 
     /**
-     * Bootstrap the console kernel.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function bootstrap(): void
     {
@@ -153,12 +148,7 @@ class ConsoleKernel
     }
 
     /**
-     * Run a Codex console command by name.
-     *
-     * @param string $command
-     * @param array $parameters
-     * @param bool|OutputInterface|null $outputBuffer
-     * @return int
+     * {@inheritDoc}
      *
      * @throws CommandNotFoundException
      * @throws Exception

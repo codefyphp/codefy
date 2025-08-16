@@ -11,7 +11,7 @@ use Codefy\Framework\tests\Pipes\PipeTwo;
 use PHPUnit\Framework\Assert;
 
 $app = require_once __DIR__ . '/../vendor/bootstrap.php';
-$pipeline = new Pipeline($app);
+$pipeline = new Pipeline($app->return());
 
 it('has exception handled by onFailure method.', function () use ($pipeline) {
     $result = $pipeline

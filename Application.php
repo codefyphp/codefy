@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework;
 
+use Codefy\Framework\Configuration\ApplicationBuilder;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Pipeline\PipelineBuilder;
@@ -68,7 +69,7 @@ final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '2.1.2';
+    public const APP_VERSION = '2.1.3';
 
     public const MIN_PHP_VERSION = '8.2';
 
@@ -106,6 +107,8 @@ final class Application extends Container
     protected array $bootingCallbacks = [];
 
     protected array $bootedCallbacks = [];
+
+    protected array $registeredCallbacks = [];
 
     private array $param = [];
 
@@ -349,7 +352,7 @@ final class Application extends Container
     }
 
     /**
-     * Register all configured service providers via config/app.php.
+     * Register all configured providers.
      *
      * @return void
      * @throws TypeException
@@ -365,6 +368,8 @@ final class Application extends Container
         foreach ($providers as $serviceProvider) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
         }
+
+        $this->fireAppCallbacks($this->registeredCallbacks);
     }
 
     /**
@@ -750,6 +755,17 @@ final class Application extends Container
         return false;
     }
 
+    /**
+     * Register a new callable function.
+     *
+     * @param callable $callback
+     * @return void
+     */
+    public function registered(callable $callback): void
+    {
+        $this->registeredCallbacks[] = $callback;
+    }
+
     protected function coreAliases(): array
     {
         return [
@@ -860,6 +876,17 @@ final class Application extends Container
     public function isDevelopment(): bool
     {
         return env(key: 'APP_ENV') === 'development';
+    }
+
+    /**
+     * Configure a new CodefyPHP application instance.
+     *
+     * @throws TypeException
+     */
+    public static function configure(array $config): ApplicationBuilder
+    {
+        return (new ApplicationBuilder(new self($config)))
+                ->withKernels();
     }
 
     /**
