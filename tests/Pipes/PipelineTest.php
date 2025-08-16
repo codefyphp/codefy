@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Codefy\Framework\Configuration\ApplicationBuilder;
 use Codefy\Framework\Pipeline\Pipeline;
 use Codefy\Framework\Pipeline\PipelineBuilder;
 use Codefy\Framework\tests\Pipes\PipeFour;
@@ -10,7 +11,9 @@ use Codefy\Framework\tests\Pipes\PipeThree;
 use Codefy\Framework\tests\Pipes\PipeTwo;
 use PHPUnit\Framework\Assert;
 
+/** @var ApplicationBuilder $app */
 $app = require_once __DIR__ . '/../vendor/bootstrap.php';
+
 $pipeline = new Pipeline($app->return());
 
 it('has exception handled by onFailure method.', function () use ($pipeline) {
