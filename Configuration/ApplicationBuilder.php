@@ -53,8 +53,12 @@ final class ApplicationBuilder
      * @param array $singletons
      * @return $this
      */
-    public function withSingletons(array $singletons): self
+    public function withSingletons(array $singletons = []): self
     {
+        if (empty($singletons)) {
+            return $this;
+        }
+
         $this->registered(function ($app) use ($singletons) {
             foreach ($singletons as $key => $callable) {
                 $app->singleton($key, $callable);
