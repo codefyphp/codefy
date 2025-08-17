@@ -29,15 +29,6 @@ final class ApplicationBuilder
             key: \Codefy\Framework\Console\Kernel::class,
             value: fn() => $this->app->make(name: \Codefy\Framework\Console\ConsoleKernel::class)
         );
-        /*$this->app->alias(
-            original: \Codefy\Framework\Contracts\Kernel::class,
-            alias: \Codefy\Framework\Http\Kernel::class
-        );
-
-        $this->app->alias(
-            original: \Codefy\Framework\Console\Kernel::class,
-            alias: \Codefy\Framework\Console\ConsoleKernel::class
-        );*/
 
         return $this;
     }
