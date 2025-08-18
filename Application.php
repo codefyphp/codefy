@@ -69,7 +69,7 @@ final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '2.1.4';
+    public const APP_VERSION = '2.1.5';
 
     public const MIN_PHP_VERSION = '8.2';
 
@@ -885,8 +885,7 @@ final class Application extends Container
      */
     public static function configure(array $config): ApplicationBuilder
     {
-        return (new ApplicationBuilder(new self($config)))
-                ->withKernels();
+        return new ApplicationBuilder(new self($config));
     }
 
     /**
