@@ -6,6 +6,7 @@ namespace Codefy\Framework\Configuration;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Bootstrap\RegisterProviders;
+use Qubus\Exception\Data\TypeException;
 
 final class ApplicationBuilder
 {
@@ -38,10 +39,15 @@ final class ApplicationBuilder
      *
      * @param array $providers
      * @return $this
+     * @throws TypeException
      */
     public function withProviders(array $providers = []): self
     {
         RegisterProviders::merge($providers);
+
+        foreach ($providers as $provider) {
+            $this->app->registerServiceProvider($provider);
+        }
 
         return $this;
     }
@@ -59,11 +65,9 @@ final class ApplicationBuilder
             return $this;
         }
 
-        $this->registered(function ($app) use ($singletons) {
-            foreach ($singletons as $key => $callable) {
-                $app->singleton($key, $callable);
-            }
-        });
+        foreach ($singletons as $key => $callable) {
+            $this->app->singleton($key, $callable);
+        };
 
         return $this;
     }
