@@ -40,12 +40,18 @@ final class RegisterProviders
         /** @var ConfigContainer $config */
         $config = $app->make(name: 'codefy.config');
 
-        $config->setConfigKey(
-            'app.providers',
+        $arrayMerge = array_unique(
             array_merge(
-                $config->getConfigKey('app.providers'),
-                self::$merge
+                self::$merge,
+                $config->getConfigKey(key: 'app.providers'),
             )
+        );
+
+        $config->setConfigKey(
+            'app',
+            [
+                'providers' => $arrayMerge,
+            ]
         );
     }
 
