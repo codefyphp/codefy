@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework\Contracts;
+namespace Codefy\Framework\Contracts\Http;
 
 use Codefy\Framework\Application;
 

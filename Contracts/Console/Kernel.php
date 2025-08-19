@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework\Console;
+namespace Codefy\Framework\Contracts\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -47,5 +47,5 @@ interface Kernel
      * @param bool|OutputInterface|null $outputBuffer
      * @return int
      */
-    public function call(string $command, array $parameters = [], bool|OutputInterface $outputBuffer = null): int;
+    public function call(string $command, array $parameters = [], bool|OutputInterface|null $outputBuffer = null): int;
 }
