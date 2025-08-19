@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http;
 
 use Codefy\Framework\Application;
-use Codefy\Framework\Contracts\Kernel as HttpKernel;
+use Codefy\Framework\Contracts\Http\Kernel as HttpKernel;
 use Exception;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Qubus\Error\Handlers\DebugErrorHandler;
@@ -17,6 +17,7 @@ use Qubus\Routing\Router;
 
 use function Codefy\Framework\Helpers\public_path;
 use function Codefy\Framework\Helpers\router_basepath;
+use function Qubus\Config\Helpers\env;
 use function Qubus\Security\Helpers\__observer;
 use function sprintf;
 use function version_compare;
@@ -56,7 +57,7 @@ final class Kernel implements HttpKernel
      */
     protected function dispatchRouter(): bool
     {
-        return (new HttpPublisher())->publish(
+        return new HttpPublisher()->publish(
             content: $this->router->match(
                 serverRequest: ServerRequest::fromGlobals(
                     server: $_SERVER,
@@ -116,7 +117,7 @@ final class Kernel implements HttpKernel
     protected function registerErrorHandler(): ErrorHandler
     {
         if ($this->codefy()->hasDebugModeEnabled()) {
-            return new DebugErrorHandler();
+            return new DebugErrorHandler(title: env(key: 'APP_NAME', default: 'CodefyPHP') . ' Error');
         }
 
         return new ProductionErrorHandler();
