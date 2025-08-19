@@ -69,11 +69,11 @@ final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '2.1.5';
+    public const string APP_VERSION = '3.0.0';
 
-    public const MIN_PHP_VERSION = '8.2';
+    public const string MIN_PHP_VERSION = '8.4';
 
-    public const DS = DIRECTORY_SEPARATOR;
+    public const string DS = DIRECTORY_SEPARATOR;
 
     /**
      * The current globally available Application (if any).
@@ -82,9 +82,21 @@ final class Application extends Container
      */
     public static ?Application $APP = null;
 
-    public string $charset = 'UTF-8';
+    // phpcs:disable
+    public string $charset {
+        get => $this->charset = 'UTF-8';
+        set(string $charset) {
+            $this->charset = $charset;
+        }
+    }
 
-    public string $locale = 'en';
+    public string $locale {
+        get => $this->locale = 'en';
+        set(string $locale) {
+            $this->locale = $locale;
+        }
+    }
+    // phpcs:enable
 
     public string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers';
 
@@ -174,10 +186,10 @@ final class Application extends Container
      */
     protected static function inferBasePath(): ?string
     {
-        $basePath = (new BasePathDetector())->getBasePath();
+        $basePath = new BasePathDetector()->getBasePath();
 
         return match (true) {
-            (env('APP_BASE_PATH') !== null && env('APP_BASE_PATH') !== false) => env('APP_BASE_PATH'),
+            (env(key: 'APP_BASE_PATH') !== null && env(key: 'APP_BASE_PATH') !== false) => env(key: 'APP_BASE_PATH'),
             $basePath !== '' => $basePath,
             default => dirname(path: __FILE__, levels: 2),
         };
@@ -186,7 +198,7 @@ final class Application extends Container
     /**
      * FileLogger
      *
-     * @throws ReflectionException
+     * @throws ReflectionException|TypeException
      */
     public static function getLogger(): LoggerInterface
     {
@@ -792,7 +804,6 @@ final class Application extends Container
                 'codefy' => self::class,
                 \Qubus\Routing\Interfaces\Collector::class => \Qubus\Routing\Route\RouteCollector::class,
                 'router' => \Qubus\Routing\Router::class,
-                \Codefy\Framework\Contracts\Kernel::class => \Codefy\Framework\Http\Kernel::class,
                 \Codefy\Framework\Contracts\RoutingController::class => \Codefy\Framework\Http\BaseController::class,
                 \League\Flysystem\FilesystemOperator::class => \Qubus\FileSystem\FileSystem::class,
                 \League\Flysystem\FilesystemAdapter::class => \Qubus\FileSystem\Adapter\LocalFlysystemAdapter::class,
@@ -818,12 +829,13 @@ final class Application extends Container
     /**
      * Load environment file(s).
      *
+     * @param string $basePath
      * @return void
      */
-    private function loadEnvironment(): void
+    private static function loadEnvironment(string $basePath): void
     {
         $dotenv = Dotenv::createImmutable(
-            paths: $this->basePath(),
+            paths: $basePath,
             names: ['.env','.env.local','.env.staging','.env.development','.env.production'],
             shortCircuit: false
         );
@@ -909,6 +921,8 @@ final class Application extends Container
                 ]
             );
         }
+
+        self::loadEnvironment($basePath);
 
         return self::$APP;
     }
