@@ -17,6 +17,7 @@ use Qubus\Routing\Router;
 
 use function Codefy\Framework\Helpers\public_path;
 use function Codefy\Framework\Helpers\router_basepath;
+use function Qubus\Config\Helpers\env;
 use function Qubus\Security\Helpers\__observer;
 use function sprintf;
 use function version_compare;
@@ -116,7 +117,7 @@ final class Kernel implements HttpKernel
     protected function registerErrorHandler(): ErrorHandler
     {
         if ($this->codefy()->hasDebugModeEnabled()) {
-            return new DebugErrorHandler();
+            return new DebugErrorHandler(title: env(key: 'APP_NAME', default: 'CodefyPHP') . ' Error');
         }
 
         return new ProductionErrorHandler();
