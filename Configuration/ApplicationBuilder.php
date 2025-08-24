@@ -22,12 +22,12 @@ final class ApplicationBuilder
     public function withKernels(): self
     {
         $this->app->singleton(
-            \Codefy\Framework\Contracts\Kernel::class,
+            \Codefy\Framework\Contracts\Http\Kernel::class,
             fn() => $this->app->make(name: \Codefy\Framework\Http\Kernel::class)
         );
 
         $this->app->singleton(
-            key: \Codefy\Framework\Console\Kernel::class,
+            key: \Codefy\Framework\Contracts\Console\Kernel::class,
             value: fn() => $this->app->make(name: \Codefy\Framework\Console\ConsoleKernel::class)
         );
 
