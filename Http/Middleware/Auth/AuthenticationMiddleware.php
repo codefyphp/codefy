@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework\Auth\Middleware;
+namespace Codefy\Framework\Http\Middleware\Auth;
 
 use Codefy\Framework\Auth\Sentinel;
 use Psr\Http\Message\ResponseInterface;

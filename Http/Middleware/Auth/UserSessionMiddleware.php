@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework\Auth\Middleware;
+namespace Codefy\Framework\Http\Middleware\Auth;
 
 use Codefy\Framework\Auth\UserSession;
+use Codefy\Framework\Http\Middleware\Auth\AuthenticationMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

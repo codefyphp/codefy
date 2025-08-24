@@ -10,19 +10,15 @@ use Qubus\Http\Factories\RedirectResponseFactory;
 use Qubus\Http\Session\SessionService;
 use Qubus\Routing\Controller\Controller;
 use Qubus\Routing\Router;
-use Qubus\View\Native\NativeLoader;
 use Qubus\View\Renderer;
-
-use function Codefy\Framework\Helpers\config;
 
 class BaseController extends Controller implements RoutingController
 {
     public function __construct(
         protected SessionService $sessionService,
         protected Router $router,
-        protected ?Renderer $view = null,
+        protected Renderer $view,
     ) {
-        $this->setView(view: $view ?? new NativeLoader(config('view.path')));
     }
 
     /**
