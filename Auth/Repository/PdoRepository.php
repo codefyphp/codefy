@@ -9,6 +9,7 @@ use PDO;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
 use Qubus\Http\Session\SessionEntity;
+use SensitiveParameter;
 
 use function sprintf;
 
@@ -22,7 +23,7 @@ class PdoRepository implements AuthUserRepository
      * @inheritdoc
      * @throws Exception
      */
-    public function authenticate(string $credential, #[\SensitiveParameter] ?string $password = null): ?SessionEntity
+    public function authenticate(string $credential, #[SensitiveParameter] ?string $password = null): ?SessionEntity
     {
         $fields = $this->config->getConfigKey(key: 'auth.pdo.fields');
 
@@ -50,7 +51,6 @@ class PdoRepository implements AuthUserRepository
         if (Password::verify(password: $password ?? '', hash: $passwordHash)) {
             $user = new class () implements SessionEntity {
                 public ?string $token = null;
-                public ?string $role = null;
 
                 public function withToken(?string $token = null): self
                 {
@@ -58,21 +58,14 @@ class PdoRepository implements AuthUserRepository
                     return $this;
                 }
 
-                public function withRole(?string $role = null): self
-                {
-                    $this->role = $role;
-                    return $this;
-                }
-
                 public function isEmpty(): bool
                 {
-                    return !empty($this->token) && !empty($this->role);
+                    return !empty($this->token);
                 }
             };
 
             $user
-                ->withToken($result->token)
-                ->withRole($result->role);
+                ->withToken($result->token);
 
             return $user;
         }

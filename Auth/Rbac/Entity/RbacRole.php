@@ -12,43 +12,32 @@ use function array_merge;
 class RbacRole implements Role
 {
     protected array $childrenNames = [];
-
     protected array $permissionNames = [];
 
+    //phpcs:disable
     /**
-     * @param string $roleName
+     * @param string $name
      * @param string $description
      * @param StorageResource $rbacStorageCollection
      */
     public function __construct(
-        protected string $roleName,
-        protected string $description,
+        public private(set) string $name {
+            get => $this->name;
+        },
+        public private(set) string $description {
+            get => $this->description;
+        },
         protected StorageResource $rbacStorageCollection
     ) {
     }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->roleName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
+    //phpcs:enable
 
     /**
      * @param Role $role
      */
     public function addChild(Role $role): void
     {
-        $this->childrenNames[$role->getName()] = true;
+        $this->childrenNames[$role->name] = true;
     }
 
     /**
@@ -77,7 +66,7 @@ class RbacRole implements Role
      */
     public function addPermission(Permission $permission): void
     {
-        $this->permissionNames[$permission->getName()] = true;
+        $this->permissionNames[$permission->name] = true;
     }
 
     /**
@@ -137,7 +126,7 @@ class RbacRole implements Role
     protected function collectChildrenPermissions(Permission $permission, &$result): void
     {
         foreach ($permission->getChildren() as $childPermission) {
-            $childPermissionName = $childPermission->getName();
+            $childPermissionName = $childPermission->name;
             if (!isset($result[$childPermissionName])) {
                 $result[$childPermissionName] = $childPermission;
                 $this->collectChildrenPermissions($childPermission, $result);

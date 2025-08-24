@@ -16,40 +16,30 @@ class RbacPermission implements Permission
     protected array $childrenNames = [];
     protected ?string $ruleClass = '';
 
+    //phpcs:disable
     /**
-     * @param string $permissionName
+     * @param string $name
      * @param string $description
      * @param StorageResource $rbacStorageCollection
      */
     public function __construct(
-        protected string $permissionName,
-        protected string $description,
+        public private(set) string $name {
+            get => $this->name;
+        },
+        public private(set) string $description {
+            get => $this->description;
+        },
         protected StorageResource $rbacStorageCollection
     ) {
     }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->permissionName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
+    //phpcs.enable
 
     /**
      * @param Permission $permission
      */
     public function addChild(Permission $permission): void
     {
-        $this->childrenNames[$permission->getName()] = true;
+        $this->childrenNames[$permission->name] = true;
     }
 
     /**

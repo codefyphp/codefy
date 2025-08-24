@@ -20,13 +20,17 @@ interface Guard
      */
     public function addPermission(string $name, string $description = ''): Permission;
 
-    public function getRoles(): array;
+    //phpcs:disable
+    public array $roles { &get; }
+    //phpcs:enable
 
     public function getRole(string $name): Role|null;
 
     public function deleteRole(string $name): void;
 
-    public function getPermissions(): array;
+    //phpcs:disable
+    public array $permissions { &get; }
+    //phpcs:enable
 
     public function getPermission(string $name): Permission|null;
 

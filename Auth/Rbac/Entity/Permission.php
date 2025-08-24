@@ -6,15 +6,11 @@ namespace Codefy\Framework\Auth\Rbac\Entity;
 
 interface Permission
 {
-    /**
-     * @return string
-     */
-    public function getName(): string;
+    //phpcs:disable
+    public string $name { get; }
 
-    /**
-     * @return string
-     */
-    public function getDescription(): string;
+    public string $description { get; }
+    //phpcs:enable
 
     /**
      * @param Permission $permission
@@ -45,5 +41,5 @@ interface Permission
      * @param array|null $params
      * @return bool
      */
-    public function checkAccess(array $params = null): bool;
+    public function checkAccess(?array $params = null): bool;
 }

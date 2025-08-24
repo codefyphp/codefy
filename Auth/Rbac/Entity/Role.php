@@ -8,15 +8,11 @@ use Codefy\Framework\Auth\Rbac\Exception\SentinelException;
 
 interface Role
 {
-    /**
-     * @return string
-     */
-    public function getName(): string;
+    //phpcs:disable
+    public string $name { get; }
 
-    /**
-     * @return string
-     */
-    public function getDescription(): string;
+    public string $description { get; }
+    //phpcs:enable
 
     /**
      * @param Role $role
@@ -55,5 +51,5 @@ interface Role
      * @return bool
      * @throws SentinelException
      */
-    public function checkAccess(string $permissionName, array $params = null): bool;
+    public function checkAccess(string $permissionName, ?array $params = null): bool;
 }

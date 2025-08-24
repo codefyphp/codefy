@@ -8,19 +8,11 @@ use Qubus\Http\Session\SessionEntity;
 
 class UserSession implements SessionEntity
 {
-    public ?string $token = null;
-
-    public ?string $role = null;
+    public private(set) ?string $token = null;
 
     public function withToken(?string $token = null): self
     {
         $this->token = $token;
-        return $this;
-    }
-
-    public function withRole(?string $role = null): self
-    {
-        $this->role = $role;
         return $this;
     }
 
@@ -29,14 +21,10 @@ class UserSession implements SessionEntity
         if (!empty($this->token)) {
             unset($this->token);
         }
-
-        if (!empty($this->role)) {
-            unset($this->role);
-        }
     }
 
     public function isEmpty(): bool
     {
-        return empty($this->token) && empty($this->role);
+        return empty($this->token);
     }
 }

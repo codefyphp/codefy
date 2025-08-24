@@ -15,7 +15,7 @@ use function Qubus\Support\Helpers\is_null__;
 
 final class AuthenticationMiddleware implements MiddlewareInterface
 {
-    public const AUTH_ATTRIBUTE = 'USERSESSION';
+    public const string AUTH_ATTRIBUTE = 'USERSESSION';
 
     public function __construct(protected Sentinel $auth)
     {

@@ -12,9 +12,15 @@ use Codefy\Framework\Auth\Rbac\Exception\SentinelException;
 
 abstract class BaseStorageResource implements StorageResource
 {
-    protected array $roles = [];
+    //phpcs:disable
+    public protected(set) array $roles = [] {
+        &get => $this->roles;
+    }
 
-    protected array $permissions = [];
+    public protected(set) array $permissions = [] {
+        &get => $this->permissions;
+    }
+    //phpcs:enable
 
     /**
      * @throws SentinelException
@@ -24,7 +30,7 @@ abstract class BaseStorageResource implements StorageResource
         if (isset($this->roles[$name])) {
             throw new SentinelException(message: 'Role already exists.');
         }
-        $role = new RbacRole(roleName: $name, description: $description, rbacStorageCollection: $this);
+        $role = new RbacRole(name: $name, description: $description, rbacStorageCollection: $this);
         $this->roles[$name] = $role;
         return $role;
     }
@@ -36,18 +42,13 @@ abstract class BaseStorageResource implements StorageResource
         }
 
         $permission = new RbacPermission(
-            permissionName: $name,
+            name: $name,
             description: $description,
             rbacStorageCollection: $this
         );
 
         $this->permissions[$name] = $permission;
         return $permission;
-    }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
     }
 
     public function getRole(string $name): ?Role
@@ -59,14 +60,9 @@ abstract class BaseStorageResource implements StorageResource
     {
         unset($this->roles[$name]);
 
-        foreach ($this->getRoles() as $role) {
+        foreach ($this->roles as $role) {
             $role->removeChild($name);
         }
-    }
-
-    public function getPermissions(): array
-    {
-        return $this->permissions;
     }
 
     public function getPermission(string $name): ?Permission
@@ -78,11 +74,11 @@ abstract class BaseStorageResource implements StorageResource
     {
         unset($this->permissions[$name]);
 
-        foreach ($this->getRoles() as $role) {
+        foreach ($this->roles as $role) {
             $role->removePermission(permissionName: $name);
         }
 
-        foreach ($this->getPermissions() as $permission) {
+        foreach ($this->permissions as $permission) {
             $permission->removeChild(permissionName: $name);
         }
     }

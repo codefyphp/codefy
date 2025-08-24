@@ -16,7 +16,7 @@ use Qubus\Http\Session\SessionService;
 
 final class UserSessionMiddleware implements MiddlewareInterface
 {
-    public const SESSION_ATTRIBUTE = 'USERSESSION';
+    public const string SESSION_ATTRIBUTE = 'USERSESSION';
 
     public function __construct(protected ConfigContainer $configContainer, protected SessionService $sessionService)
     {
@@ -39,8 +39,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
             /** @var UserSession $user */
             $user = $session->get(type: UserSession::class);
             $user
-                    ->withToken(token: $userDetails->token)
-                    ->withRole(role: $userDetails->role);
+                    ->withToken(token: $userDetails->token);
 
             $request = $request->withAttribute(self::SESSION_ATTRIBUTE, $user);
 

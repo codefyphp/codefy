@@ -34,13 +34,14 @@ class Rbac implements Guard
         return $this->storageResource->addPermission($name, $description);
     }
 
+    //phpcs:disable
     /**
      * @return Role[]
      */
-    public function getRoles(): array
-    {
-        return $this->storageResource->getRoles();
+    public array $roles = [] {
+        &get => $this->roles;
     }
+    //phpcs:enable
 
     /**
      * @param string $name
@@ -59,13 +60,14 @@ class Rbac implements Guard
         $this->storageResource->deleteRole($name);
     }
 
+    //phpcs:disable
     /**
      * @return Permission[]
      */
-    public function getPermissions(): array
-    {
-        return $this->storageResource->getPermissions();
+    public array $permissions = [] {
+        &get => $this->permissions;
     }
+    //phpcs:enable
 
     /**
      * @param string $name
