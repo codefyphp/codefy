@@ -40,7 +40,7 @@ trait ExpressionAware
      *
      * @var array<string,int>
      */
-    protected $fieldsPosition = [
+    protected array $fieldsPosition = [
         'minute'  => CronExpression::MINUTE,
         'hour'    => CronExpression::HOUR,
         'day'     => CronExpression::DAY,
@@ -66,19 +66,11 @@ trait ExpressionAware
      */
     public function filtersPass(): bool
     {
-        foreach ($this->filters as $callback) {
-            if (! $this->call($callback)) {
-                return false;
-            }
+        if (array_any($this->filters, fn($callback) => !$this->call($callback))) {
+            return false;
         }
 
-        foreach ($this->rejects as $callback) {
-            if ($this->call($callback)) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all($this->rejects, fn($callback) => !$this->call($callback));
     }
 
     /**
@@ -570,7 +562,7 @@ trait ExpressionAware
         $now = $now->setTimezone($timezone);
 
         if ($this->timezone) {
-            $taskTimeZone = is_object($this->timezone) && $this->timezone instanceof DateTimeZone
+            $taskTimeZone = $this->timezone instanceof DateTimeZone
             ? $this->timezone
                 ->getName()
             : $this->timezone;
@@ -591,14 +583,6 @@ trait ExpressionAware
      */
     protected function spliceIntoPosition(int $position, string $value): self
     {
-        /*if ($this->expression instanceof CronExpression) {
-            $expression = $this->expression->getExpression();
-        }
-
-        if (is_string($this->expression)) {
-            $expression = $this->expression;
-        }*/
-
         $expression = match (true) {
             $this->expression instanceof CronExpression => $this->expression->getExpression(),
             is_string($this->expression) => $this->expression

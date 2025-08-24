@@ -24,9 +24,9 @@ final class FenomView implements Renderer
      */
     public function __construct(protected ConfigContainer $configContainer)
     {
-        $this->fenom = (new Fenom(
+        $this->fenom = new Fenom(
             provider: new Provider(template_dir: $this->configContainer->getConfigKey(key: 'view.path'))
-        ))->setCompileDir(
+        )->setCompileDir(
             dir: $this->configContainer->getConfigKey(key: 'view.cache')
         )->setOptions(options: $this->configContainer->getConfigKey(key: 'view.options'));
     }

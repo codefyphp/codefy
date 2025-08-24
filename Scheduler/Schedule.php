@@ -27,20 +27,29 @@ class Schedule
 {
     use LiteralAware;
 
-    public const SUNDAY = 0;
-    public const MONDAY = 1;
-    public const TUESDAY = 2;
-    public const WEDNESDAY = 3;
-    public const THURSDAY = 4;
-    public const FRIDAY = 5;
-    public const SATURDAY = 6;
+    public const int SUNDAY = 0;
+    public const int MONDAY = 1;
+    public const int TUESDAY = 2;
+    public const int WEDNESDAY = 3;
+    public const int THURSDAY = 4;
+    public const int FRIDAY = 5;
+    public const int SATURDAY = 6;
 
+    //phpcs:disable
     /** @var Processor[] $processors */
-    protected array $processors = [];
+    protected array $processors = [] {
+        &get => $this->processors;
+    }
 
-    protected array $executedProcessors = [];
+    public protected(set) array $executedProcessors = [] {
+        &get => $this->executedProcessors;
+    }
 
-    protected array $failedProcessors = [];
+    public protected(set) array $failedProcessors = [] {
+        &get => $this->failedProcessors;
+    }
+
+    //phpcs:enable
 
     public function __construct(public readonly QubusDateTimeZone $timeZone, public readonly Locker $mutex)
     {
@@ -154,16 +163,6 @@ class Schedule
     }
 
     /**
-     * Get the executed processes.
-     *
-     * @return array
-     */
-    public function getExecutedProcessors(): array
-    {
-        return $this->executedProcessors;
-    }
-
-    /**
      * Push a failed process.
      */
     private function pushFailedProcessor(Processor $processor, Exception $ex): Processor
@@ -174,20 +173,12 @@ class Schedule
     }
 
     /**
-     * Get the failed jobs.
-     *
-     * @return FailedProcessor[]
-     */
-    public function getFailedProcessors(): array
-    {
-        return $this->failedProcessors;
-    }
-
-    /**
      * Compile the Task command.
      */
     protected function compileArguments(array $args = []): string
     {
+        $compiled = '';
+
         // Sanitize command arguments.
         foreach ($args as $key => $value) {
             $compiled = ' ' . escapeshellarg($key);

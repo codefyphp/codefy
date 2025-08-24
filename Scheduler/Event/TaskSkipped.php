@@ -8,5 +8,5 @@ use Qubus\EventDispatcher\BaseEvent;
 
 final class TaskSkipped extends BaseEvent
 {
-    public const EVENT_NAME = 'task.skipped';
+    public const string EVENT_NAME = 'task.skipped';
 }

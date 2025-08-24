@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Pipeline;
 
-use Codefy\Framework\Application;
+use Codefy\Framework\Codefy;
 
 final class PipelineBuilder
 {
@@ -24,6 +24,6 @@ final class PipelineBuilder
 
     public function build(): Chainable
     {
-        return new Pipeline(Application::$APP->getContainer());
+        return new Pipeline(Codefy::$PHP->getContainer());
     }
 }

@@ -57,8 +57,7 @@ trait ScheduleValidateAware
                 }
             }
 
-            $value = implode(',', $value);
-            return $value;
+            return implode(',', $value);
         }
 
         if (

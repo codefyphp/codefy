@@ -52,7 +52,7 @@ class DbalMigrationAdapter implements MigrationAdapter
             ->values(
                 [
                     'version' => $migration->getVersion(),
-                    'recorded_on' => (new QubusDateTimeImmutable(time: 'now'))->format(format: 'Y-m-d h:i:s')
+                    'recorded_on' => new QubusDateTimeImmutable(time: 'now')->format(format: 'Y-m-d h:i:s')
                 ]
             )->execute();
 

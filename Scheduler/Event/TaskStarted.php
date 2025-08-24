@@ -9,7 +9,7 @@ use Qubus\EventDispatcher\BaseEvent;
 
 final class TaskStarted extends BaseEvent
 {
-    public const EVENT_NAME = 'task.started';
+    public const string EVENT_NAME = 'task.started';
 
     private Task $task;
 

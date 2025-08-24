@@ -9,7 +9,7 @@ use Qubus\EventDispatcher\BaseEvent;
 
 final class TaskFailed extends BaseEvent
 {
-    public const EVENT_NAME = 'task.failed';
+    public const string EVENT_NAME = 'task.failed';
 
     private Task $task;
 
