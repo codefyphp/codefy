@@ -5,8 +5,13 @@ Scheduler/Tests
 storage
 /vendor/
 .env
+.env.development
+.env.local
+.env.production
+.env.staging
 .phpcs-cache
 .php-cs-fixer.cache
+.phpunit.cache
 .phpunit.result.cache
 composer.lock
 index.php
