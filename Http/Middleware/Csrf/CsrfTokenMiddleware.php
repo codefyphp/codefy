@@ -73,7 +73,6 @@ class CsrfTokenMiddleware implements MiddlewareInterface
                 $request = $request->withHeader($this->configContainer->getConfigKey(key: 'csrf.header'), $this->token);
             }
 
-            /** @var CsrfSession $csrf */
             $csrf = $session->get(CsrfSession::class);
             $csrf
                 ->withCsrfToken($this->token);
