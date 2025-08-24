@@ -19,7 +19,7 @@ class CsrfTokenMiddleware implements MiddlewareInterface
 {
     use CsrfTokenAware;
 
-    public const string SESSION_ATTRIBUTE = 'CSRF_TOKEN';
+    public const string CSRF_SESSION_ATTRIBUTE = 'CSRF_TOKEN';
 
     public static CsrfTokenMiddleware $current;
 
@@ -36,9 +36,9 @@ class CsrfTokenMiddleware implements MiddlewareInterface
     public static function getField(): string
     {
         return sprintf(
-                '<input type="hidden" name="%s" value="%s">' . "\n",
-                self::$current->getFieldAttr(),
-                self::$current->token
+            '<input type="hidden" name="%s" value="%s">' . "\n",
+            self::$current->getFieldAttr(),
+            self::$current->token
         );
     }
 
@@ -73,14 +73,15 @@ class CsrfTokenMiddleware implements MiddlewareInterface
                 $request = $request->withHeader($this->configContainer->getConfigKey(key: 'csrf.header'), $this->token);
             }
 
-            $response = $handler->handle(
-                $request
-                    ->withAttribute(self::SESSION_ATTRIBUTE, $this->token)
-            );
-
             /** @var CsrfSession $csrf */
             $csrf = $session->get(CsrfSession::class);
-            $csrf->withCsrfToken($this->token);
+            $csrf
+                ->withCsrfToken($this->token);
+
+            $response = $handler->handle(
+                $request
+                    ->withAttribute(self::CSRF_SESSION_ATTRIBUTE, $csrf)
+            );
 
             return $this->sessionService->commitSession($response, $session);
         } catch (\Exception $e) {

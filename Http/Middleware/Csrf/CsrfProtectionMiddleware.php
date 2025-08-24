@@ -78,15 +78,16 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
      */
     private function fetchToken(ServerRequestInterface $request): string
     {
-        $token = $request->getAttribute(CsrfTokenMiddleware::SESSION_ATTRIBUTE);
+        /** @var CsrfSession $csrf */
+        $csrf = $request->getAttribute(CsrfTokenMiddleware::CSRF_SESSION_ATTRIBUTE);
 
         // Ensure the token stored previously by the CsrfTokenMiddleware is present and has a valid format.
         if (
-                is_string($token) &&
-                ctype_alnum($token) &&
-                strlen($token) === $this->configContainer->getConfigKey(key: 'csrf.csrf_token_length')
+                is_string($csrf->csrfToken()) &&
+                ctype_alnum($csrf->csrfToken()) &&
+                strlen($csrf->csrfToken()) === $this->configContainer->getConfigKey(key: 'csrf.csrf_token_length')
         ) {
-            return $token;
+            return $csrf->csrfToken();
         }
 
         return '';

@@ -28,19 +28,21 @@ final class UserSessionMiddleware implements MiddlewareInterface
         try {
             $userDetails = $request->getAttribute(AuthenticationMiddleware::AUTH_ATTRIBUTE);
 
+            $expire = isset($request->getParsedBody()['rememberme'])
+            && $request->getParsedBody()['rememberme'] === 'yes'
+            ? $this->configContainer->getConfigKey(key: 'cookies.remember')
+            : $this->configContainer->getConfigKey(key: 'cookies.lifetime');
+
             $this->sessionService::$options = [
                 'cookie-name' => 'USERSESSID',
-                'cookie-lifetime' => (int) $this->configContainer->getConfigKey(
-                    key: 'cookies.lifetime',
-                    default: 86400
-                ),
+                'cookie-lifetime' => (int) $expire,
             ];
             $session = $this->sessionService->makeSession($request);
 
             /** @var UserSession $user */
             $user = $session->get(type: UserSession::class);
             $user
-                    ->withToken(token: $userDetails->token);
+                ->withToken(token: $userDetails->token);
 
             $request = $request->withAttribute(self::SESSION_ATTRIBUTE, $user);
 
