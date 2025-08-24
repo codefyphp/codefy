@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Csrf;
 
+use Qubus\Http\Session\SessionEntity;
+
 use function Qubus\Support\Helpers\is_null__;
 
-class CsrfSession
+class CsrfSession implements SessionEntity
 {
     public ?string $csrfToken = null;
 

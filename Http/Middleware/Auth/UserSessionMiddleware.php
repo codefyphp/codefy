@@ -39,6 +39,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
             ];
             $session = $this->sessionService->makeSession($request);
 
+            /** @var UserSession $user */
             $user = $session->get(type: UserSession::class);
             $user
                 ->withToken(token: $userDetails->token);
