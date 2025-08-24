@@ -11,15 +11,20 @@
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-pdo": "*",
-        "codefyphp/domain-driven-core": "^1",
+        "codefyphp/domain-driven-core": "^3.0.x-dev",
         "dragonmantank/cron-expression": "^3",
+        "guzzlehttp/guzzle": "^7.10",
+        "melbahja/seo": "^2.1",
+        "middlewares/cache": "^3.1",
+        "middlewares/referrer-spam": "^2.1",
+        "paragonie/csp-builder": "^3",
         "qubus/cache": "^3",
         "qubus/error": "^2",
         "qubus/event-dispatcher": "^3",
         "qubus/exception": "^3",
-        "qubus/expressive": "^1",
+        "qubus/expressive": "^2",
         "qubus/filesystem": "^3",
         "qubus/inheritance": "^3",
         "qubus/injector": "^3",
@@ -28,8 +33,8 @@
         "qubus/security": "^3",
         "qubus/support": "^3",
         "qubus/view": "^2",
-        "symfony/console": "^6",
-        "symfony/options-resolver": "^6"
+        "symfony/console": "^7",
+        "symfony/options-resolver": "^7"
     },
     "autoload": {
         "psr-4": {
@@ -37,20 +42,20 @@
         },
         "files": [
           "Helpers/core.php",
-          "Helpers/path.php"
+          "Helpers/path.php",
+          "Http/Middleware/Csrf/helpers.php"
         ]
     },
     "require-dev": {
         "fenom/fenom": "^3.0",
         "fenom/providers-collection": "^1.0",
         "foil/foil": "^0.6.7",
-        "mockery/mockery": "^1.3.1",
-        "pestphp/pest": "^1.22",
-        "pestphp/pest-plugin-mock": "^1.0",
-        "qubus/qubus-coding-standard": "^1.1"
+        "mockery/mockery": "^1",
+        "pestphp/pest": "^3",
+        "qubus/qubus-coding-standard": "^1"
     },
     "scripts": {
-        "test": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --min=50 --colors=always",
+        "test": "vendor/bin/pest",
         "cs-check": "phpcs",
         "cs-fix": "phpcbf"
     },
