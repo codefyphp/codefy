@@ -9,10 +9,14 @@ use Qubus\Exception\Exception;
 
 trait DbTransactionsAware
 {
+    //phpcs:disable
     /**
      * Determines whether class uses transaction.
      */
-    protected bool $useTransaction = false;
+    protected bool $useTransaction = false {
+        get => $this->useTransaction;
+    }
+    //phpcs:enable
 
     /**
      * Enable transaction in pipeline.
@@ -35,7 +39,7 @@ trait DbTransactionsAware
             return;
         }
 
-        Codefy::$PHP->getDB()->beginTransaction();
+        Codefy::$PHP->getDb()->beginTransaction();
     }
 
     /**
@@ -49,7 +53,7 @@ trait DbTransactionsAware
             return;
         }
 
-        Codefy::$PHP->getDB()->commit();
+        Codefy::$PHP->getDb()->commit();
     }
 
     /**
@@ -63,6 +67,6 @@ trait DbTransactionsAware
             return;
         }
 
-        Codefy::$PHP->getDB()->rollback();
+        Codefy::$PHP->getDb()->rollback();
     }
 }

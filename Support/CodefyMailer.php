@@ -9,5 +9,5 @@ use Qubus\Mail\QubusMailer;
 
 final class CodefyMailer extends QubusMailer
 {
-    public const VERSION = Application::APP_VERSION;
+    public const string VERSION = Application::APP_VERSION;
 }
