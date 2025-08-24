@@ -9,6 +9,7 @@ use Codefy\Framework\Factory\Traits\FileLoggerAware;
 use Codefy\Framework\Support\LocalStorage;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Log\Logger;
 use Qubus\Log\Loggers\FileLogger;
 use ReflectionException;
@@ -19,7 +20,7 @@ class FileLoggerFactory implements LoggerFactory
     use FileLoggerAware;
 
     /**
-     * @throws ReflectionException
+     * @throws ReflectionException|TypeException
      */
     public static function getLogger(): LoggerInterface
     {
