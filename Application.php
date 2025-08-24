@@ -23,7 +23,7 @@ use Qubus\EventDispatcher\ActionFilter\Observer;
 use Qubus\EventDispatcher\EventDispatcher;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
-use Qubus\Expressive\OrmBuilder;
+use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 use Qubus\Http\Session\Flash;
 use Qubus\Http\Session\PhpSession;
@@ -46,30 +46,15 @@ use function is_string;
 use function Qubus\Config\Helpers\env;
 use function Qubus\Support\Helpers\is_null__;
 use function rtrim;
+use function strtoupper;
 
 use const DIRECTORY_SEPARATOR;
 
-/**
- * @property-read ServerRequestInterface $request
- * @property-read ResponseInterface $response
- * @property-read Assets $assets
- * @property-read Mailer $mailer
- * @property-read PhpSession $session
- * @property-read Flash $flash
- * @property-read EventDispatcher $event
- * @property-read HttpCookieFactory $httpCookie
- * @property-read LocalStorage $localStorage
- * @property-read ConfigContainer $configContainer
- * @property-read PipelineBuilder $pipeline
- * @property-read Observer $hook
- * @property-read StringHelper $string
- * @property-read ArrayHelper $array
- */
 final class Application extends Container
 {
     use InvokerAware;
 
-    public const string APP_VERSION = '3.0.0';
+    public const string APP_VERSION = '3.0.0-beta.1';
 
     public const string MIN_PHP_VERSION = '8.4';
 
@@ -83,46 +68,65 @@ final class Application extends Container
     public static ?Application $APP = null;
 
     // phpcs:disable
-    public string $charset {
-        get => $this->charset = 'UTF-8';
-        set(string $charset) {
-            $this->charset = $charset;
-        }
+    public string $charset = 'UTF-8' {
+        get => $this->charset;
+        set(string $charset) => $this->charset = strtoupper($charset);
     }
 
-    public string $locale {
-        get => $this->locale = 'en';
-        set(string $locale) {
-            $this->locale = $locale;
-        }
+    public string $locale = 'en' {
+        get => $this->locale;
+        set(string $locale) => $this->locale = $locale;
     }
-    // phpcs:enable
 
-    public string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers';
+    public string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers' {
+        get => $this->controllerNamespace;
+        set(string $controllerNamespace) => $this->controllerNamespace = $controllerNamespace;
+    }
 
     public static string $ROOT_PATH = '';
 
-    protected string $basePath = '';
+    private string $basePath = '' {
+        get => $this->basePath;
+    }
 
-    protected ?string $appPath = null;
+    private ?string $appPath = null {
+        get => $this->appPath;
+    }
 
-    protected array $serviceProviders = [];
+    private array $serviceProviders = [] {
+        &get => $this->serviceProviders;
+    }
 
-    protected array $serviceProvidersRegistered = [];
+    private array $serviceProvidersRegistered = [] {
+        &get => $this->serviceProvidersRegistered;
+    }
 
-    protected array $baseMiddlewares = [];
+    private array $baseMiddlewares = [] {
+        &get => $this->baseMiddlewares;
+    }
 
-    private bool $booted = false;
+    public private(set) bool $booted = false;
 
-    private bool $hasBeenBootstrapped = false;
+    private bool $hasBeenBootstrapped = false {
+        get => $this->hasBeenBootstrapped;
+    }
 
-    protected array $bootingCallbacks = [];
+    private array $bootingCallbacks = [] {
+        &get => $this->bootingCallbacks;
+    }
 
-    protected array $bootedCallbacks = [];
+    private array $bootedCallbacks = [] {
+        &get => $this->bootedCallbacks;
+    }
 
-    protected array $registeredCallbacks = [];
+    private array $registeredCallbacks = [] {
+        &get => $this->registeredCallbacks;
+    }
 
-    private array $param = [];
+    private array $param = [] {
+        &get => $this->param;
+    }
+    // phpcs:enable
 
     /**
      * @throws TypeException
@@ -136,7 +140,8 @@ final class Application extends Container
         parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
         $this->registerBaseBindings();
         $this->registerDefaultServiceProviders();
-        $this->registerPropertyBindings();
+
+        Codefy::$PHP = $this::getInstance();
     }
 
     private function registerBaseBindings(): void
@@ -144,38 +149,6 @@ final class Application extends Container
         self::$APP = $this;
         self::$ROOT_PATH = $this->basePath;
         $this->alias(original: 'app', alias: self::class);
-    }
-
-    /**
-     * Dynamically created properties.
-     *
-     * @return void
-     * @throws TypeException
-     */
-    private function registerPropertyBindings(): void
-    {
-        $contracts = [
-            'request' => ServerRequestInterface::class,
-            'response' => ResponseInterface::class,
-            'assets' => Assets::class,
-            'mailer' => Mailer::class,
-            'session' => PhpSession::class,
-            'flash' => Flash::class,
-            'event' => EventDispatcher::class,
-            'httpCookie' => HttpCookieFactory::class,
-            'localStorage' => Support\LocalStorage::class,
-            'configContainer' => ConfigContainer::class,
-            'pipeline' => PipelineBuilder::class,
-            'hook' => Observer::class,
-            'string' => StringHelper::class,
-            'array' => ArrayHelper::class,
-        ];
-
-        foreach ($contracts as $property => $name) {
-            $this->{$property} = $this->make(name: $name);
-        }
-
-        Codefy::$PHP = $this::getInstance();
     }
 
     /**
@@ -242,12 +215,12 @@ final class Application extends Container
     }
 
     /**
-     * @return OrmBuilder|null
+     * @return QueryBuilder|null
      * @throws Exception
      */
-    public function getDB(): ?OrmBuilder
+    public function getDb(): ?QueryBuilder
     {
-        return new OrmBuilder(connection: $this->getDbConnection());
+        return QueryBuilder::fromInstance($this->getDbConnection());
     }
 
     /**
@@ -317,14 +290,9 @@ final class Application extends Container
         return $this;
     }
 
-    public function setBoot(bool $bool = false): void
+    public function setBooted(bool $bool = false): void
     {
         $this->booted = $bool;
-    }
-
-    public function isBooted(): bool
-    {
-        return $this->booted;
     }
 
     /**
@@ -410,7 +378,7 @@ final class Application extends Container
         $this->markServiceProviderAsRegistered(registered: $registered, serviceProvider: $serviceProvider);
         // If application is booted, call the boot method on the service provider
         // if it exists.
-        if ($this->isBooted()) {
+        if ($this->booted) {
             $this->bootServiceProvider(provider: $serviceProvider);
         };
 
@@ -508,7 +476,7 @@ final class Application extends Container
     {
         $this->bootedCallbacks[] = $callback;
 
-        if ($this->isBooted()) {
+        if ($this->booted) {
             $callback($this);
         }
     }
@@ -723,11 +691,6 @@ final class Application extends Container
         $this->controllerNamespace = $namespace;
     }
 
-    public function getControllerNamespace(): string
-    {
-        return $this->controllerNamespace;
-    }
-
     public function withBaseMiddlewares(array $middlewares): void
     {
         $this->baseMiddlewares = $middlewares;
@@ -926,4 +889,62 @@ final class Application extends Container
 
         return self::$APP;
     }
+
+    //phpcs:disable
+    public private(set) ServerRequestInterface $request {
+        get => $this->request ?? $this->make(name: ServerRequestInterface::class);
+    }
+
+    public private(set) ResponseInterface $response {
+        get => $this->response ?? $this->make(name: ResponseInterface::class);
+    }
+
+    public private(set) Assets $assets {
+        get => $this->assets ?? $this->make(name: Assets::class);
+    }
+
+    public private(set) Mailer $mailer {
+        get => $this->mailer ?? $this->make(name: Mailer::class);
+    }
+
+    public private(set) PhpSession $session {
+        get => $this->session ?? $this->make(name: PhpSession::class);
+    }
+
+    public private(set) Flash $flash {
+        get => $this->flash ?? $this->make(name: Flash::class);
+    }
+
+    public private(set) EventDispatcher $event {
+        get => $this->event ?? $this->make(name: EventDispatcher::class);
+    }
+
+    public private(set) HttpCookieFactory $httpCookie {
+        get => $this->httpCookie ?? $this->make(name: HttpCookieFactory::class);
+    }
+
+    public private(set) LocalStorage $localStorage {
+        get => $this->localStorage ?? $this->make(name: LocalStorage::class);
+    }
+
+    public private(set) ConfigContainer $configContainer {
+        get => $this->configContainer ?? $this->make(name: ConfigContainer::class);
+    }
+
+    public private(set) PipelineBuilder $pipeline {
+        get => $this->pipeline ?? $this->make(name: PipelineBuilder::class);
+    }
+
+    public private(set) Observer $hook {
+        get => $this->hook ?? $this->make(name: Observer::class);
+    }
+
+    public private(set) StringHelper $string {
+        get => $this->string ?? $this->make(name: StringHelper::class);
+    }
+
+    public private(set) ArrayHelper $array {
+        get => $this->array ?? $this->make(name: ArrayHelper::class);
+    }
+    //phpcs:disable
 }
