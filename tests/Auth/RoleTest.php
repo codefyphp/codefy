@@ -8,33 +8,33 @@ $resource = Mockery::mock(\Codefy\Framework\Auth\Rbac\Resource\StorageResource::
 
 it('should create Role instance.', function () use ($resource) {
     $role = new \Codefy\Framework\Auth\Rbac\Entity\RbacRole(
-        roleName: 'admin',
+        name: 'admin',
         description: 'Super administrator.',
         rbacStorageCollection: $resource
     );
 
-    Assert::assertEquals('admin', $role->getName());
+    Assert::assertEquals('admin', $role->name);
 });
 
 it('should get the role description', function () use ($resource) {
     $role = new \Codefy\Framework\Auth\Rbac\Entity\RbacRole(
-        roleName: 'admin',
+        name: 'admin',
         description: 'Super administrator.',
         rbacStorageCollection: $resource
     );
 
-    Assert::assertEquals('Super administrator.', $role->getDescription());
+    Assert::assertEquals('Super administrator.', $role->description);
 });
 
 it('should get children.', function () use ($resource) {
     $role2 = new \Codefy\Framework\Auth\Rbac\Entity\RbacRole(
-        roleName: 'role2',
+        name: 'role2',
         description: 'desc2',
         rbacStorageCollection: $resource
     );
 
     $role3 = new \Codefy\Framework\Auth\Rbac\Entity\RbacRole(
-        roleName: 'role3',
+        name: 'role3',
         description: 'desc3',
         rbacStorageCollection: $resource
     );
@@ -43,7 +43,7 @@ it('should get children.', function () use ($resource) {
     $resource->shouldReceive('getRole')->andReturn($role2, $role3);
 
     $role1 = new \Codefy\Framework\Auth\Rbac\Entity\RbacRole(
-        roleName: 'role1',
+        name: 'role1',
         description: 'desc1',
         rbacStorageCollection: $resource
     );
@@ -66,13 +66,13 @@ it('should get children.', function () use ($resource) {
 
 it('should get permissions.', function () use ($resource) {
     $permission2 = new \Codefy\Framework\Auth\Rbac\Entity\RbacPermission(
-        permissionName: 'perm:perm2',
+        name: 'perm:perm2',
         description: 'desc2',
         rbacStorageCollection: $resource
     );
 
     $permission3 = new \Codefy\Framework\Auth\Rbac\Entity\RbacPermission(
-        permissionName: 'perm:perm3',
+        name: 'perm:perm3',
         description: 'desc3',
         rbacStorageCollection: $resource
     );
@@ -81,7 +81,7 @@ it('should get permissions.', function () use ($resource) {
     $resource->shouldReceive('getPermission')->andReturn($permission2, $permission3);
 
     $role1 = new \Codefy\Framework\Auth\Rbac\Entity\RbacRole(
-        roleName: 'admin',
+        name: 'admin',
         description: 'Super administrator.',
         rbacStorageCollection: $resource
     );

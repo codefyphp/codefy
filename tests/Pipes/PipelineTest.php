@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Codefy\Framework\Application;
+use Codefy\Framework\Codefy;
 use Codefy\Framework\Pipeline\Pipeline;
 use Codefy\Framework\Pipeline\PipelineBuilder;
 use Codefy\Framework\tests\Pipes\PipeFour;
@@ -86,8 +87,7 @@ it('accepts class strings as pipe.', function () use ($pipeline) {
 });
 
 it('accepts invokable class as pipe using PipelineBuilder.', function () {
-    $builder = (new PipelineBuilder())
-        ->pipe(new PipeFour());
+    $builder = Codefy::$PHP->pipeline->pipe(new PipeFour());
 
     $pipeline = $builder->build();
 

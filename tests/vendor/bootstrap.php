@@ -5,6 +5,7 @@ use Qubus\Exception\Data\TypeException;
 
 try {
     return Application::configure(['basePath' => dirname(path: __DIR__, levels: 2)])
+            ->withKernels()
             ->withProviders([
                 // fill in custom providers
             ])

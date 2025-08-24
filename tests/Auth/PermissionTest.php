@@ -6,35 +6,35 @@ use PHPUnit\Framework\Assert;
 
 $resource = Mockery::mock(\Codefy\Framework\Auth\Rbac\Resource\StorageResource::class);
 
-it('should get the permission name.', function () use ($resource) {
+it(description: 'should get the permission name.', closure: function () use ($resource) {
     $permission = new \Codefy\Framework\Auth\Rbac\Entity\RbacPermission(
-        permissionName: 'admin:edit',
+        name: 'admin:edit',
         description: 'Edit permission.',
         rbacStorageCollection: $resource
     );
 
-    Assert::assertEquals('admin:edit', $permission->getName());
+    Assert::assertEquals('admin:edit', $permission->name);
 });
 
-it('should get permission description.', function () use ($resource) {
+it(description: 'should get permission description.', closure: function () use ($resource) {
     $permission = new \Codefy\Framework\Auth\Rbac\Entity\RbacPermission(
-        permissionName: 'admin:edit',
+        name: 'admin:edit',
         description: 'Edit permission.',
         rbacStorageCollection: $resource
     );
 
-    Assert::assertEquals('Edit permission.', $permission->getDescription());
+    Assert::assertEquals('Edit permission.', $permission->description);
 });
 
-it('should get children.', function () use ($resource) {
+it(description: 'should get children.', closure: function () use ($resource) {
     $permission2 = new \Codefy\Framework\Auth\Rbac\Entity\RbacPermission(
-        permissionName: 'perm:perm2',
+        name: 'perm:perm2',
         description: 'desc2',
         rbacStorageCollection: $resource
     );
 
     $permission3 = new \Codefy\Framework\Auth\Rbac\Entity\RbacPermission(
-        permissionName: 'perm:perm3',
+        name: 'perm:perm3',
         description: 'desc3',
         rbacStorageCollection: $resource
     );
@@ -43,7 +43,7 @@ it('should get children.', function () use ($resource) {
     $resource->shouldReceive('getPermission')->andReturn($permission2, $permission3);
 
     $permission1 = new \Codefy\Framework\Auth\Rbac\Entity\RbacPermission(
-        permissionName: 'perm:perm1',
+        name: 'perm:perm1',
         description: 'desc1',
         rbacStorageCollection: $resource
     );
@@ -64,9 +64,9 @@ it('should get children.', function () use ($resource) {
     Assert::assertEquals(['perm:perm3' => $permission3], $permission1->getChildren());
 });
 
-it('should set and get rule.', function () use ($resource) {
+it(description: 'should set and get rule.', closure: function () use ($resource) {
     $permission = new \Codefy\Framework\Auth\Rbac\Entity\RbacPermission(
-        permissionName: 'admin:edit',
+        name: 'admin:edit',
         description: 'Edit permission.',
         rbacStorageCollection: $resource
     );
