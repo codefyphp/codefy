@@ -24,7 +24,7 @@ final class RegisterProviders
      */
     public function bootstrap(Application $app): void
     {
-        $this->mergeAdditionalProviders($app);
+        $this->mergeAdditionalProviders(app: $app);
         $app->registerConfiguredServiceProviders();
     }
 
@@ -41,18 +41,13 @@ final class RegisterProviders
         $config = $app->make(name: 'codefy.config');
 
         $arrayMerge = array_unique(
-            array_merge(
+            array: array_merge(
                 self::$merge,
                 $config->getConfigKey(key: 'app.providers'),
             )
         );
 
-        $config->setConfigKey(
-            'app',
-            [
-                'providers' => $arrayMerge,
-            ]
-        );
+        $config->setConfigKey(key: 'app', value: ['providers' => $arrayMerge,]);
     }
 
     /**
@@ -65,9 +60,9 @@ final class RegisterProviders
     public static function merge(array $providers): void
     {
         self::$merge = array_values(
-            array_filter(
-                array_unique(
-                    array_merge(self::$merge, $providers)
+            array: array_filter(
+                array: array_unique(
+                    array: array_merge(self::$merge, $providers)
                 )
             )
         );
