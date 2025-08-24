@@ -6,6 +6,7 @@ namespace Codefy\Framework\Console;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleApplication as Codex;
+use Codefy\Framework\Contracts\Console\Kernel;
 use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Scheduler\Mutex\Locker;
 use Codefy\Framework\Scheduler\Schedule;
@@ -153,7 +154,7 @@ class ConsoleKernel implements Kernel
      * @throws CommandNotFoundException
      * @throws Exception
      */
-    public function call(string $command, array $parameters = [], bool|OutputInterface $outputBuffer = null): int
+    public function call(string $command, array $parameters = [], bool|OutputInterface|null $outputBuffer = null): int
     {
         $this->bootstrap();
 

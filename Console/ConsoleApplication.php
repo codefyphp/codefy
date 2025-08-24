@@ -24,7 +24,7 @@ class ConsoleApplication extends SymfonyApplication
         parent::__construct(name: 'CodefyPHP', version: Application::APP_VERSION);
     }
 
-    public function run(InputInterface $input = null, OutputInterface $output = null): int
+    public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
     {
         $this->getCommandName(input: $input = $input ?: new ArgvInput());
 
@@ -34,7 +34,7 @@ class ConsoleApplication extends SymfonyApplication
     /**
      * @throws Exception
      */
-    public function call($command, array $parameters = [], bool|OutputInterface $outputBuffer = null): int
+    public function call($command, array $parameters = [], bool|OutputInterface|null $outputBuffer = null): int
     {
         [$command, $input] = $this->parseCommand(command: $command, parameters: $parameters);
 
@@ -75,7 +75,7 @@ class ConsoleApplication extends SymfonyApplication
      */
     public function output(): string
     {
-        return $this->lastOutput && method_exists($this->lastOutput, 'fetch')
+        return $this->lastOutput && method_exists(object_or_class: $this->lastOutput, method: 'fetch')
         ? $this->lastOutput->fetch()
         : '';
     }
