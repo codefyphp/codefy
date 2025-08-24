@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Helpers;
 
 use Codefy\Framework\Application;
-use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 
 use function implode;

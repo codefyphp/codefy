@@ -12,7 +12,7 @@ use Qubus\Config\Collection;
 use Qubus\Dbal\Connection;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
-use Qubus\Expressive\OrmBuilder;
+use Qubus\Expressive\QueryBuilder;
 use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
 use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
 use Qubus\Routing\Router;
@@ -97,14 +97,14 @@ function env(string $key, mixed $default = null): mixed
 }
 
 /**
- * OrmBuilder database instance.
+ * QueryBuilder database instance.
  *
- * @return OrmBuilder|null
+ * @return QueryBuilder|null
  * @throws Exception
  */
-function orm(): ?OrmBuilder
+function orm(): ?QueryBuilder
 {
-    return Codefy::$PHP->getDB();
+    return Codefy::$PHP->getDb();
 }
 
 /**
