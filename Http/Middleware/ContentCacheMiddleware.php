@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware;
 
-use Closure;
 use Cocur\Slugify\Slugify;
 use Codefy\Framework\Support\RequestMethod;
 use Laminas\Diactoros\Stream;
@@ -81,7 +80,7 @@ class ContentCacheMiddleware implements MiddlewareInterface
     /**
      * @throws InvalidArgumentException
      */
-    protected function getCachedResponseHtml(RequestInterface $request): ResponseInterface
+    protected function getCachedResponseHtml(RequestInterface $request)
     {
         return $this
             ->cacheItemPool
@@ -89,19 +88,14 @@ class ContentCacheMiddleware implements MiddlewareInterface
             ->get();
     }
 
-    protected function createCacheItem(string $key): Closure
-    {
-        return fn() => new Item($key);
-    }
-
     protected function cacheResponse(RequestInterface $request, ResponseInterface $response): void
     {
-        $cacheItem = $this->createCacheItem($this->createKeyFromRequest($request));
+        $cacheItem = new Item($this->createKeyFromRequest($request));
         $value = (string) $response->getBody();
         $cacheItem->set($value);
 
         $this
-                ->cacheItemPool
-                ->save($cacheItem);
+            ->cacheItemPool
+            ->save($cacheItem);
     }
 }
