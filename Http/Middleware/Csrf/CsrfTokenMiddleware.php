@@ -23,7 +23,7 @@ class CsrfTokenMiddleware implements MiddlewareInterface
 
     public static CsrfTokenMiddleware $current;
 
-    private string $token;
+    private ?string $token = null;
 
     public function __construct(protected ConfigContainer $configContainer, protected SessionService $sessionService)
     {
