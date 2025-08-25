@@ -86,8 +86,8 @@ class RateLimiter
                 $interval = $item->get();
             } else {
                 $interval = new Interval($condition->ttl);
-                $item->expiresAfter($condition->ttl);
             }
+            $item->expiresAfter($condition->ttl);
             $interval->count += $count;
             $item->set($interval);
             $this->cache->save($item);
