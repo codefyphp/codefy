@@ -68,11 +68,25 @@ final class Application extends Container
     public static ?Application $APP = null;
 
     // phpcs:disable
+    /**
+     * @var string Charset of the application.
+     */
     public string $charset = 'UTF-8' {
         get => $this->charset;
         set(string $charset) => $this->charset = strtoupper($charset);
     }
 
+    /**
+     * @var string Language of the application.
+     */
+    public string $language = 'en-US' {
+        get => $this->language;
+        set(string $language) => $this->language = strtoupper($language);
+    }
+
+    /**
+     * @var string Language of translatable source files.
+     */
     public string $locale = 'en' {
         get => $this->locale;
         set(string $locale) => $this->locale = $locale;
