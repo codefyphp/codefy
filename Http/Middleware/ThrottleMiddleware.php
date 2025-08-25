@@ -48,7 +48,7 @@ class ThrottleMiddleware implements MiddlewareInterface
                     $condition->limit,
                     $condition->ttl
                 ),
-                status: 404
+                status: 401
             );
         }
 
