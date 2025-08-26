@@ -102,7 +102,7 @@ function env(string $key, mixed $default = null): mixed
  * @return QueryBuilder|null
  * @throws Exception
  */
-function orm(): ?QueryBuilder
+function qb(): ?QueryBuilder
 {
     return Codefy::$PHP->getDb();
 }
