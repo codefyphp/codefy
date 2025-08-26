@@ -46,7 +46,8 @@ class RateLimiter
             } elseif ($condition->ttl > $existing->ttl && $condition->limit <= $existing->limit) {
                 throw new LogicException(
                     sprintf(
-                        'Adding a condition of ttl %d, limit %d will never be reached due to existing condition of ttl %d, limit %d',
+                        'Adding a condition of ttl %d, limit %d will never be 
+                        reached due to existing condition of ttl %d, limit %d',
                         $condition->ttl,
                         $condition->limit,
                         $existing->ttl,
@@ -56,7 +57,8 @@ class RateLimiter
             } elseif ($condition->ttl < $existing->ttl && $condition->limit >= $existing->limit) {
                 throw new LogicException(
                     sprintf(
-                        'Adding a condition of ttl %d, limit %d will prevent existing condition of ttl %d, limit %d from being reached',
+                        'Adding a condition of ttl %d, limit %d will prevent existing 
+                        condition of ttl %d, limit %d from being reached',
                         $condition->ttl,
                         $condition->limit,
                         $existing->ttl,
