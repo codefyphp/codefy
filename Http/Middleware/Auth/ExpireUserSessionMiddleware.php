@@ -38,7 +38,7 @@ class ExpireUserSessionMiddleware implements MiddlewareInterface
         /** @var UserSession $user */
         $user = $session->get(type: UserSession::class);
         $user
-                ->withToken(token: null);
+            ->clear();
 
         $request = $request->withAttribute(self::SESSION_ATTRIBUTE, $session);
 
