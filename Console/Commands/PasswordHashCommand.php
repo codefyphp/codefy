@@ -7,6 +7,7 @@ namespace Codefy\Framework\Console\Commands;
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
 use Codefy\Framework\Support\Password;
+use Qubus\Exception\Exception;
 
 class PasswordHashCommand extends ConsoleCommand
 {
@@ -23,6 +24,9 @@ class PasswordHashCommand extends ConsoleCommand
         parent::__construct(codefy: $codefy);
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(): int
     {
         $password = $this->getArgument(key: 'password');

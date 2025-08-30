@@ -40,7 +40,7 @@ final class Kernel implements HttpKernel
     {
         $this->codefy = $codefy;
         $this->router = $router;
-        $this->router->setBaseMiddleware(middleware: $this->codefy->getBaseMiddlewares());
+        $this->router->baseMiddleware =  $this->codefy->getBaseMiddlewares();
         $this->router->setBasePath(basePath: router_basepath(path: public_path()));
         $this->router->setDefaultNamespace(namespace: $this->codefy->controllerNamespace);
 
@@ -92,7 +92,7 @@ final class Kernel implements HttpKernel
             );
         }
 
-        __observer()->action->doAction('kernel.preboot');
+        __observer()->action->doAction('kernel_preboot');
 
         if (! $this->codefy->hasBeenBootstrapped()) {
             $this->codefy->bootstrapWith(bootstrappers: $this->bootstrappers());

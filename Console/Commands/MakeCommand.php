@@ -15,7 +15,7 @@ class MakeCommand extends ConsoleCommand
 {
     use MakeCommandAware;
 
-    protected const FILE_EXTENSION = '.php';
+    protected const string FILE_EXTENSION = '.php';
 
     private array $errors = [];
 
@@ -30,7 +30,7 @@ class MakeCommand extends ConsoleCommand
     protected string $help = 'Command which can generate a class file from a set of predefined stub files';
 
     /* @var array Stubs */
-    private const STUBS = [
+    private const array STUBS = [
         'controller'    => 'App\Infrastructure\Http\Controllers',
         'repository'    => 'App\Infrastructure\Persistence\Repository',
         'provider'      => 'App\Infrastructure\Providers',

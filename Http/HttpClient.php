@@ -13,14 +13,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use Qubus\EventDispatcher\ActionFilter\Action;
-use Qubus\EventDispatcher\ActionFilter\Filter;
 use Qubus\Exception\Exception;
 use Qubus\Http\Factories\JsonResponseFactory;
-use ReflectionException;
 
 use function func_get_args;
 use function parse_url;
+use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_null__;
 
 class HttpClient extends GuzzleClient
@@ -76,7 +74,6 @@ class HttpClient extends GuzzleClient
      *
      * @throws InvalidArgumentException
      * @throws Exception
-     * @throws ReflectionException
      * @throws \Exception|GuzzleException
      */
     #[\Override] public function request(string $method, $uri = '', array $options = []): ResponseInterface
@@ -91,7 +88,7 @@ class HttpClient extends GuzzleClient
              *                                     Default: 10.
              * @param string|UriInterface $uri     URI object or string.
              */
-                'timeout'              => Filter::getInstance()->applyFilter('http.request.timeout', 10, $uri),
+                'timeout'              => __observer()->filter->applyFilter('http.request.timeout', 10, $uri),
             /**
              * Filters the number of seconds to wait while trying to connect to a server.
              * Use 0 to wait indefinitely. Default: 10.
@@ -99,7 +96,7 @@ class HttpClient extends GuzzleClient
              * @param float               $connect_timeout Number of seconds. Default: 10.
              * @param string|UriInterface $uri             URI object or string.
              */
-                'connect_timeout'      => Filter::getInstance()->applyFilter('http.request.connect.timeout', 10, $uri),
+                'connect_timeout'      => __observer()->filter->applyFilter('http.request.connect.timeout', 10, $uri),
             /**
              * Filters the version of the HTTP protocol used in a request.
              *
@@ -107,14 +104,14 @@ class HttpClient extends GuzzleClient
              *                                     Default: 1.1.
              * @param string|UriInterface $uri     URI object or string.
              */
-                'version'              => Filter::getInstance()->applyFilter('http.request.version', '1.1', $uri),
+                'version'              => __observer()->filter->applyFilter('http.request.version', '1.1', $uri),
             /**
              * Filters the redirect behavior of a request.
              *
              * @param bool|array          $allow_redirects The redirect behavior of a request. Default: false.
              * @param string|UriInterface $uri             URI object or string.
              */
-                'allow_redirects '     => Filter::getInstance()->applyFilter(
+                'allow_redirects '     => __observer()->filter->applyFilter(
                     'http.request.allow.redirects',
                     false,
                     $uri
@@ -142,7 +139,7 @@ class HttpClient extends GuzzleClient
          * @param array               $parsedArgs An array of HTTP request arguments.
          * @param string|UriInterface $uri        URI object or string.
          */
-        $parsedArgs = Filter::getInstance()->applyFilter('http.request.args', $parsedArgs, $uri);
+        $parsedArgs = __observer()->filter->applyFilter('http.request.args', $parsedArgs, $uri);
         /**
          * Filters the preemptive return value of an HTTP request.
          *
@@ -159,7 +156,7 @@ class HttpClient extends GuzzleClient
          * @param array                        $parsedArgs HTTP request arguments.
          * @param string|UriInterface          $uri        URI object or string.
          */
-        $preempt = Filter::getInstance()->applyFilter('http.request.preempt', false, $parsedArgs, $uri);
+        $preempt = __observer()->filter->applyFilter('http.request.preempt', false, $parsedArgs, $uri);
         if ($preempt !== false) {
             return $preempt;
         }
@@ -167,7 +164,7 @@ class HttpClient extends GuzzleClient
         $parsedUrl = parse_url($uri);
         if (empty($parsedUrl) || !isset($parsedUrl['scheme'])) {
             $response = new HttpRequestError('A valid URL was not provided.', 405);
-            Action::getInstance()->doAction(
+            __observer()->action->doAction(
                 'http_api_debug',
                 $response,
                 'response',
@@ -193,7 +190,7 @@ class HttpClient extends GuzzleClient
          * @param array                   $parsedArgs HTTP request arguments.
          * @param string|UriInterface     $uri        URI object or string.
          */
-        Action::getInstance()->doAction(
+        __observer()->action->doAction(
             'http_api_debug',
             $response,
             'response',
@@ -209,6 +206,6 @@ class HttpClient extends GuzzleClient
          * @param array               $parsedArgs HTTP request arguments.
          * @param string|UriInterface $uri        URI object or string.
          */
-        return Filter::getInstance()->applyFilter('http.request.response', $response, $parsedArgs, $uri);
+        return __observer()->filter->applyFilter('http.request.response', $response, $parsedArgs, $uri);
     }
 }

@@ -26,9 +26,9 @@ class Stack
 
     protected array $options = [];
 
-    protected EventDispatcher $dispatcher;
+    protected ?EventDispatcher $dispatcher = null;
 
-    protected Locker $mutex;
+    protected ?Locker $mutex = null;
 
     protected DateTimeZone|string|null $timezone;
 

@@ -13,17 +13,13 @@ final class FailedProcessor
      * @param Processor $processor
      * @param Exception $exception
      */
-    public function __construct(private Processor $processor, private Exception $exception)
-    {
-    }
-
-    public function getProcessor(): Processor
-    {
-        return $this->processor;
-    }
-
-    public function getException(): Exception
-    {
-        return $this->exception;
+    public function __construct(
+        private Processor $processor {
+            get => $this->processor;
+        },
+        private Exception $exception {
+            get => $this->exception;
+        }
+    ) {
     }
 }
