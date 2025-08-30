@@ -30,7 +30,7 @@ none of the features and instead use the interfaces to build your own implementa
 </h3>
 
 ## 📍 Requirement
-- PHP 8.2+
+- PHP 8.4+
 - Additional constraints based on which components are used.
 
 ## 🏆 Highlighted Features
