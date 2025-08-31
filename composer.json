@@ -22,7 +22,7 @@
         "paragonie/csp-builder": "^3",
         "php-debugbar/php-debugbar": "^2.2",
         "qubus/cache": "^4",
-        "qubus/error": "^2",
+        "qubus/error": "^3",
         "qubus/event-dispatcher": "^3",
         "qubus/exception": "^3",
         "qubus/expressive": "^2",
@@ -32,8 +32,8 @@
         "qubus/mail": "^4",
         "qubus/router": "^4",
         "qubus/security": "^3",
-        "qubus/support": "^3",
-        "qubus/view": "^2",
+        "qubus/support": "^4",
+        "qubus/view": "^3",
         "symfony/console": "^7",
         "symfony/options-resolver": "^7"
     },
@@ -52,8 +52,7 @@
         "fenom/providers-collection": "^1.0",
         "foil/foil": "^0.6.7",
         "mockery/mockery": "^1",
-        "pestphp/pest": "^3",
-        "qubus/qubus-coding-standard": "^1"
+        "qubus/qubus-coding-standard": "^2"
     },
     "scripts": {
         "test": "vendor/bin/pest",
