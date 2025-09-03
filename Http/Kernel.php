@@ -8,11 +8,11 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Contracts\Http\Kernel as HttpKernel;
 use Exception;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Error\Handlers\DebugErrorHandler;
 use Qubus\Error\Handlers\ErrorHandler;
 use Qubus\Error\Handlers\ProductionErrorHandler;
-use Qubus\Http\HttpPublisher;
-use Qubus\Http\ServerRequestFactory as ServerRequest;
 use Qubus\Routing\Router;
 
 use function Codefy\Framework\Helpers\public_path;
@@ -55,26 +55,25 @@ final class Kernel implements HttpKernel
     /**
      * @throws Exception
      */
-    protected function dispatchRouter(): bool
+    protected function dispatchRouter(ServerRequestInterface $request): void
     {
-        return new HttpPublisher()->publish(
-            content: $this->router->match(
-                serverRequest: ServerRequest::fromGlobals(
-                    server: $_SERVER,
-                    query: $_GET,
-                    body: $_POST,
-                    cookies: $_COOKIE,
-                    files: $_FILES
-                )
-            ),
-            emitter: new SapiEmitter()
-        );
+        $response = $this->handle($request);
+        $responseEmitter = new SapiEmitter();
+        $responseEmitter->emit($response);
     }
 
     /**
      * @throws Exception
      */
-    public function boot(): bool
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->router->match(serverRequest: $request);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function boot(ServerRequestInterface $request): void
     {
         if (
             version_compare(
@@ -98,7 +97,7 @@ final class Kernel implements HttpKernel
             $this->codefy->bootstrapWith(bootstrappers: $this->bootstrappers());
         }
 
-        return $this->dispatchRouter();
+        $this->dispatchRouter($request);
     }
 
     /**

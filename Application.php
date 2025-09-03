@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework;
 
 use Codefy\Framework\Configuration\ApplicationBuilder;
+use Codefy\Framework\Contracts\Http\Kernel;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Pipeline\PipelineBuilder;
@@ -25,6 +26,8 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
+use Qubus\Http\ServerRequestFactory;
+use Qubus\Http\ServerRequestFactory as ServerRequest;
 use Qubus\Http\Session\Flash;
 use Qubus\Http\Session\PhpSession;
 use Qubus\Inheritance\InvokerAware;
@@ -801,6 +804,25 @@ final class Application extends Container
                 => \Qubus\Http\Session\Storage\SimpleCacheStorage::class,
             ]
         ];
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        /** @var Kernel $kernel */
+        $kernel = $this->make(name: Kernel::class);
+
+        return $kernel->handle($request);
+    }
+
+    public function handleRequest(ServerRequestInterface $request): void
+    {
+        /** @var Kernel $kernel */
+        $kernel = $this->make(name: Kernel::class);
+
+        $kernel->boot($request);
     }
 
     /**
