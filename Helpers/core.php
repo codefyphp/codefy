@@ -13,9 +13,6 @@ use Qubus\Dbal\Connection;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\QueryBuilder;
-use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
-use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
-use Qubus\Routing\Router;
 use ReflectionException;
 
 use function dirname;
@@ -185,7 +182,7 @@ function mail(string|array $to, string $subject, string $message, array $headers
     // Set X-Mailer header
     $xMailer = __observer()->filter->applyFilter(
         'mail.xmailer',
-        sprintf('CodefyPHP Framework %s', Application::APP_VERSION)
+        sprintf('CodefyPHP Framework %s', Codefy::$PHP::APP_VERSION)
     );
     $instance = $instance->withXMailer(xmailer: $xMailer);
 
@@ -209,20 +206,4 @@ function mail(string|array $to, string $subject, string $message, array $headers
         FileLoggerFactory::getLogger()->error($e->getMessage(), ['function' => '\Codefy\Framework\Helpers\mail']);
         return false;
     }
-}
-
-/**
- * Generate url's from named routes.
- *
- * @param string $name Name of the route.
- * @param array $params Data parameters.
- * @return string The url.
- * @throws NamedRouteNotFoundException
- * @throws RouteParamFailedConstraintException
- */
-function route(string $name, array $params = []): string
-{
-    /** @var Router $route */
-    $route = app('router');
-    return $route->url($name, $params);
 }
