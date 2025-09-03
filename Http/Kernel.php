@@ -6,8 +6,8 @@ namespace Codefy\Framework\Http;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Contracts\Http\Kernel as HttpKernel;
+use Codefy\Framework\Http\Emitter\SapiEmitter;
 use Exception;
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Error\Handlers\DebugErrorHandler;
