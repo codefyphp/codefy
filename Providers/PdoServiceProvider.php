@@ -29,21 +29,23 @@ final class PdoServiceProvider extends CodefyServiceProvider
             $config->getConfigKey(key: "database.connections.{$default}.host")
         );
 
-        $this->codefy->define(name: PDO::class, args: [
-            ':dsn' => $dsn,
-            ':username' => $config->getConfigKey(
-                key: "database.connections.{$default}.username"
-            ),
-            ':password' => $config->getConfigKey(
-                key: "database.connections.{$default}.password"
-            ),
-            ':options' => [
-                PDO::ATTR_EMULATE_PREPARES => false,
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_PERSISTENT => false,
-                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
-            ],
-        ]);
+        $this->codefy->singleton(PDO::class, function () use ($dsn, $config, $default) {
+            return new PDO(
+                $dsn,
+                $config->getConfigKey(
+                    key: "database.connections.{$default}.username"
+                ),
+                $config->getConfigKey(
+                    key: "database.connections.{$default}.password"
+                ),
+                [
+                    PDO::ATTR_EMULATE_PREPARES => $config->getConfigKey(key: "database.pdo.emulate_prepares"),
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_PERSISTENT => $config->getConfigKey(key: "database.pdo.persistent"),
+                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+                ]
+            );
+        });
 
         $this->codefy->share(nameOrInstance: PDO::class);
     }
