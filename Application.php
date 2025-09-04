@@ -826,6 +826,22 @@ final class Application extends Container
     }
 
     /**
+     * @throws \Exception
+     */
+    public function process(ServerRequestInterface $request): ResponseInterface
+    {
+        /** @var Router $router */
+        $router = $this->make(name: 'router');
+
+        // Ensure basePath is set
+        if (is_callable([$request->getUri(), 'getPath']) && is_callable([$router, 'setBasePath'])) {
+            $router->setBasePath($request->getUri()->getPath());
+        }
+
+        return $this->handle($request);
+    }
+
+    /**
      * Load environment file(s).
      *
      * @param string $basePath
