@@ -26,8 +26,6 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
-use Qubus\Http\ServerRequestFactory;
-use Qubus\Http\ServerRequestFactory as ServerRequest;
 use Qubus\Http\Session\Flash;
 use Qubus\Http\Session\PhpSession;
 use Qubus\Inheritance\InvokerAware;
@@ -38,6 +36,7 @@ use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Mail\Mailer;
+use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
 use Qubus\Support\Assets;
 use Qubus\Support\StringHelper;
@@ -765,11 +764,12 @@ final class Application extends Container
                 \Psr\Container\ContainerInterface::class => self::class,
                 \Qubus\Injector\ServiceContainer::class => self::class,
                 \Psr\Http\Message\ServerRequestInterface::class => \Qubus\Http\ServerRequest::class,
-                \Psr\Http\Message\ServerRequestFactoryInterface::class => \Qubus\Http\ServerRequestFactory::class,
+                \Psr\Http\Message\ServerRequestFactoryInterface::class => \Qubus\Http\Factories\Psr17Factory::class,
                 \Psr\Http\Message\RequestInterface::class => \Qubus\Http\Request::class,
+                \Psr\Http\Message\RequestFactoryInterface::class => \Qubus\Http\Factories\Psr17Factory::class,
                 \Psr\Http\Server\RequestHandlerInterface::class => \Relay\Runner::class,
                 \Psr\Http\Message\ResponseInterface::class => \Qubus\Http\Response::class,
-                \Psr\Http\Message\ResponseFactoryInterface::class => \Laminas\Diactoros\ResponseFactory::class,
+                \Psr\Http\Message\ResponseFactoryInterface::class => \Qubus\Http\Factories\Psr17Factory::class,
                 \Psr\Cache\CacheItemInterface::class => \Qubus\Cache\Psr6\Item::class,
                 \Psr\Cache\CacheItemPoolInterface::class => \Qubus\Cache\Psr6\ItemPool::class,
                 \Qubus\Cache\Psr6\TaggableCacheItem::class => \Qubus\Cache\Psr6\TaggablePsr6ItemAdapter::class,
@@ -817,7 +817,7 @@ final class Application extends Container
         return $kernel->handle($request);
     }
 
-    public function handleRequest(ServerRequestInterface $request): void
+    public function handleRequest(?ServerRequestInterface $request = null): void
     {
         /** @var Kernel $kernel */
         $kernel = $this->make(name: Kernel::class);
@@ -981,6 +981,10 @@ final class Application extends Container
 
     public private(set) ArrayHelper $array {
         get => $this->array ?? $this->make(name: ArrayHelper::class);
+    }
+
+    public private(set) Router $router {
+        get => $this->router ?? $this->make(name: 'router');
     }
     //phpcs:disable
 }
