@@ -208,7 +208,7 @@ final class Application extends Container
     /**
      * @throws Exception
      */
-    public function getDbConnection(): Connection
+    public function getDbConnection(): Connection\DbalPdo|Connection
     {
         /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
