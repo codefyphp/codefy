@@ -45,7 +45,7 @@ final class BridgeManager
         Request $swooleRequest,
         Response $swooleResponse,
     ): Response {
-        $response = $this->app->process($this->requestFactory->createServerRequest($swooleRequest));
+        $response = $this->app->handle($this->requestFactory->createServerRequest($swooleRequest));
 
         return $this->responseMerger->toSwoole($response, $swooleResponse);
     }
