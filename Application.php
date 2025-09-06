@@ -36,7 +36,6 @@ use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Mail\Mailer;
-use Qubus\Routing\Psr7Router;
 use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
 use Qubus\Support\Assets;
@@ -999,8 +998,8 @@ final class Application extends Container
         get => $this->array ?? $this->make(name: ArrayHelper::class);
     }
 
-    public private(set) Psr7Router $router {
-        get => $this->router ?? $this->make(name: Psr7Router::class);
+    public private(set) Router $router {
+        get => $this->router ?? $this->make(name: Router::class);
     }
     //phpcs:disable
 }

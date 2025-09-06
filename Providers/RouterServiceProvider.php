@@ -15,7 +15,7 @@ final class RouterServiceProvider extends CodefyServiceProvider
 {
     public function register(): void
     {
-        $this->codefy->singleton(Psr7Router::class, function () {
+        $this->codefy->singleton(Router::class, function () {
             $router = new Router(
                 routeCollector: new RouteCollector(
                     routes: [],
@@ -31,6 +31,10 @@ final class RouterServiceProvider extends CodefyServiceProvider
             return $router;
         });
 
+        $this->codefy->alias(Psr7Router::class, Router::class);
+        $this->codefy->alias(Router::class, 'router');
         $this->codefy->share(nameOrInstance: Psr7Router::class);
+        $this->codefy->share(nameOrInstance: Router::class);
+        $this->codefy->share(nameOrInstance: 'router');
     }
 }
