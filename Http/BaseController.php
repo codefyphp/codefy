@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Qubus\Http\Factories\RedirectResponseFactory;
 use Qubus\Http\Session\SessionService;
 use Qubus\Routing\Controller\Controller;
-use Qubus\Routing\Router;
+use Qubus\Routing\Psr7Router;
 use Qubus\View\Renderer;
 
 class BaseController extends Controller implements RoutingController
@@ -18,7 +18,7 @@ class BaseController extends Controller implements RoutingController
         protected SessionService $sessionService {
             get => $this->sessionService;
         },
-        protected Router $router {
+        protected Psr7Router $router {
             get => $this->router;
         },
         protected Renderer $view {

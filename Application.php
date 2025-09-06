@@ -36,6 +36,7 @@ use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Mail\Mailer;
+use Qubus\Routing\Psr7Router;
 use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
 use Qubus\Support\Assets;
@@ -281,6 +282,7 @@ final class Application extends Container
                 Providers\ConfigServiceProvider::class,
                 Providers\PdoServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
+                Providers\RouterServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
@@ -782,8 +784,6 @@ final class Application extends Container
                 'dir.path' => \Codefy\Framework\Support\Paths::class,
                 'container' => self::class,
                 'codefy' => self::class,
-                \Qubus\Routing\Interfaces\Collector::class => \Qubus\Routing\Route\RouteCollector::class,
-                'router' => \Qubus\Routing\Router::class,
                 \Codefy\Framework\Contracts\RoutingController::class => \Codefy\Framework\Http\BaseController::class,
                 \League\Flysystem\FilesystemOperator::class => \Qubus\FileSystem\FileSystem::class,
                 \League\Flysystem\FilesystemAdapter::class => \Qubus\FileSystem\Adapter\LocalFlysystemAdapter::class,
@@ -999,8 +999,8 @@ final class Application extends Container
         get => $this->array ?? $this->make(name: ArrayHelper::class);
     }
 
-    public private(set) Router $router {
-        get => $this->router ?? $this->make(name: 'router');
+    public private(set) Psr7Router $router {
+        get => $this->router ?? $this->make(name: Psr7Router::class);
     }
     //phpcs:disable
 }
