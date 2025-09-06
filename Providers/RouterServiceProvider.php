@@ -32,7 +32,7 @@ final class RouterServiceProvider extends CodefyServiceProvider
         });
 
         $this->codefy->alias(Psr7Router::class, Router::class);
-        $this->codefy->alias(Router::class, 'router');
+        $this->codefy->alias('router', Router::class);
         $this->codefy->share(nameOrInstance: Psr7Router::class);
         $this->codefy->share(nameOrInstance: Router::class);
         $this->codefy->share(nameOrInstance: 'router');
