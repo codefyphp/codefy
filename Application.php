@@ -147,11 +147,11 @@ final class Application extends Container
     /**
      * @throws TypeException
      */
-    public function __construct(array $params)
+    public function __construct(array $params = [])
     {
-        if (isset($params['basePath'])) {
-            $this->withBasePath(basePath: $params['basePath']);
-        }
+        $this->withBasePath(
+            basePath: $params['basePath'] ?? env(key: 'APP_BASE_PATH')
+        );
 
         parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
         $this->registerBaseBindings();
@@ -889,11 +889,11 @@ final class Application extends Container
     }
 
     /**
-     * Configure a new CodefyPHP application instance.
+     * Create a new CodefyPHP application instance.
      *
      * @throws TypeException
      */
-    public static function configure(array $config): ApplicationBuilder
+    public static function create(array $config = []): ApplicationBuilder
     {
         return new ApplicationBuilder(new self($config));
     }
