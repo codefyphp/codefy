@@ -6,17 +6,16 @@ namespace Codefy\Framework;
 
 use Codefy\Framework\Configuration\ApplicationBuilder;
 use Codefy\Framework\Contracts\Http\Kernel;
-use Codefy\Framework\Factory\FileLoggerFactory;
-use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Pipeline\PipelineBuilder;
 use Codefy\Framework\Support\BasePathDetector;
 use Codefy\Framework\Support\LocalStorage;
 use Codefy\Framework\Support\Paths;
+use Codefy\Framework\Traits\LoggerAware;
+use Codefy\Framework\Traits\RouterAware;
 use Dotenv\Dotenv;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Dbal\Connection;
 use Qubus\Dbal\DB;
@@ -40,7 +39,6 @@ use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
 use Qubus\Support\Assets;
 use Qubus\Support\StringHelper;
-use ReflectionException;
 
 use function dirname;
 use function get_class;
@@ -55,6 +53,8 @@ use const DIRECTORY_SEPARATOR;
 final class Application extends Container
 {
     use InvokerAware;
+    use RouterAware;
+    use LoggerAware;
 
     public const string APP_VERSION = '3.0.0-beta.4';
 
@@ -147,11 +147,11 @@ final class Application extends Container
     /**
      * @throws TypeException
      */
-    public function __construct(array $params = [])
+    public function __construct(array $params)
     {
-        $this->withBasePath(
-            basePath: $params['basePath'] ?? env(key: 'APP_BASE_PATH')
-        );
+        if (isset($params['basePath'])) {
+            $this->withBasePath(basePath: $params['basePath']);
+        }
 
         parent::__construct(InjectorFactory::create(config: $this->coreAliases()));
         $this->registerBaseBindings();
@@ -182,27 +182,6 @@ final class Application extends Container
             $basePath !== '' => $basePath,
             default => dirname(path: __FILE__, levels: 2),
         };
-    }
-
-    /**
-     * FileLogger
-     *
-     * @throws ReflectionException|TypeException
-     */
-    public static function getLogger(): LoggerInterface
-    {
-        return FileLoggerFactory::getLogger();
-    }
-
-    /**
-     * FileLogger with SMTP support.
-     *
-     * @throws ReflectionException
-     * @throws TypeException
-     */
-    public static function getSmtpLogger(): LoggerInterface
-    {
-        return FileLoggerSmtpFactory::getLogger();
     }
 
     /**
@@ -893,7 +872,7 @@ final class Application extends Container
      *
      * @throws TypeException
      */
-    public static function create(array $config = []): ApplicationBuilder
+    public static function create(array $config): ApplicationBuilder
     {
         return new ApplicationBuilder(new self($config));
     }
