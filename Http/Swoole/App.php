@@ -10,7 +10,7 @@ use Qubus\Http\Swoole\Factory\RequestFactory;
 use Qubus\Http\Swoole\ResponseMerger;
 use Swoole\Http\Request as SwooleRequest;
 use Swoole\Http\Response as SwooleResponse;
-use Swoole\Server;
+use Swoole\Http\Server;
 
 use function flush;
 use function time;
