@@ -45,8 +45,22 @@ final class BridgeManager
         Request $swooleRequest,
         Response $swooleResponse,
     ): Response {
-        $response = $this->app->handle($this->requestFactory->createServerRequest($swooleRequest));
 
-        return $this->responseMerger->toSwoole($response, $swooleResponse);
+        $psrRequest = $this->requestFactory->createServerRequest($swooleRequest);
+
+        if (!$psrRequest->getUri()->getHost() && isset($swooleRequest->header['host'])) {
+            $uri = $psrRequest->getUri()->withHost($swooleRequest->header['host']);
+            $psrRequest = $psrRequest->withUri($uri);
+        }
+
+        try {
+            $response = $this->app->handle($psrRequest);
+
+            return $this->responseMerger->toSwoole($response, $swooleResponse);
+        } catch (Exception $e) {
+            $swooleResponse->status(500);
+            $swooleResponse->end("BridgeManager error: {$e->getMessage()}");
+            return $swooleResponse;
+        }
     }
 }
