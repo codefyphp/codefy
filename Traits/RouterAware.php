@@ -23,7 +23,7 @@ trait RouterAware
     /**
      * @throws TooLateToAddNewRouteException
      */
-    public function get(string $uri, callable|string $callback): Routable
+    public function httpGet(string $uri, callable|string $callback): Routable
     {
         return $this->getRouter()->get($uri, $callback);
     }
@@ -31,7 +31,7 @@ trait RouterAware
     /**
      * @throws TooLateToAddNewRouteException
      */
-    public function post(string $uri, callable|string $callback): Routable
+    public function httpPost(string $uri, callable|string $callback): Routable
     {
         return $this->getRouter()->post($uri, $callback);
     }
@@ -39,7 +39,7 @@ trait RouterAware
     /**
      * @throws TooLateToAddNewRouteException
      */
-    public function head(string $uri, callable|string $callback): Routable
+    public function httpHead(string $uri, callable|string $callback): Routable
     {
         return $this->getRouter()->head($uri, $callback);
     }
@@ -47,7 +47,7 @@ trait RouterAware
     /**
      * @throws TooLateToAddNewRouteException
      */
-    public function delete(string $uri, callable|string $callback): Routable
+    public function httpDelete(string $uri, callable|string $callback): Routable
     {
         return $this->getRouter()->delete($uri, $callback);
     }
@@ -55,7 +55,7 @@ trait RouterAware
     /**
      * @throws TooLateToAddNewRouteException
      */
-    public function connect(string $uri, callable|string $callback): Routable
+    public function httpConnect(string $uri, callable|string $callback): Routable
     {
         return $this->getRouter()->connect($uri, $callback);
     }
@@ -63,7 +63,7 @@ trait RouterAware
     /**
      * @throws TooLateToAddNewRouteException
      */
-    public function options(string $uri, callable|string $callback): Routable
+    public function httpOptions(string $uri, callable|string $callback): Routable
     {
         return $this->getRouter()->options($uri, $callback);
     }
@@ -71,7 +71,7 @@ trait RouterAware
     /**
      * @throws TooLateToAddNewRouteException
      */
-    public function patch(string $uri, callable|string $callback): Routable
+    public function httpPatch(string $uri, callable|string $callback): Routable
     {
         return $this->getRouter()->patch($uri, $callback);
     }
@@ -79,7 +79,7 @@ trait RouterAware
     /**
      * @throws TooLateToAddNewRouteException
      */
-    public function trace(string $uri, callable|string $callback): Routable
+    public function httpTrace(string $uri, callable|string $callback): Routable
     {
         return $this->getRouter()->trace($uri, $callback);
     }
