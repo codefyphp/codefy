@@ -11,11 +11,13 @@ use Qubus\Routing\Route\InjectorMiddlewareResolver;
 use Qubus\Routing\Route\RouteCollector;
 use Qubus\Routing\Router;
 
-final class RouterServiceProvider extends CodefyServiceProvider
+class RouterServiceProvider extends CodefyServiceProvider
 {
+    protected ?string $namespace = null;
+
     public function register(): void
     {
-        $this->codefy->singleton(Router::class, function () {
+        $this->codefy->singleton(key: Router::class, value: function () {
             $router = new Router(
                 routeCollector: new RouteCollector(
                     routes: [],
@@ -24,15 +26,15 @@ final class RouterServiceProvider extends CodefyServiceProvider
                 ),
                 container: $this->codefy,
                 responseFactory: new ResponseFactory(),
-                resolver: new InjectorMiddlewareResolver($this->codefy),
+                resolver: new InjectorMiddlewareResolver(container: $this->codefy),
             );
-            $router->setDefaultNamespace($this->codefy->controllerNamespace);
 
+            $router->setDefaultNamespace(namespace: $this->namespace ?? $this->codefy->controllerNamespace);
             return $router;
         });
 
-        $this->codefy->alias(Psr7Router::class, Router::class);
-        $this->codefy->alias('router', Router::class);
+        $this->codefy->alias(original: Psr7Router::class, alias: Router::class);
+        $this->codefy->alias(original: 'router', alias: Router::class);
         $this->codefy->share(nameOrInstance: Psr7Router::class);
         $this->codefy->share(nameOrInstance: Router::class);
         $this->codefy->share(nameOrInstance: 'router');
