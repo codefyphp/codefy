@@ -7,9 +7,12 @@ namespace Codefy\Framework\Configuration;
 use Codefy\Framework\Application;
 use Codefy\Framework\Bootstrap\RegisterProviders;
 use Qubus\Exception\Data\TypeException;
+use Qubus\Routing\Psr7Router;
 
 final class ApplicationBuilder
 {
+    private mixed $routing = null;
+
     public function __construct(protected Application $app)
     {
     }
@@ -68,6 +71,13 @@ final class ApplicationBuilder
         foreach ($singletons as $key => $callable) {
             $this->app->singleton($key, $callable);
         };
+
+        return $this;
+    }
+
+    public function withRouting(callable|Psr7Router $routing): self
+    {
+        $this->routing = $routing;
 
         return $this;
     }
