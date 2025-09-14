@@ -11,7 +11,6 @@ use Codefy\Framework\Support\BasePathDetector;
 use Codefy\Framework\Support\LocalStorage;
 use Codefy\Framework\Support\Paths;
 use Codefy\Framework\Traits\LoggerAware;
-use Codefy\Framework\Traits\RouterAware;
 use Dotenv\Dotenv;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -53,7 +52,6 @@ use const DIRECTORY_SEPARATOR;
 final class Application extends Container
 {
     use InvokerAware;
-    use RouterAware;
     use LoggerAware;
 
     public const string APP_VERSION = '3.0.0-beta.4';
@@ -147,7 +145,7 @@ final class Application extends Container
     /**
      * @throws TypeException
      */
-    public function __construct(array $params)
+    public function __construct(array $params = [])
     {
         if (isset($params['basePath'])) {
             $this->withBasePath(basePath: $params['basePath']);
@@ -446,9 +444,13 @@ final class Application extends Container
      */
     protected function bootServiceProvider(Serviceable|Bootable $provider): void
     {
+        $provider->callBootingCallbacks();
+
         if (method_exists(object_or_class: $provider, method: 'boot')) {
             $this->execute(callableOrMethodStr: [$provider, 'boot']);
         }
+
+        $provider->callBootedCallbacks();
     }
 
     /**
