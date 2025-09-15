@@ -876,7 +876,8 @@ final class Application extends Container
      */
     public static function create(array $config): ApplicationBuilder
     {
-        return new ApplicationBuilder(new self($config));
+        return new ApplicationBuilder(new self($config))
+            ->withKernels();
     }
 
     /**
