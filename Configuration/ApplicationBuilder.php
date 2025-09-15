@@ -9,13 +9,14 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Bootstrap\RegisterProviders;
 use Codefy\Framework\Providers\RoutingServiceProvider;
 use Qubus\Exception\Data\TypeException;
-use Qubus\Routing\Route\RouteFileRegistrar;
+use Qubus\Routing\Route\RoutingRegistrar;
+use Qubus\Routing\Router;
 
 use function is_array;
 use function is_callable;
 use function is_string;
+use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_null__;
-use function realpath;
 
 final class ApplicationBuilder
 {
@@ -85,10 +86,11 @@ final class ApplicationBuilder
      * Register the routing services for the application.
      *
      * @param callable|Closure|null $using
-     * @param array|string|null $web
-     * @param array|null $class
-     * @param array|string|null $api
-     * @param callable|null $then
+     * @param array|string|null     $web
+     * @param array|null            $class
+     * @param array|string|null     $api
+     * @param string                $apiPrefix
+     * @param callable|null         $then
      * @return $this
      * @throws TypeException
      */
@@ -97,14 +99,15 @@ final class ApplicationBuilder
         array|string|null $web = null,
         ?array $class = null,
         array|string|null $api = null,
+        string $apiPrefix = 'api',
         ?callable $then = null,
     ): self {
         if (
-            is_null__($using) &&
+                is_null__($using) &&
                 (is_string($web) || is_array($web) || is_string($api) || is_array($api)) ||
-            is_callable($then)
+                is_callable($then)
         ) {
-            $using = $this->buildRoutingCallback($web, $api, $then);
+            $using = $this->buildRoutingCallback($web, $api, $apiPrefix, $then);
         }
 
         RoutingServiceProvider::loadRoutesUsing($using);
@@ -113,6 +116,7 @@ final class ApplicationBuilder
             $this->app->registerServiceProvider(serviceProvider: RoutingServiceProvider::class, force: true);
         });
 
+        // Class-based routes
         if (!is_null__($class) && is_array($class)) {
             foreach ($class as $route) {
                 $this->app->execute([$route, 'handle']);
@@ -125,43 +129,38 @@ final class ApplicationBuilder
     /**
      * Create the routing callback for the application.
      *
-     * @param array|string|null  $web
-     * @param array|string|null  $api
-     * @param callable|null      $then
+     * @param array|string|null $web
+     * @param array|string|null $api
+     * @param string            $apiPrefix
+     * @param callable|null     $then
      * @return Closure
      */
     protected function buildRoutingCallback(
         array|string|null $web = null,
         array|string|null $api = null,
+        string $apiPrefix = 'api',
         ?callable $then = null
     ): Closure {
-        return function () use ($web, $api, $then) {
-            if (is_string($api) || is_array($api)) {
-                if (is_array($api)) {
-                    foreach ($api as $apiRoute) {
-                        if (realpath($apiRoute) !== false) {
-                            new RouteFileRegistrar($this->app->router)->register($apiRoute);
-                        }
-                    }
-                } else {
-                    require $api;
-                }
+        return function (Router $router) use ($web, $api, $apiPrefix, $then) {
+            $registrar = new RoutingRegistrar($router);
+
+            // Web routes
+            if ($web) {
+                $registrar->group($web);
             }
 
-            if (is_string($web) || is_array($web)) {
-                if (is_array($web)) {
-                    foreach ($web as $webRoute) {
-                        if (realpath($webRoute) !== false) {
-                            new RouteFileRegistrar($this->app->router)->register($webRoute);
-                        }
-                    }
-                } else {
-                    new RouteFileRegistrar($this->app->router)->register($web);
-                }
+            // API routes
+            if ($api) {
+                /**
+                 * API middleware filter.
+                 */
+                $apiMiddleware = __observer()->filter->applyFilter('rest.api', ['api']);
+                $registrar->group($api, middleware: $apiMiddleware, prefix: $apiPrefix);
             }
 
+            // Final callback
             if (is_callable($then)) {
-                $then($this->app);
+                $then($router);
             }
         };
     }
