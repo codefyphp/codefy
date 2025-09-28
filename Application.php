@@ -6,11 +6,16 @@ namespace Codefy\Framework;
 
 use Codefy\Framework\Configuration\ApplicationBuilder;
 use Codefy\Framework\Contracts\Http\Kernel;
+use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Pipeline\PipelineBuilder;
+use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Support\BasePathDetector;
 use Codefy\Framework\Support\LocalStorage;
 use Codefy\Framework\Support\Paths;
 use Codefy\Framework\Traits\LoggerAware;
+use Defuse\Crypto\Exception\BadFormatException;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
+use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Dotenv\Dotenv;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -24,6 +29,7 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
+use Qubus\Http\Encryption\Env\SecureEnv;
 use Qubus\Http\Session\Flash;
 use Qubus\Http\Session\PhpSession;
 use Qubus\Inheritance\InvokerAware;
@@ -38,7 +44,9 @@ use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
 use Qubus\Support\Assets;
 use Qubus\Support\StringHelper;
+use ReflectionException;
 
+use function Codefy\Framework\Helpers\base_path;
 use function dirname;
 use function get_class;
 use function is_string;
@@ -79,7 +87,7 @@ final class Application extends Container
     /**
      * @var string Language of the application.
      */
-    public string $language = 'en-US' {
+    public string $language = 'en' {
         get => $this->language;
         set(string $language) => $this->language = strtoupper($language);
     }
@@ -98,6 +106,8 @@ final class Application extends Container
     }
 
     public static string $ROOT_PATH = '';
+
+    public static bool $encryptedEnv = false;
 
     private string $basePath = '' {
         get => $this->basePath;
@@ -810,15 +820,25 @@ final class Application extends Container
      *
      * @param string $basePath
      * @return void
+     * @throws TypeException
+     * @throws ReflectionException
      */
     private static function loadEnvironment(string $basePath): void
     {
-        $dotenv = Dotenv::createImmutable(
-            paths: $basePath,
-            names: ['.env','.env.local','.env.staging','.env.development','.env.production'],
-            shortCircuit: false
-        );
-        $dotenv->safeLoad();
+        if (self::$encryptedEnv) {
+            try {
+                SecureEnv::parse(base_path(path: '.env.enc'), base_path(path: '.enc.key'));
+            } catch (BadFormatException | EnvironmentIsBrokenException | WrongKeyOrModifiedCiphertextException $e) {
+                FileLoggerFactory::getLogger()->error($e->getMessage());
+            }
+        } else {
+            $dotenv = Dotenv::createImmutable(
+                paths: $basePath,
+                names: ['.env','.env.local','.env.staging','.env.development','.env.production'],
+                shortCircuit: false
+            );
+            $dotenv->safeLoad();
+        }
     }
 
     public function __get(mixed $name)
@@ -885,6 +905,7 @@ final class Application extends Container
      *
      * @return static
      * @throws TypeException
+     * @throws ReflectionException
      */
     public static function getInstance(?string $path = null): self
     {
