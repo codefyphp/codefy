@@ -127,6 +127,20 @@ final class ApplicationBuilder
     }
 
     /**
+     * Set whether environment variables
+     * should be encrypted.
+     *
+     * @param bool $bool Default: false.
+     * @return $this
+     */
+    public function withEncryptedEnv(bool $bool = false): self
+    {
+        $this->app::$encryptedEnv = $bool;
+
+        return $this;
+    }
+
+    /**
      * Create the routing callback for the application.
      *
      * @param array|string|null $web
