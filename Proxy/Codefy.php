@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework;
+namespace Codefy\Framework\Proxy;
 
+use Codefy\Framework\Application;
 use stdClass;
 
 class Codefy extends stdClass

@@ -3,9 +3,8 @@
 declare(strict_types=1);
 
 use Codefy\Framework\Application;
-use Codefy\Framework\Codefy;
+use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Pipeline\Pipeline;
-use Codefy\Framework\Pipeline\PipelineBuilder;
 use Codefy\Framework\tests\Pipes\PipeFour;
 use Codefy\Framework\tests\Pipes\PipeOne;
 use Codefy\Framework\tests\Pipes\PipeThree;

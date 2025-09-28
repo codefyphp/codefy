@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Support\Traits;
 
-use Codefy\Framework\Codefy;
+use Codefy\Framework\Proxy\Codefy;
 
 trait ContainerAware
 {

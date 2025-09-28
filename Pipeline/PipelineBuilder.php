@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Pipeline;
 
-use Codefy\Framework\Codefy;
+use Codefy\Framework\Proxy\Codefy;
 
 final class PipelineBuilder
 {
