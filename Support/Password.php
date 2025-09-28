@@ -7,6 +7,8 @@ namespace Codefy\Framework\Support;
 use Qubus\Exception\Exception;
 
 use function defined;
+use function password_algos;
+use function password_get_info;
 use function password_hash;
 use function password_needs_rehash;
 use function password_verify;
@@ -96,7 +98,7 @@ final class Password
      * @return bool
      * @throws Exception
      */
-    public static function rehash(string $hash): bool
+    public static function needsRehash(string $hash): bool
     {
         return password_needs_rehash(hash: $hash, algo: self::algorithm(), options: self::options());
     }
