@@ -46,7 +46,6 @@ use Qubus\Support\Assets;
 use Qubus\Support\StringHelper;
 use ReflectionException;
 
-use function Codefy\Framework\Helpers\base_path;
 use function dirname;
 use function get_class;
 use function is_string;
@@ -153,6 +152,8 @@ final class Application extends Container
     // phpcs:enable
 
     /**
+     * @param array $params
+     * @throws ReflectionException
      * @throws TypeException
      */
     public function __construct(array $params = [])
@@ -827,7 +828,7 @@ final class Application extends Container
     {
         if (self::$encryptedEnv) {
             try {
-                SecureEnv::parse(base_path(path: '.env.enc'), base_path(path: '.enc.key'));
+                SecureEnv::parse(inputFile: $basePath . '/.env.enc', keyFile: $basePath . '/.enc.key');
             } catch (BadFormatException | EnvironmentIsBrokenException | WrongKeyOrModifiedCiphertextException $e) {
                 FileLoggerFactory::getLogger()->error($e->getMessage());
             }
@@ -893,6 +894,7 @@ final class Application extends Container
      * Create a new CodefyPHP application instance.
      *
      * @throws TypeException
+     * @throws ReflectionException
      */
     public static function create(array $config): ApplicationBuilder
     {
