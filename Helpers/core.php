@@ -4,10 +4,22 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Helpers;
 
+use Codefy\CommandBus\Busses\SynchronousCommandBus;
+use Codefy\CommandBus\Command;
+use Codefy\CommandBus\Containers\ContainerFactory;
+use Codefy\CommandBus\Exceptions\CommandCouldNotBeHandledException;
+use Codefy\CommandBus\Exceptions\UnresolvableCommandHandlerException;
+use Codefy\CommandBus\Odin;
+use Codefy\CommandBus\Resolvers\NativeCommandHandlerResolver;
 use Codefy\Framework\Application;
-use Codefy\Framework\Codefy;
+use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Support\CodefyMailer;
+use Codefy\QueryBus\Busses\SynchronousQueryBus;
+use Codefy\QueryBus\Enquire;
+use Codefy\QueryBus\Query;
+use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
+use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Qubus\Config\Collection;
 use Qubus\Dbal\Connection;
 use Qubus\Exception\Data\TypeException;
@@ -206,4 +218,42 @@ function mail(string|array $to, string $subject, string $message, array $headers
         FileLoggerFactory::getLogger()->error($e->getMessage(), ['function' => '\Codefy\Framework\Helpers\mail']);
         return false;
     }
+}
+
+/**
+ * Dispatches the given `$command` through
+ * the CommandBus.
+ *
+ * @param Command $command
+ * @throws ReflectionException
+ * @throws TypeException
+ * @throws CommandCouldNotBeHandledException
+ * @throws UnresolvableCommandHandlerException
+ */
+function command(Command $command): void
+{
+    $resolver = new NativeCommandHandlerResolver(
+        container: ContainerFactory::make(config: config(key: 'commandbus.container'))
+    );
+    $odin = new Odin(bus: new SynchronousCommandBus($resolver));
+
+    $odin->execute($command);
+}
+
+/**
+ * Queries the given query and returns
+ * a result if any.
+ *
+ * @throws ReflectionException
+ * @throws TypeException
+ * @throws UnresolvableQueryHandlerException
+ */
+function ask(Query $query): mixed
+{
+    $resolver = new NativeQueryHandlerResolver(
+        container: ContainerFactory::make(config: config(key: 'querybus.aliases'))
+    );
+    $enquirer = new Enquire(bus: new SynchronousQueryBus($resolver));
+
+    return $enquirer->execute($query);
 }
