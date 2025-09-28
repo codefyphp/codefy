@@ -1,8 +1,7 @@
 .idea
-/config/
-files
-Scheduler/Tests
-storage
+src/config
+src/files
+src/storage
 /vendor/
 .env
 .env.development

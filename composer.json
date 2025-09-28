@@ -39,12 +39,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Codefy\\Framework\\": ""
+            "Codefy\\Framework\\": "src/"
         },
         "files": [
-          "Helpers/core.php",
-          "Helpers/path.php",
-          "Http/Middleware/Csrf/helpers.php"
+          "src/Helpers/core.php",
+          "src/Helpers/path.php",
+          "src/Http/Middleware/Csrf/helpers.php"
         ]
     },
     "require-dev": {
@@ -53,6 +53,11 @@
         "foil/foil": "^0.6.7",
         "mockery/mockery": "^1",
         "qubus/qubus-coding-standard": "^2"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codefy\\Framework\\Tests\\": "tests/"
+        }
     },
     "scripts": {
         "test": "vendor/bin/pest",
