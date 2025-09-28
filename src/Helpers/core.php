@@ -98,11 +98,11 @@ function get_fresh_bootstrap(): mixed
  *
  * @param string $key
  * @param mixed|null $default
- * @return mixed|null
+ * @return mixed
  */
 function env(string $key, mixed $default = null): mixed
 {
-    return $_ENV[$key] ?? $default;
+    return \Qubus\Config\Helpers\env($key, $default);
 }
 
 /**
