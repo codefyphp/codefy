@@ -1,7 +1,7 @@
 .idea
-src/config
-src/files
-src/storage
+config
+files
+storage
 /vendor/
 .env
 .env.development
