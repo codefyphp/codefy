@@ -14,10 +14,8 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use Qubus\Exception\Exception;
-use Qubus\Http\Factories\JsonResponseFactory;
 
 use function func_get_args;
-use function parse_url;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_null__;
 
@@ -37,7 +35,7 @@ class HttpClient extends GuzzleClient
      * {@inheritDoc}
      *
      * @param string              $method  HTTP method.
-     * @param string|UriInterface $uri     URI object or string.
+     * @param string|UriInterface $uri     URL, URI object or string.
      * @param array               $options {
      *                                     Optional. Array of Request options to apply.
      *                                     See \GuzzleHttp\RequestOptions.
@@ -159,20 +157,6 @@ class HttpClient extends GuzzleClient
         $preempt = __observer()->filter->applyFilter('http.request.preempt', false, $parsedArgs, $uri);
         if ($preempt !== false) {
             return $preempt;
-        }
-
-        $parsedUrl = parse_url($uri);
-        if (empty($parsedUrl) || !isset($parsedUrl['scheme'])) {
-            $response = new HttpRequestError('A valid URL was not provided.', 405);
-            __observer()->action->doAction(
-                'http_api_debug',
-                $response,
-                'response',
-                \Qubus\Http\Request::class,
-                $parsedArgs,
-                $uri
-            );
-            return JsonResponseFactory::create($response->getMessage(), (int) $response->getCode());
         }
 
         if (is_null__($parsedArgs['headers'])) {
