@@ -7,7 +7,7 @@
   </testsuites>
   <source>
     <include>
-      <directory suffix=".php">./</directory>
+      <directory suffix=".php">./src</directory>
     </include>
     <exclude>
       <directory suffix=".php">./vendor</directory>
