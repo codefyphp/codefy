@@ -51,7 +51,6 @@
         "fenom/fenom": "^3.0",
         "fenom/providers-collection": "^1.0",
         "foil/foil": "^0.6.7",
-        "mockery/mockery": "^1",
         "qubus/qubus-coding-standard": "^2"
     },
     "autoload-dev": {
