@@ -766,7 +766,7 @@ final class Application extends Container
                 \Qubus\Cache\Psr6\TaggableCacheItemPool::class => \Qubus\Cache\Psr6\TaggablePsr6PoolAdapter::class,
                 \Qubus\Config\Path\Path::class => \Qubus\Config\Path\ConfigPath::class,
                 \Qubus\Config\ConfigContainer::class => \Qubus\Config\Collection::class,
-                \Qubus\EventDispatcher\EventDispatcher::class => \Qubus\EventDispatcher\Dispatcher::class,
+                \Psr\EventDispatcher\EventDispatcherInterface::class => \Qubus\EventDispatcher\EventDispatcher::class,
                 \Qubus\Mail\Mailer::class => \Codefy\Framework\Support\CodefyMailer::class,
                 'mailer' => Mailer::class,
                 'dir.path' => \Codefy\Framework\Support\Paths::class,
