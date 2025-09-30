@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Auth\Repository;
 
 use Codefy\Framework\Support\Password;
-use PDO;
+use Opis\Database\Connection;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
 use Qubus\Http\Session\SessionEntity;
@@ -15,7 +15,7 @@ use function sprintf;
 
 class PdoRepository implements AuthUserRepository
 {
-    public function __construct(private PDO $pdo, protected ConfigContainer $config)
+    public function __construct(private Connection $connection, protected ConfigContainer $config)
     {
     }
 
@@ -33,7 +33,7 @@ class PdoRepository implements AuthUserRepository
             $fields['identity']
         );
 
-        $stmt = $this->pdo->prepare(query: $sql);
+        $stmt = $this->connection->getPDO()->prepare(query: $sql);
         if (false === $stmt) {
             return null;
         }

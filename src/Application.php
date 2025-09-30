@@ -17,12 +17,11 @@ use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Dotenv\Dotenv;
+use Opis\Database\Connection;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Config\ConfigContainer;
-use Qubus\Dbal\Connection;
-use Qubus\Dbal\DB;
 use Qubus\EventDispatcher\ActionFilter\Observer;
 use Qubus\EventDispatcher\EventDispatcher;
 use Qubus\Exception\Data\TypeException;
@@ -196,26 +195,24 @@ final class Application extends Container
     /**
      * @throws Exception
      */
-    public function getDbConnection(): Connection\DbalPdo|Connection
+    public function getDbConnection(): Connection
     {
         /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
+        $default = $config->getConfigKey(key: 'database.default');
 
-        $connection = $config->getConfigKey(key: 'database.default');
+        $connection = new Connection(
+            dsn: $config->getConfigKey(key: "database.connections.{$default}.dsn"),
+            username: $config->getConfigKey(key: "database.connections.{$default}.username", default: null),
+            password: $config->getConfigKey(key: "database.connections.{$default}.password", default: null),
+            driver: $config->getConfigKey(key: "database.connections.{$default}.driver"),
+        );
 
-        return DB::connection([
-            'driver' => $config->getConfigKey(key: "database.connections.{$connection}.driver"),
-            'host' => $config->getConfigKey(key: "database.connections.{$connection}.host", default: 'localhost'),
-            'port' => $config->getConfigKey(key: "database.connections.{$connection}.port", default: 3306),
-            'charset' => $config->getConfigKey(key: "database.connections.{$connection}.charset", default: 'utf8mb4'),
-            'collation' => $config->getConfigKey(
-                key: "database.connections.{$connection}.collation",
-                default: 'utf8mb4_unicode_ci'
-            ),
-            'username' => $config->getConfigKey(key: "database.connections.{$connection}.username"),
-            'password' => $config->getConfigKey(key: "database.connections.{$connection}.password"),
-            'dbname' => $config->getConfigKey(key: "database.connections.{$connection}.dbname"),
-        ]);
+        if (!empty($config->getConfigKey(key: "database.connections.{$default}.options"))) {
+            $connection->options($config->getConfigKey(key: "database.connections.{$default}.options"));
+        }
+
+        return $connection;
     }
 
     /**
@@ -267,7 +264,7 @@ final class Application extends Container
         foreach (
             [
                 Providers\ConfigServiceProvider::class,
-                Providers\PdoServiceProvider::class,
+                Providers\DatabaseConnectionServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
                 Providers\RouterServiceProvider::class,
             ] as $serviceProvider
@@ -989,6 +986,10 @@ final class Application extends Container
 
     public private(set) Router $router {
         get => $this->router ?? $this->make(name: Router::class);
+    }
+
+    public private(set) Paths $path {
+        get => $this->path ?? $this->make(name: Paths::class);
     }
     //phpcs:disable
 }

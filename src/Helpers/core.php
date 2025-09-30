@@ -20,8 +20,8 @@ use Codefy\QueryBus\Enquire;
 use Codefy\QueryBus\Query;
 use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
 use Codefy\QueryBus\UnresolvableQueryHandlerException;
+use Opis\Database\Database;
 use Qubus\Config\Collection;
-use Qubus\Dbal\Connection;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\QueryBuilder;
@@ -111,20 +111,20 @@ function env(string $key, mixed $default = null): mixed
  * @return QueryBuilder|null
  * @throws Exception
  */
-function qb(): ?QueryBuilder
+function queryBuilder(): ?QueryBuilder
 {
     return Codefy::$PHP->getDb();
 }
 
 /**
- * Dbal database instance.
+ * Database abstraction layer (dbal) instance.
  *
- * @return Connection
+ * @return Database
  * @throws Exception
  */
-function dbal(): Connection
+function dbal(): Database
 {
-    return Codefy::$PHP->getDbConnection();
+    return new Database(Codefy::$PHP->getDbConnection());
 }
 
 /**
