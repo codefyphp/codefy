@@ -23,7 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\EventDispatcher\ActionFilter\Observer;
-use Qubus\EventDispatcher\EventDispatcher;
+use Qubus\EventDispatcher\Legacy\EventDispatcher;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\QueryBuilder;
@@ -766,7 +766,6 @@ final class Application extends Container
                 \Qubus\Cache\Psr6\TaggableCacheItemPool::class => \Qubus\Cache\Psr6\TaggablePsr6PoolAdapter::class,
                 \Qubus\Config\Path\Path::class => \Qubus\Config\Path\ConfigPath::class,
                 \Qubus\Config\ConfigContainer::class => \Qubus\Config\Collection::class,
-                \Psr\EventDispatcher\EventDispatcherInterface::class => \Qubus\EventDispatcher\EventDispatcher::class,
                 \Qubus\Mail\Mailer::class => \Codefy\Framework\Support\CodefyMailer::class,
                 'mailer' => Mailer::class,
                 'dir.path' => \Codefy\Framework\Support\Paths::class,
@@ -950,10 +949,6 @@ final class Application extends Container
 
     public private(set) Flash $flash {
         get => $this->flash ?? $this->make(name: Flash::class);
-    }
-
-    public private(set) EventDispatcher $event {
-        get => $this->event ?? $this->make(name: EventDispatcher::class);
     }
 
     public private(set) HttpCookieFactory $httpCookie {
