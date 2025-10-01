@@ -10,7 +10,7 @@ use Codefy\Framework\Scheduler\Event\TaskStarted;
 use Codefy\Framework\Scheduler\Mutex\Locker;
 use Codefy\Framework\Scheduler\Traits\MailerAware;
 use DateTimeZone;
-use Qubus\EventDispatcher\EventDispatcher;
+use Qubus\EventDispatcher\Legacy\EventDispatcher;
 use Qubus\Exception\Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
