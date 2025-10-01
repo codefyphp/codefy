@@ -7,11 +7,11 @@ namespace Codefy\Framework\Console\Commands;
 use ArrayAccess;
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
-use Codefy\Framework\Migration\Adapter\MigrationAdapter;
-use Codefy\Framework\Migration\Migration;
-use Codefy\Framework\Migration\Migrator;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
+use Qubus\Expressive\Migration\Adapter\MigrationAdapter;
+use Qubus\Expressive\Migration\Migration;
+use Qubus\Expressive\Migration\Migrator;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -226,7 +226,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             }
 
             $migrationName = preg_replace(pattern: '/^[0-9]+_/', replacement: '', subject: basename(path: $path));
-            if (false !== strpos(haystack: $migrationName, needle: '.')) {
+            if (str_contains($migrationName, '.')) {
                 $migrationName = substr(
                     string: $migrationName,
                     offset: 0,
