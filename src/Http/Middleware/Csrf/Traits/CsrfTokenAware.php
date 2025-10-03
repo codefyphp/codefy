@@ -36,7 +36,11 @@ trait CsrfTokenAware
         if ($token === '') {
             $token = $this->generateToken();
         }
-        return hash_hmac(algo: 'sha256', data: $token, key: $this->configContainer->getConfigKey(key: 'csrf.salt'));
+        return hash_hmac(
+            algo: $this->configContainer->getConfigKey(key: 'csrf.hash_algo', default: 'sha256'),
+            data: $token,
+            key: $this->configContainer->getConfigKey(key: 'csrf.salt')
+        );
     }
 
     /**
@@ -47,7 +51,7 @@ trait CsrfTokenAware
         return hash_equals(
             $knownString,
             hash_hmac(
-                algo: 'sha256',
+                algo: $this->configContainer->getConfigKey(key: 'csrf.hash_algo', default: 'sha256'),
                 data: $userString,
                 key: $this->configContainer->getConfigKey(key: 'csrf.salt')
             )
