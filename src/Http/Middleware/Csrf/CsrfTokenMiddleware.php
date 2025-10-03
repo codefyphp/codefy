@@ -57,7 +57,7 @@ class CsrfTokenMiddleware implements MiddlewareInterface
     {
         try {
             $this->sessionService::$options = [
-                'cookie-name' => 'CSRFSESSID',
+                'cookie-name' => $this->configContainer->getConfigKey(key: 'csrf.cookie_name', default: 'CSRFSESSID'),
                 'cookie-lifetime' => (int) $this->configContainer->getConfigKey(key: 'csrf.lifetime', default: 86400),
             ];
 
