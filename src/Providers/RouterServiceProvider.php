@@ -13,7 +13,7 @@ use Qubus\Routing\Router;
 
 class RouterServiceProvider extends CodefyServiceProvider
 {
-    protected ?string $namespace = null;
+    public const ?string NAMESPACE = null;
 
     public function register(): void
     {
@@ -29,7 +29,7 @@ class RouterServiceProvider extends CodefyServiceProvider
                 resolver: new InjectorMiddlewareResolver(container: $this->codefy),
             );
 
-            $router->setDefaultNamespace(namespace: $this->namespace ?? $this->codefy->controllerNamespace);
+            $router->setDefaultNamespace(namespace: self::NAMESPACE ?? $this->codefy->controllerNamespace);
             return $router;
         });
 
