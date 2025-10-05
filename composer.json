@@ -25,7 +25,7 @@
         "qubus/error": "^3",
         "qubus/event-dispatcher": "^4",
         "qubus/exception": "^4",
-        "qubus/expressive": "^2",
+        "qubus/expressive": "^3.x-dev",
         "qubus/filesystem": "^4",
         "qubus/inheritance": "^4",
         "qubus/mail": "^5",
@@ -62,6 +62,7 @@
         "cs-check": "phpcs",
         "cs-fix": "phpcbf"
     },
+    "minimum-stability": "dev",
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true,
