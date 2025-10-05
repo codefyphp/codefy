@@ -17,16 +17,17 @@ use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Dotenv\Dotenv;
-use Opis\Database\Connection;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Config\ConfigContainer;
+use Qubus\Dbal\Connection;
+use Qubus\Dbal\Connection\DriverConnection;
+use Qubus\Dbal\QueryBuilder;
 use Qubus\EventDispatcher\ActionFilter\Observer;
 use Qubus\EventDispatcher\Legacy\EventDispatcher;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
-use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 use Qubus\Http\Encryption\Env\SecureEnv;
 use Qubus\Http\Session\Flash;
@@ -201,18 +202,7 @@ final class Application extends Container
         $config = $this->make(name: 'codefy.config');
         $default = $config->getConfigKey(key: 'database.default');
 
-        $connection = new Connection(
-            dsn: $config->getConfigKey(key: "database.connections.{$default}.dsn"),
-            username: $config->getConfigKey(key: "database.connections.{$default}.username", default: null),
-            password: $config->getConfigKey(key: "database.connections.{$default}.password", default: null),
-            driver: $config->getConfigKey(key: "database.connections.{$default}.driver"),
-        );
-
-        if (!empty($config->getConfigKey(key: "database.connections.{$default}.options"))) {
-            $connection->options($config->getConfigKey(key: "database.connections.{$default}.options"));
-        }
-
-        return $connection;
+        return DriverConnection::make($config->getConfigKey(key: "database.connections.{$default}"));
     }
 
     /**
