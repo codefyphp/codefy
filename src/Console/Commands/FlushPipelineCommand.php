@@ -11,7 +11,6 @@ use Qubus\FileSystem\FileSystem;
 use Symfony\Component\Console\Input\InputOption;
 
 use function Codefy\Framework\Helpers\public_path;
-use function Qubus\Support\Helpers\is_null__;
 
 class FlushPipelineCommand extends ConsoleCommand
 {
@@ -100,7 +99,7 @@ EOT
 
         $groups = (isset($config['default'])) ? $config : ['default' => $config];
 
-        if (! is_null__($group = $this->getOptions(key: 'group'))) {
+        if (! empty($group = $this->getOptions(key: 'group'))) {
             $groups = $this->codefy->array->subset(array: $groups, keys: [$group]);
         }
 
