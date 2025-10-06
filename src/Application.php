@@ -257,7 +257,6 @@ final class Application extends Container
                 Providers\DatabaseConnectionServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
                 Providers\RouterServiceProvider::class,
-                Providers\AssetsServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
