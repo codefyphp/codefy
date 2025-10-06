@@ -9,10 +9,13 @@ use Qubus\Exception\Data\TypeException;
 use ReflectionException;
 use ReflectionMethod;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use Symfony\Component\Console\Question\Question;
 
 use function count;
 use function method_exists;
@@ -175,6 +178,19 @@ abstract class ConsoleCommand extends SymfonyCommand
         }
 
         return true;
+    }
+
+    /**
+     * @param string $question
+     * @return mixed
+     */
+    protected function confirm(string $question): mixed
+    {
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper(name: 'question');
+        $question = new Question(question: $question);
+
+        return $helper->ask($this->input, $this->output, $question);
     }
 
     /**

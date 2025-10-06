@@ -9,6 +9,7 @@ use Codefy\Framework\Contracts\Http\Kernel;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Pipeline\PipelineBuilder;
 use Codefy\Framework\Proxy\Codefy;
+use Codefy\Framework\Support\Assets;
 use Codefy\Framework\Support\BasePathDetector;
 use Codefy\Framework\Support\LocalStorage;
 use Codefy\Framework\Support\Paths;
@@ -42,7 +43,6 @@ use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Mail\Mailer;
 use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
-use Qubus\Support\Assets;
 use Qubus\Support\StringHelper;
 use ReflectionException;
 
@@ -257,6 +257,7 @@ final class Application extends Container
                 Providers\DatabaseConnectionServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
                 Providers\RouterServiceProvider::class,
+                Providers\AssetsServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
@@ -927,7 +928,7 @@ final class Application extends Container
     }
 
     public private(set) Assets $assets {
-        get => $this->assets ?? $this->make(name: Assets::class);
+        get => $this->assets ?? $this->make(name: 'assets.group.default');
     }
 
     public private(set) Mailer $mailer {
