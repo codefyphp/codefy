@@ -7,7 +7,7 @@ namespace Codefy\Framework\Pipeline;
 use Closure;
 use Codefy\Framework\Support\Traits\DbTransactionsAware;
 use Exception;
-use Qubus\Inheritance\ActionAware;
+use Qubus\EventDispatcher\ActionFilter\Traits\ActionAware;
 use Qubus\Injector\ServiceContainer;
 use RuntimeException;
 use Throwable;
@@ -109,7 +109,7 @@ final class Pipeline implements Chainable
     {
         try {
             $this->doAction(
-                'pipeline.started',
+                'pipeline_started',
                 $destination,
                 $this->passable,
                 $this->pipes(),
@@ -129,7 +129,7 @@ final class Pipeline implements Chainable
             $this->commitTransaction();
 
             $this->doAction(
-                'pipeline.finished',
+                'pipeline_finished',
                 $destination,
                 $this->passable,
                 $this->pipes(),
@@ -197,7 +197,7 @@ final class Pipeline implements Chainable
     {
         return function ($stack, $pipe) {
             return function ($passable) use ($stack, $pipe) {
-                $this->doAction('pipeline.execution.started', $pipe, $passable);
+                $this->doAction('pipeline_execution_started', $pipe, $passable);
 
                 if (is_callable($pipe)) {
                     // If the pipe is a callable, then we will call it directly, but otherwise we
@@ -205,7 +205,7 @@ final class Pipeline implements Chainable
                     // the appropriate method and arguments, returning the results back out.
                     $result = $pipe($passable, $stack);
 
-                    $this->doAction('pipeline.execution.finished', $pipe, $passable);
+                    $this->doAction('pipeline_execution_finished', $pipe, $passable);
 
                     return $result;
                 } elseif (! is_object($pipe)) {
@@ -228,7 +228,7 @@ final class Pipeline implements Chainable
                 ? $pipe->{$this->method}(...$parameters)
                 : $pipe(...$parameters);
 
-                $this->doAction('pipeline.execution.finished', $pipe, $passable);
+                $this->doAction('pipeline_execution_finished', $pipe, $passable);
 
                 return $this->handleCarry($carry);
             };

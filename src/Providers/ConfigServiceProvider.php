@@ -7,11 +7,15 @@ namespace Codefy\Framework\Providers;
 use Codefy\Framework\Support\CodefyServiceProvider;
 use Qubus\Config\Collection;
 use Qubus\Config\Configuration;
+use Qubus\Config\Path\PathNotFoundException;
 
 use function Codefy\Framework\Helpers\env;
 
 final class ConfigServiceProvider extends CodefyServiceProvider
 {
+    /**
+     * @throws PathNotFoundException
+     */
     public function register(): void
     {
         $this->codefy->defineParam(

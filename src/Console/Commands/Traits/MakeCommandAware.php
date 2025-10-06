@@ -12,6 +12,7 @@ use Exception;
 use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Support\Inflector;
+use ReflectionException;
 use RuntimeException;
 
 use function str_contains;
@@ -103,6 +104,8 @@ trait MakeCommandAware
      * @param string|null $qualifiedNamespaces - will return the namespace for the stub command
      * @return void
      * @throws MakeCommandFileAlreadyExistsException
+     * @throws \Qubus\Exception\Exception
+     * @throws ReflectionException
      */
     public function createClassFromStub(
         string $qualifiedClass,

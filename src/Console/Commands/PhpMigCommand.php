@@ -135,7 +135,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         if (!($adapter instanceof MigrationAdapter)) {
             throw new RuntimeException(
                 message: "phpmig.adapter or phpmig.sets must be an 
-                instance of \\Codefy\\Framework\\Migration\\Adapter\\MigrationAdapter"
+                instance of \Qubus\Expressive\Migration\Adapter\MigrationAdapter"
             );
         }
 
@@ -276,7 +276,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             if (!($migration instanceof Migration)) {
                 throw new TypeException(
                     message: sprintf(
-                        'The class "%s" in file "%s" must extend \Codefy\Framework\Migration\Migration',
+                        'The class "%s" in file "%s" must extend \Qubus\Expressive\Migration\Migration',
                         $class,
                         $path
                     )
@@ -299,9 +299,9 @@ abstract class PhpMigCommand extends ConsoleCommand
 
     /**
      * @param OutputInterface $output
-     * @return mixed
+     * @return Migrator
      */
-    protected function bootstrapMigrator(OutputInterface $output): mixed
+    protected function bootstrapMigrator(OutputInterface $output): Migrator
     {
         return new Migrator(adapter: $this->getAdapter(), objectmap: $this->getObjectMap(), output: $output);
     }

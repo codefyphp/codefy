@@ -45,7 +45,7 @@ class ListCommand extends ConsoleCommand
             $nextRun = new CronExpression($job->getExpression());
 
             $fullCommand = $job->getCommand();
-            if($job instanceof Callback) {
+            if ($job instanceof Callback) {
                 $fullCommand = $job->__toString();
             }
 

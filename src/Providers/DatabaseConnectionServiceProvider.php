@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Providers;
 
 use Codefy\Framework\Support\CodefyServiceProvider;
-use Opis\Database\Connection;
-use PDO;
-use Qubus\Config\ConfigContainer;
-use Qubus\Exception\Exception;
+use Qubus\Expressive\Connection;
 
 use function sprintf;
 
