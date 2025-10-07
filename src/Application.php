@@ -270,11 +270,11 @@ final class Application extends Container
         $this->hasBeenBootstrapped = true;
 
         foreach ($bootstrappers as $bootstrapper) {
-            $this->make(name: EventDispatcherInterface::class)->dispatch($bootstrapper);
+            $this->make(name: EventDispatcherInterface::class)->dispatch(new $bootstrapper());
 
             $this->make(name: $bootstrapper)->bootstrap($this);
 
-            $this->make(name: EventDispatcherInterface::class)->dispatch($bootstrapper);
+            $this->make(name: EventDispatcherInterface::class)->dispatch(new $bootstrapper());
         }
     }
 
