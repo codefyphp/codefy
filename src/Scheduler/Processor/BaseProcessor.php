@@ -249,6 +249,8 @@ abstract class BaseProcessor implements Processor
      */
     public function getExpression(): ?string
     {
+        $expression = null;
+
         if ($this->expression instanceof CronExpression) {
             $expression = $this->expression->getExpression();
         }

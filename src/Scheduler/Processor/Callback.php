@@ -10,7 +10,7 @@ use function is_string;
 
 class Callback extends BaseProcessor implements Stringable, Processor
 {
-    public function run(): mixed
+    public function run(): string|false
     {
         if (
             $this->preventOverlapping &&
@@ -31,7 +31,7 @@ class Callback extends BaseProcessor implements Stringable, Processor
     /**
      * Executes command.
      */
-    private function exec(callable $fn): mixed
+    private function exec(callable $fn): string
     {
         $data = $this->call($fn, $this->args, true);
 

@@ -6,20 +6,23 @@ namespace Codefy\Framework\Scheduler\Event;
 
 use Codefy\Framework\Scheduler\Task;
 use Qubus\EventDispatcher\BaseEvent;
+use Qubus\EventDispatcher\Legacy\Event;
 
-final class TaskCompleted extends BaseEvent
+final class TaskCompleted extends BaseEvent implements Event
 {
     public const string EVENT_NAME = 'task.completed';
 
-    private Task $task;
+    public private(set) ?Task $task = null {
+        get => $this->task;
+    }
 
     public function __construct(Task $task)
     {
         $this->task = $task;
     }
 
-    public function getTask(): Task
+    public function getName(): string
     {
-        return $this->task;
+        return self::EVENT_NAME;
     }
 }

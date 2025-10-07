@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Scheduler\Traits;
 
-use Qubus\Exception\Exception;
+use Exception;
 
 use function Codefy\Framework\Helpers\app;
 use function explode;

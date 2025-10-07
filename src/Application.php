@@ -19,11 +19,11 @@ use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Dotenv\Dotenv;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\EventDispatcher\ActionFilter\Observer;
-use Qubus\EventDispatcher\Legacy\EventDispatcher;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\Connection;
@@ -254,6 +254,7 @@ final class Application extends Container
         foreach (
             [
                 Providers\ConfigServiceProvider::class,
+                Providers\EventDispatcherServiceProvider::class,
                 Providers\DatabaseConnectionServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
                 Providers\RouterServiceProvider::class,
@@ -269,11 +270,11 @@ final class Application extends Container
         $this->hasBeenBootstrapped = true;
 
         foreach ($bootstrappers as $bootstrapper) {
-            $this->make(name: EventDispatcher::class)->dispatch("bootstrapping.{$bootstrapper}");
+            $this->make(name: EventDispatcherInterface::class)->dispatch($bootstrapper);
 
             $this->make(name: $bootstrapper)->bootstrap($this);
 
-            $this->make(name: EventDispatcher::class)->dispatch("bootstrapped.{$bootstrapper}");
+            $this->make(name: EventDispatcherInterface::class)->dispatch($bootstrapper);
         }
     }
 
@@ -756,7 +757,6 @@ final class Application extends Container
                 \Qubus\Cache\Psr6\TaggableCacheItemPool::class => \Qubus\Cache\Psr6\TaggablePsr6PoolAdapter::class,
                 \Qubus\Config\Path\Path::class => \Qubus\Config\Path\ConfigPath::class,
                 \Qubus\Config\ConfigContainer::class => \Qubus\Config\Collection::class,
-                \Qubus\EventDispatcher\Legacy\EventDispatcher::class => \Qubus\EventDispatcher\Legacy\Dispatcher::class,
                 \Qubus\Mail\Mailer::class => \Codefy\Framework\Support\CodefyMailer::class,
                 'mailer' => Mailer::class,
                 'dir.path' => \Codefy\Framework\Support\Paths::class,
@@ -942,8 +942,8 @@ final class Application extends Container
         get => $this->flash ?? $this->make(name: Flash::class);
     }
 
-    public private(set) EventDispatcher $event {
-        get => $this->event ?? $this->make(name: EventDispatcher::class);
+    public private(set) EventDispatcherInterface $event {
+        get => $this->event ?? $this->make(name: EventDispatcherInterface::class);
     }
 
     public private(set) HttpCookieFactory $httpCookie {

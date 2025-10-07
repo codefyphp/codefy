@@ -9,9 +9,12 @@ use Codefy\Framework\Scheduler\Processor\Callback;
 use Codefy\Framework\Scheduler\Processor\Processor;
 use Codefy\Framework\Scheduler\Processor\Shell;
 use Codefy\Framework\Scheduler\Traits\LiteralAware;
+use Exception;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Exception\Data\TypeException;
-use Qubus\Exception\Exception;
 use Qubus\Support\DateTime\QubusDateTimeZone;
+use ReflectionClass;
+use ReflectionException;
 
 use function array_filter;
 use function count;
@@ -51,8 +54,11 @@ class Schedule
 
     //phpcs:enable
 
-    public function __construct(public readonly QubusDateTimeZone $timeZone, public readonly Locker $mutex)
-    {
+    public function __construct(
+        public readonly EventDispatcherInterface $dispatcher,
+        public readonly QubusDateTimeZone $timeZone,
+        public readonly Locker $mutex
+    ) {
     }
 
     /**
@@ -104,6 +110,23 @@ class Schedule
         $this->queueProcessor($command);
 
         return $command;
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws \Qubus\Exception\Exception
+     */
+    public function task(Task $task, array $options = []): BaseTask
+    {
+        $instance = new ReflectionClass($task);
+        $task = $instance->newInstanceArgs([$this->mutex, $this->timeZone]);
+        $task->withOptions($options);
+        $task->withScheduler($this);
+        $task->withDispatcher($this->dispatcher);
+
+        $this->queueProcessor($task);
+
+        return $task;
     }
 
     /**

@@ -11,6 +11,7 @@ use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Scheduler\Mutex\Locker;
 use Codefy\Framework\Scheduler\Schedule;
 use Exception;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Support\DateTime\QubusDateTimeZone;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
@@ -47,13 +48,19 @@ class ConsoleKernel implements Kernel
         $this->codefy->share(nameOrInstance: Schedule::class);
 
         $this->codefy->prepare(name: Schedule::class, callableOrMethodStr: function () {
+            $dispatcher = $this->codefy->make(name: EventDispatcherInterface::class);
+
             $timeZone = new QubusDateTimeZone(timezone: $this->codefy->make(
                 name: 'codefy.config'
             )->getConfigKey('app.timezone'));
 
             $mutex = $this->codefy->make(name: Locker::class);
 
-            return tap(value: new Schedule(timeZone: $timeZone, mutex: $mutex), callback: function ($schedule) {
+            return tap(value: new Schedule(
+                dispatcher: $dispatcher,
+                timeZone: $timeZone,
+                mutex: $mutex
+            ), callback: function ($schedule) {
                 $this->schedule(schedule: $schedule);
             });
         });
