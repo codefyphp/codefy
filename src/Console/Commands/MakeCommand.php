@@ -36,6 +36,8 @@ class MakeCommand extends ConsoleCommand
         'provider'      => 'App\Infrastructure\Providers',
         'middleware'    => 'App\Infrastructure\Http\Middleware',
         'error'         => 'App\Infrastructure\Errors',
+        'command'       => 'App\Application\Console\Commands',
+        'route'         => 'App\Infrastructure\Http\Routes',
     ];
 
     protected array $args = [

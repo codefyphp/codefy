@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 use function Qubus\Support\Helpers\is_writable;
 
-class GenerateCommand extends PhpMigCommand
+class MigrateGenerateCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:generate';
 

@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }}
+
+use Codefy\Framework\Console\ConsoleCommand;
+
+class {{ class }} extends ConsoleCommand
+{
+    public function handle(): int
+    {
+
+    }
+}

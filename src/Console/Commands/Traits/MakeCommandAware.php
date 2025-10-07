@@ -176,7 +176,7 @@ trait MakeCommandAware
      */
     private function getStubFiles(string $classNameSuffix): string|false
     {
-        $files = glob(pattern: Application::$ROOT_PATH . '/vendor/codefyphp/framework/Stubs/*.stub');
+        $files = glob(pattern: Application::$ROOT_PATH . '/vendor/codefyphp/codefy/src/Stubs/*.stub');
         if (is_array(value: $files) && count($files)) {
             foreach ($files as $file) {
                 if (is_file(filename: $file)) {

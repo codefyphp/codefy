@@ -237,7 +237,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             $class = $this->migrationToClassName(migrationName: $migrationName);
 
             if (
-                $this instanceof GenerateCommand
+                $this instanceof MigrateGenerateCommand
                 && $class == $this->migrationToClassName(migrationName: $input->getArgument(name: 'name'))
             ) {
                 throw new TypeException(
