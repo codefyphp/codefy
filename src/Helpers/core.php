@@ -30,6 +30,7 @@ use function dirname;
 use function getcwd;
 use function is_int;
 use function Qubus\Security\Helpers\__observer;
+use function Qubus\Security\Helpers\t__;
 use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
 use function file_exists;
@@ -63,17 +64,17 @@ function app(?string $name = null, array $args = []): mixed
  *
  * @param string $key
  * @param array|bool $set
+ * @param mixed $default
  * @return mixed
- * @throws TypeException
  */
-function config(string $key, array|bool $set = false): mixed
+function config(string $key, array|bool $set = false, mixed $default = ''): mixed
 {
     if (!is_false__(var: $set)) {
         app(name: Collection::class)->setConfigKey($key, $set);
-        return app(name: Collection::class)->getConfigKey($key);
+        return app(name: Collection::class)->getConfigKey($key, $default);
     }
 
-    return app(name: Collection::class)->getConfigKey($key);
+    return app(name: Collection::class)->getConfigKey($key, $default);
 }
 
 /**
@@ -244,4 +245,15 @@ function ask(Query $query): mixed
     $enquirer = new Enquire(bus: new SynchronousQueryBus($resolver));
 
     return $enquirer->execute($query);
+}
+
+/**
+ * Displays the returned translated text.
+ *
+ * @param string $string
+ * @return string
+ */
+function trans(string $string): string
+{
+    return t__(msgid: $string, domain: config(key: 'app.locale_domain', default: 'codefy'));
 }
