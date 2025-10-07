@@ -69,7 +69,6 @@ class MakeCommand extends ConsoleCommand
             return ConsoleCommand::SUCCESS;
         } catch (MakeCommandFileAlreadyExistsException | TypeException | RuntimeException | FilesystemException $e) {
             $this->terminalError(string: sprintf('%s', $e->getMessage()));
-        } finally {
             return ConsoleCommand::FAILURE;
         }
     }
