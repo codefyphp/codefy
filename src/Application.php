@@ -45,8 +45,6 @@ use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
 use Qubus\Support\StringHelper;
 use ReflectionException;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
 
 use function dirname;
 use function get_class;
@@ -599,6 +597,16 @@ final class Application extends Container
     }
 
     /**
+     * Get the path to the service provider list in the bootstrap directory.
+     *
+     * @return string
+     */
+    public function getBootstrapProvidersPath(): string
+    {
+        return $this->bootstrapPath() . self::DS . 'providers.php';
+    }
+
+    /**
      * Get the path to the application's "config" directory.
      *
      * @return string
@@ -806,19 +814,6 @@ final class Application extends Container
     }
 
     /**
-     * Handle the incoming Artisan command.
-     *
-     * @param InputInterface  $input
-     * @return int
-     */
-    public function handleCommand(InputInterface $input): int
-    {
-        $kernel = $this->make(\Codefy\Framework\Contracts\Console\Kernel::class);
-
-        return $kernel->handle($input, new ConsoleOutput());
-    }
-
-    /**
      * Load environment file(s).
      *
      * @param string $basePath
@@ -902,7 +897,7 @@ final class Application extends Container
     {
         return new ApplicationBuilder(new self($config))
             ->withKernels()
-            ->withCommands();
+            ->withProviders();
     }
 
     /**

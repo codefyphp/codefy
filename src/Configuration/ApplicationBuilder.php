@@ -7,22 +7,14 @@ namespace Codefy\Framework\Configuration;
 use Closure;
 use Codefy\Framework\Application;
 use Codefy\Framework\Bootstrap\RegisterProviders;
-use Codefy\Framework\Console\ConsoleCommand;
-use Codefy\Framework\Contracts\Console\Kernel;
 use Codefy\Framework\Providers\RoutingServiceProvider;
-use Codefy\Framework\Scheduler\Schedule;
-use Composer\ClassMapGenerator\ClassMapGenerator;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Routing\Route\RoutingRegistrar;
 use Qubus\Routing\Router;
-use Qubus\Support\Collection\ArrayCollection;
-use ReflectionClass;
 
-use function array_merge;
 use function is_array;
 use function is_callable;
 use function is_string;
-use function is_subclass_of;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_null__;
 
@@ -56,12 +48,18 @@ final class ApplicationBuilder
      * Register additional service providers.
      *
      * @param array $providers
+     * @param bool $withBootstrapProviders
      * @return $this
      * @throws TypeException
      */
-    public function withProviders(array $providers = []): self
+    public function withProviders(array $providers = [], bool $withBootstrapProviders = true): self
     {
-        RegisterProviders::merge($providers);
+        RegisterProviders::merge(
+            providers: $providers,
+            bootstrapProviderPath: $withBootstrapProviders
+                    ? $this->app->getBootstrapProvidersPath()
+                    : null
+        );
 
         foreach ($providers as $provider) {
             $this->app->registerServiceProvider($provider);
@@ -149,37 +147,6 @@ final class ApplicationBuilder
     }
 
     /**
-     * @param array $commands
-     * @return $this
-     */
-    public function withCommands(array $commands = []): self
-    {
-        $commands = $this->registerConsoleCommands($commands);
-
-        $this->app->prepare(Kernel::class, function ($kernel) use ($commands): void {
-            $commands = new ArrayCollection($commands)
-                    ->filter(fn (string $item, int $key) =>
-                            is_subclass_of($item, ConsoleCommand::class)
-                            && !new ReflectionClass($item)->isAbstract());
-
-            $this->app->booting(static function () use ($kernel, $commands): void {
-                $kernel->addCommands($commands->all());
-            });
-        });
-
-        return $this;
-    }
-
-    public function withSchedule(callable $callback): self
-    {
-        $schedule = $this->app->make(name: Schedule::class);
-
-        $callback($schedule);
-
-        return $this;
-    }
-
-    /**
      * Create the routing callback for the application.
      *
      * @param array|string|null $web
@@ -216,32 +183,6 @@ final class ApplicationBuilder
                 $then($router);
             }
         };
-    }
-
-    /**
-     * Register all console commands in given directories/namespaces.
-     *
-     * @param array<string, string> $directories keyed by namespace prefix
-     */
-    public function registerConsoleCommands(array $directories): array
-    {
-        $commands = [];
-
-        $directories = array_merge($directories, $this->defaultCommandDirectories());
-
-        foreach ($directories as $namespace => $directory) {
-            // Generate class map for the given directory
-            $classMap = ClassMapGenerator::createMap($directory);
-
-            foreach ($classMap as $class => $path) {
-                // Ensure class belongs to the given namespace
-                if (str_starts_with($class, $namespace)) {
-                    $commands[] = $class;
-                }
-            }
-        }
-
-        return $commands;
     }
 
     /**
@@ -292,18 +233,5 @@ final class ApplicationBuilder
     public function return(): Application
     {
         return $this->app;
-    }
-
-    protected function defaultCommandDirectories(): array
-    {
-        $ds = $this->app::DS;
-
-        return [
-            'App\\Application\\Console\\Commands' =>
-                    $this->app->path() . $ds . 'Application' . $ds . 'Console' . $ds . 'Commands',
-            'Codefy\\Framework\\Console\\Commands' =>
-                    $this->app->basePath() . $ds . 'vendor' . $ds . 'codefyphp' . $ds . 'codefy' .
-                    $ds . 'src' . $ds . 'Console' . $ds . 'Commands',
-        ];
     }
 }

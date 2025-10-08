@@ -10,6 +10,7 @@ use Codefy\Framework\Contracts\Console\Kernel;
 use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Scheduler\Mutex\Locker;
 use Codefy\Framework\Scheduler\Schedule;
+use Codefy\Framework\Support\DefaultCommands;
 use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Support\DateTime\QubusDateTimeZone;
@@ -19,6 +20,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
+use function array_unique;
 use function Qubus\Inheritance\Helpers\tap;
 
 class ConsoleKernel implements Kernel
@@ -114,7 +116,11 @@ class ConsoleKernel implements Kernel
     public function addCommands(array $commands): void
     {
         foreach ($commands as $command) {
-            $command = $this->codefy->make(name: $command);
+            if (is_callable($command)) {
+                $command = $command($this->codefy);
+            } else {
+                $command = $this->codefy->make(name: $command);
+            }
             $this->registerCommand($command);
         }
     }
@@ -167,6 +173,23 @@ class ConsoleKernel implements Kernel
         }
 
         return $this->codex;
+    }
+
+    /**
+     * @param array $commands
+     * @return void
+     */
+    protected function load(array $commands = []): void
+    {
+        $commands = array_unique(
+            array_merge(
+                $this->commands,
+                $this->codefy->make(name: 'codefy.config')->getConfigKey('app.commands'),
+                new DefaultCommands($commands)->toArray()
+            )
+        );
+
+        $this->addCommands($commands);
     }
 
     /**

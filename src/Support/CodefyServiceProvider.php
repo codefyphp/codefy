@@ -81,4 +81,14 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
             $index++;
         }
     }
+
+    /**
+     * Get the default providers for a CodefyPHP application.
+     *
+     * @return DefaultProviders
+     */
+    public static function defaultProviders(): DefaultProviders
+    {
+        return new DefaultProviders();
+    }
 }
