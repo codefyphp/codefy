@@ -14,6 +14,7 @@
         "php": ">=8.4",
         "ext-pdo": "*",
         "codefyphp/domain-driven-core": "^3.0.x-dev",
+        "composer/class-map-generator": "^1.0@dev",
         "dragonmantank/cron-expression": "^3",
         "melbahja/seo": "^2.1",
         "middlewares/cache": "^3.1",

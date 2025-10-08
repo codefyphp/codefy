@@ -14,7 +14,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 use function count;
@@ -188,7 +189,66 @@ abstract class ConsoleCommand extends SymfonyCommand
     {
         /** @var QuestionHelper $helper */
         $helper = $this->getHelper(name: 'question');
-        $question = new Question(question: $question);
+        $question = new ConfirmationQuestion(question: $question, default: false);
+
+        return $helper->ask($this->input, $this->output, $question);
+    }
+
+    /**
+     * @param string $question
+     * @param bool|float|int|string|null $default
+     * @return mixed
+     */
+    protected function ask(string $question, bool|float|int|null|string $default = null): mixed
+    {
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper(name: 'question');
+        $question = new Question(question: $question, default: $default);
+
+        return $helper->ask($this->input, $this->output, $question);
+    }
+
+    /**
+     * @param string $question
+     * @param array $choices
+     * @param bool|float|int|string|null $default
+     * @param string|null $message
+     * @return mixed
+     */
+    protected function choice(
+        string $question,
+        array $choices,
+        bool|float|int|null|string $default = null,
+        ?string $message = null
+    ): mixed {
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper(name: 'question');
+        $question = new ChoiceQuestion(question: $question, choices: $choices, default: $default);
+
+        $question->setErrorMessage(errorMessage: $message ?? 'There is an error.');
+
+        return $helper->ask($this->input, $this->output, $question);
+    }
+
+    /**
+     * @param string $question
+     * @param array $choices
+     * @param bool|float|int|string|null $default
+     * @param string|null $message
+     * @return mixed
+     */
+    protected function multiChoice(
+        string $question,
+        array $choices,
+        bool|float|int|null|string $default = null,
+        ?string $message = null
+    ): mixed {
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper(name: 'question');
+        $question = new ChoiceQuestion(question: $question, choices: $choices, default: $default);
+
+        $question->setMultiselect(multiselect: true);
+        $question->setErrorMessage(errorMessage: $message ?? 'There is an error.');
 
         return $helper->ask($this->input, $this->output, $question);
     }

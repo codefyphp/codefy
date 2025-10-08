@@ -106,6 +106,20 @@ class ConsoleKernel implements Kernel
     }
 
     /**
+     * Add an array of commands to the console.
+     *
+     * @param array $commands
+     * @return void
+     */
+    public function addCommands(array $commands): void
+    {
+        foreach ($commands as $command) {
+            $command = $this->codefy->make(name: $command);
+            $this->registerCommand($command);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function all(): array

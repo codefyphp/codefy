@@ -45,6 +45,8 @@ use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
 use Qubus\Support\StringHelper;
 use ReflectionException;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 use function dirname;
 use function get_class;
@@ -573,7 +575,7 @@ final class Application extends Container
      */
     public function path(): string
     {
-        return $this->appPath ?: $this->basePath . self::DS . 'app';
+        return $this->appPath ?: $this->basePath . self::DS . 'App';
     }
 
     /**
@@ -804,6 +806,19 @@ final class Application extends Container
     }
 
     /**
+     * Handle the incoming Artisan command.
+     *
+     * @param InputInterface  $input
+     * @return int
+     */
+    public function handleCommand(InputInterface $input): int
+    {
+        $kernel = $this->make(\Codefy\Framework\Contracts\Console\Kernel::class);
+
+        return $kernel->handle($input, new ConsoleOutput());
+    }
+
+    /**
      * Load environment file(s).
      *
      * @param string $basePath
@@ -886,7 +901,8 @@ final class Application extends Container
     public static function create(array $config): ApplicationBuilder
     {
         return new ApplicationBuilder(new self($config))
-            ->withKernels();
+            ->withKernels()
+            ->withCommands();
     }
 
     /**
