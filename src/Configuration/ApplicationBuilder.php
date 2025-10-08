@@ -16,6 +16,7 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Routing\Route\RoutingRegistrar;
 use Qubus\Routing\Router;
 use Qubus\Support\Collection\ArrayCollection;
+use ReflectionClass;
 
 use function array_merge;
 use function is_array;
@@ -147,13 +148,19 @@ final class ApplicationBuilder
         return $this;
     }
 
+    /**
+     * @param array $commands
+     * @return $this
+     */
     public function withCommands(array $commands = []): self
     {
         $commands = $this->registerConsoleCommands($commands);
 
         $this->app->prepare(Kernel::class, function ($kernel) use ($commands): void {
             $commands = new ArrayCollection($commands)
-                ->filter(fn (string $item, string $key) => is_subclass_of($item, ConsoleCommand::class));
+                    ->filter(fn (string $item, int $key) =>
+                            is_subclass_of($item, ConsoleCommand::class)
+                            && !new ReflectionClass($item)->isAbstract());
 
             $this->app->booting(static function () use ($kernel, $commands): void {
                 $kernel->addCommands($commands->all());
@@ -229,9 +236,6 @@ final class ApplicationBuilder
             foreach ($classMap as $class => $path) {
                 // Ensure class belongs to the given namespace
                 if (str_starts_with($class, $namespace)) {
-                    /*if (is_subclass_of($class, ConsoleCommand::class) && !new ReflectionClass($class)->isAbstract()) {
-                        $this->app->make(name: $class);
-                    }*/
                     $commands[] = $class;
                 }
             }
