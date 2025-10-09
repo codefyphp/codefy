@@ -60,6 +60,6 @@ class Auth implements Sentinel
             return RedirectResponseFactory::create($location);
         }
 
-        return JsonResponseFactory::create(data: 'Invalid credentials.', status: 403);
+        return JsonResponseFactory::create(data: 'Forbidden.', status: 403);
     }
 }
