@@ -66,6 +66,9 @@ class Server
 
         $url = concat_ws(string1: $url, string2: $path, separator: '');
 
-        return esc_url(url: $url);
+        // Replace multiple slashes with a single slash, but not after the protocol (http:// or https://)
+        $normalizedUrl = preg_replace(pattern: '#(?<!:)//+#', replacement: '/', subject: $url);
+
+        return esc_url(url: $normalizedUrl);
     }
 }
