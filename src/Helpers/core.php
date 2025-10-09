@@ -28,8 +28,12 @@ use ReflectionException;
 
 use function dirname;
 use function error_log;
+use function filter_var;
 use function getcwd;
 use function is_int;
+use function parse_url;
+use function preg_match;
+use function preg_replace;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Security\Helpers\esc_attr__;
 use function Qubus\Security\Helpers\esc_html__;
@@ -41,8 +45,15 @@ use function in_array;
 use function is_string;
 use function realpath;
 use function sprintf;
+use function str_contains;
+use function str_starts_with;
+use function strlen;
+use function substr;
 use function substr_count;
 use function ucfirst;
+
+use const FILTER_FLAG_IPV6;
+use const FILTER_VALIDATE_IP;
 
 /**
  * Get the available container instance.
@@ -249,6 +260,106 @@ function ask(Query $query): mixed
 }
 
 /**
+ * Normalize a URL by collapsing multiple consecutive slashes into one,
+ * but preserve the scheme's "://" (for http/https) and do not touch query or fragment.
+ *
+ * Examples:
+ *   normalize_url('http://example.com//foo///bar') => 'http://example.com/foo/bar'
+ *   normalize_url('//example.com//a')             => '//example.com/a'
+ *   normalize_url('/some//relative//path')       => '/some/relative/path'
+ *
+ * @param string $url
+ * @return string
+ */
+function normalize_url(string $url): string
+{
+    $original = $url;
+    $parts = parse_url($url);
+
+    // If parse_url fails, fall back to simple regex while protecting scheme.
+    if ($parts === false) {
+        if (preg_match('#^(https?://)#i', $url, $m)) {
+            $prefix = $m[1];
+            $rest = substr($url, strlen($prefix));
+            $rest = preg_replace(pattern: '#/+#', replacement: '/', subject: $rest);
+            return $prefix . $rest;
+        }
+
+        if (str_starts_with($url, '//')) {
+            return '//' . preg_replace(pattern: '#/+#', replacement: '/', subject: substr(string: $url, offset: 2));
+        }
+
+        return preg_replace(pattern: '#/+#', replacement: '/', subject: $url);
+    }
+
+    $scheme   = $parts['scheme'] ?? null;
+    $user     = $parts['user'] ?? null;
+    $pass     = $parts['pass'] ?? null;
+    $host     = $parts['host'] ?? null;
+    $port     = $parts['port'] ?? null;
+    $path     = $parts['path'] ?? '';
+    $query    = $parts['query'] ?? null;
+    $fragment = $parts['fragment'] ?? null;
+
+    // Collapse multiple slashes in the path only.
+    // This preserves a single leading slash (if any) and turns '///a//b' => '/a/b'.
+    $path = preg_replace(pattern: '#/+#', replacement: '/', subject: $path);
+
+    // Rebuild authority (user[:pass]@host[:port])
+    $authority = '';
+    if ($host !== null) {
+        if ($user !== null) {
+            $authority .= $user;
+            if ($pass !== null) {
+                $authority .= ':' . $pass;
+            }
+            $authority .= '@';
+        }
+
+        // For IPv6 host strings we ensure brackets when reconstructing authority.
+        $hostOut = $host;
+        if (
+                str_contains($hostOut, ':')
+                && $hostOut[0] !== '['
+                && filter_var($hostOut, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)
+        ) {
+            $hostOut = '[' . $hostOut . ']';
+        }
+
+        $authority .= $hostOut;
+        if ($port !== null) {
+            $authority .= ':' . $port;
+        }
+    }
+
+    $result = '';
+
+    if ($scheme !== null) {
+        // Preserve scheme and "://"
+        $result .= $scheme . '://';
+        $result .= $authority;
+    } elseif ($host !== null) {
+        // protocol-relative or host-without-scheme: preserve leading //
+        $result .= '//' . $authority;
+    } elseif (str_starts_with($original, '//')) {
+        // preserve protocol-relative leading //
+        $result .= '//';
+    }
+
+    $result .= $path;
+
+    if ($query !== null) {
+        $result .= '?' . $query;
+    }
+
+    if ($fragment !== null) {
+        $result .= '#' . $fragment;
+    }
+
+    return $result;
+}
+
+/**
  * Displays the returned translated text.
  *
  * @param string $string
@@ -285,7 +396,7 @@ function trans_attr(string $string): string
 function site_url(string $path = ''): string
 {
     try {
-        return Server::siteUrl($path);
+        return normalize_url(Server::siteUrl($path));
     } catch (Exception $e) {
         error_log($e->getMessage());
     }
