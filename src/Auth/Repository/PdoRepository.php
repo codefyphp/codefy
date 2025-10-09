@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Codefy\Framework\Auth\Repository;
 
 use Codefy\Framework\Support\Password;
-use Opis\Database\Connection;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
+use Qubus\Expressive\Connection;
 use Qubus\Http\Session\SessionEntity;
 use SensitiveParameter;
 
@@ -33,7 +33,7 @@ class PdoRepository implements AuthUserRepository
             $fields['identity']
         );
 
-        $stmt = $this->connection->getPDO()->prepare(query: $sql);
+        $stmt = $this->connection->pdo->prepare($sql);
         if (false === $stmt) {
             return null;
         }

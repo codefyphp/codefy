@@ -49,14 +49,14 @@ class FileResource extends BaseStorageResource
     public function save(): void
     {
         $data = [
-                'roles' => [],
-                'permissions' => [],
+            'roles' => [],
+            'permissions' => [],
         ];
         foreach ($this->roles as $role) {
-            $data['roles'][$role->getName()] = $this->roleToRow($role);
+            $data['roles'][$role->name] = $this->roleToRow($role);
         }
         foreach ($this->permissions as $permission) {
-            $data['permissions'][$permission->getName()] = $this->permissionToRow($permission);
+            $data['permissions'][$permission->name] = $this->permissionToRow($permission);
         }
 
         LocalStorage::disk()->write($this->file, json_encode(value: $data, flags: JSON_PRETTY_PRINT));
@@ -65,16 +65,16 @@ class FileResource extends BaseStorageResource
     protected function roleToRow(Role $role): array
     {
         $result = [];
-        $result['name'] = $role->getName();
-        $result['description'] = $role->getDescription();
+        $result['name'] = $role->name;
+        $result['description'] = $role->description;
         $childrenNames = [];
         foreach ($role->getChildren() as $child) {
-            $childrenNames[] = $child->getName();
+            $childrenNames[] = $child->name;
         }
         $result['children'] = $childrenNames;
         $permissionNames = [];
         foreach ($role->getPermissions() as $permission) {
-            $permissionNames[] = $permission->getName();
+            $permissionNames[] = $permission->name;
         }
         $result['permissions'] = $permissionNames;
         return $result;
@@ -83,11 +83,11 @@ class FileResource extends BaseStorageResource
     protected function permissionToRow(Permission $permission): array
     {
         $result = [];
-        $result['name'] = $permission->getName();
-        $result['description'] = $permission->getDescription();
+        $result['name'] = $permission->name;
+        $result['description'] = $permission->description;
         $childrenNames = [];
         foreach ($permission->getChildren() as $child) {
-            $childrenNames[] = $child->getName();
+            $childrenNames[] = $child->name;
         }
         $result['children'] = $childrenNames;
         $result['ruleClass'] = $permission->getRuleClass();
@@ -105,7 +105,7 @@ class FileResource extends BaseStorageResource
         foreach ($permissionsData as $pData) {
             $permission = $this->addPermission($pData['name'] ?? '', $pData['description'] ?? '');
             $permission->setRuleClass($pData['ruleClass'] ?? '');
-            $permChildrenNames[$permission->getName()] = $pData['children'] ?? [];
+            $permChildrenNames[$permission->name] = $pData['children'] ?? [];
         }
 
         foreach ($permChildrenNames as $permissionName => $childrenNames) {
@@ -129,7 +129,7 @@ class FileResource extends BaseStorageResource
 
         foreach ($rolesData as $rData) {
             $role = $this->addRole($rData['name'] ?? '', $rData['description'] ?? '');
-            $rolesChildrenNames[$role->getName()] = $rData['children'] ?? [];
+            $rolesChildrenNames[$role->name] = $rData['children'] ?? [];
             $permissionNames = $rData['permissions'] ?? [];
             foreach ($permissionNames as $permissionName) {
                 if ($permission = $this->getPermission($permissionName)) {
