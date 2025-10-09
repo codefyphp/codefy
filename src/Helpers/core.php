@@ -27,6 +27,7 @@ use Qubus\Expressive\QueryBuilder;
 use ReflectionException;
 
 use function dirname;
+use function error_log;
 use function getcwd;
 use function is_int;
 use function Qubus\Security\Helpers\__observer;
@@ -280,10 +281,14 @@ function trans_attr(string $string): string
 
 /**
  * Returns the url of the application.
- *
- * @throws Exception
  */
 function site_url(string $path = ''): string
 {
-    return Server::siteUrl($path);
+    try {
+        return Server::siteUrl($path);
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+    }
+
+    return '';
 }
