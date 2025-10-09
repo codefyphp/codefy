@@ -12,10 +12,9 @@ class UserSession implements SessionEntity
 
     public function withToken(?string $token = null): self
     {
-        $new = clone $this;
-        $new->token = $token;
+        $this->token = $token;
 
-        return $new;
+        return $this;
     }
 
     public function clear(): void
