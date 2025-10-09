@@ -15,6 +15,7 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Support\CodefyMailer;
+use Codefy\Framework\Support\Server;
 use Codefy\QueryBus\Busses\SynchronousQueryBus;
 use Codefy\QueryBus\Enquire;
 use Codefy\QueryBus\Query;
@@ -275,4 +276,14 @@ function trans_html(string $string): string
 function trans_attr(string $string): string
 {
     return esc_attr__(string: $string, domain: config(key: 'app.locale_domain', default: 'codefy'));
+}
+
+/**
+ * Returns the url of the application.
+ *
+ * @throws Exception
+ */
+function site_url(string $path = ''): string
+{
+    return Server::siteUrl($path);
 }
