@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Auth\Repository;
 
+use Codefy\Framework\Auth\UserSession;
 use Codefy\Framework\Support\Password;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
@@ -49,21 +50,7 @@ class PdoRepository implements AuthUserRepository
         $passwordHash = (string) ($result->{$fields['password']} ?? '');
 
         if (Password::verify(password: $password ?? '', hash: $passwordHash)) {
-            $user = new class () implements SessionEntity {
-                public ?string $token = null;
-
-                public function withToken(?string $token = null): self
-                {
-                    $this->token = $token;
-                    return $this;
-                }
-
-                public function isEmpty(): bool
-                {
-                    return !empty($this->token);
-                }
-            };
-
+            $user = new UserSession();
             $user
                 ->withToken($result->token);
 

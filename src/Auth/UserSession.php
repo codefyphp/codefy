@@ -8,7 +8,7 @@ use Qubus\Http\Session\SessionEntity;
 
 class UserSession implements SessionEntity
 {
-    public private(set) ?string $token = null;
+    public protected(set) ?string $token = null;
 
     public function withToken(?string $token = null): self
     {
