@@ -21,7 +21,6 @@ use Codefy\QueryBus\Query;
 use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
 use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Qubus\Config\Collection;
-use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\QueryBuilder;
 use ReflectionException;
@@ -30,6 +29,8 @@ use function dirname;
 use function getcwd;
 use function is_int;
 use function Qubus\Security\Helpers\__observer;
+use function Qubus\Security\Helpers\esc_attr__;
+use function Qubus\Security\Helpers\esc_html__;
 use function Qubus\Security\Helpers\t__;
 use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
@@ -215,7 +216,6 @@ function mail(string|array $to, string $subject, string $message, array $headers
  *
  * @param Command $command
  * @throws ReflectionException
- * @throws TypeException
  * @throws CommandCouldNotBeHandledException
  * @throws UnresolvableCommandHandlerException
  */
@@ -234,7 +234,6 @@ function command(Command $command): void
  * a result if any.
  *
  * @throws ReflectionException
- * @throws TypeException
  * @throws UnresolvableQueryHandlerException
  */
 function ask(Query $query): mixed
@@ -256,4 +255,24 @@ function ask(Query $query): mixed
 function trans(string $string): string
 {
     return t__(msgid: $string, domain: config(key: 'app.locale_domain', default: 'codefy'));
+}
+
+/**
+ * Escapes a translated string to make it safe for HTML output.
+ *
+ * @throws Exception
+ */
+function trans_html(string $string): string
+{
+    return esc_html__(string: $string, domain: config(key: 'app.locale_domain', default: 'codefy'));
+}
+
+/**
+ * Escapes a translated string to make it safe for HTML attribute.
+ *
+ * @throws Exception
+ */
+function trans_attr(string $string): string
+{
+    return esc_attr__(string: $string, domain: config(key: 'app.locale_domain', default: 'codefy'));
 }
