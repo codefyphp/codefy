@@ -7,8 +7,6 @@ namespace Codefy\Framework\Providers;
 use Codefy\Framework\Support\CodefyServiceProvider;
 use Qubus\Expressive\Connection;
 
-use function sprintf;
-
 final class DatabaseConnectionServiceProvider extends CodefyServiceProvider
 {
     public function register(): void
