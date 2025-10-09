@@ -11,6 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
+use Qubus\Http\Factories\JsonResponseFactory;
+use Qubus\Http\Factories\RedirectResponseFactory;
 use Qubus\Http\Session\SessionEntity;
 
 class Auth implements Sentinel
@@ -49,18 +51,15 @@ class Auth implements Sentinel
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function unauthorized(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->responseFactory
-            ->createResponse(code: 302)
-            ->withHeader(
-                name: 'Location',
-                value: $this->configContainer->getConfigKey(
-                    key: 'auth.http_redirect',
-                    default: $this->configContainer->getConfigKey(key: 'auth.login_url')
-                )
-            );
+        $location = $this->configContainer->getConfigKey(key: 'auth.http_redirect');
+        if (!empty($location)) {
+            return RedirectResponseFactory::create($location);
+        }
+
+        return JsonResponseFactory::create(data: 'Invalid credentials.', status: 403);
     }
 }
