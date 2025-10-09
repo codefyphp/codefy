@@ -20,6 +20,9 @@ use Symfony\Component\Console\Question\Question;
 
 use function count;
 use function method_exists;
+use function str_repeat;
+
+use const PHP_EOL;
 
 abstract class ConsoleCommand extends SymfonyCommand
 {
@@ -106,55 +109,60 @@ abstract class ConsoleCommand extends SymfonyCommand
      * Outputs the string to the console without any tag.
      *
      * @param string $string
-     * @return mixed
      */
-    protected function terminalRaw(string $string): mixed
+    protected function terminalRaw(string $string): void
     {
-        return $this->output->writeln(messages: $string);
+        $this->output->writeln(messages: $string);
     }
 
     /**
      * Output to the terminal wrap in info tags.
      *
      * @param string $string
-     * @return string
      */
-    protected function terminalInfo(string $string): mixed
+    protected function terminalInfo(string $string): void
     {
-        return $this->output->writeln(messages: '<info>' . $string . '</info>');
+        $this->output->writeln(messages: '<info>' . $string . '</info>');
     }
 
     /**
      * Output to the terminal wrap in comment tags.
      *
      * @param string $string
-     * @return string
      */
-    protected function terminalComment(string $string): mixed
+    protected function terminalComment(string $string): void
     {
-        return $this->output->writeln(messages: '<comment>' . $string . '</comment>');
+        $this->output->writeln(messages: '<comment>' . $string . '</comment>');
     }
 
     /**
      * Output to the terminal wrap in question tags.
      *
      * @param string $string
-     * @return string
      */
-    protected function terminalQuestion(string $string): mixed
+    protected function terminalQuestion(string $string): void
     {
-        return $this->output->writeln(messages: '<question>' . $string . '</question>');
+        $this->output->writeln(messages: '<question>' . $string . '</question>');
     }
 
     /**
      * Output to the terminal wrap in error tags.
      *
      * @param string $string
-     * @return string
      */
-    protected function terminalError(string $string): mixed
+    protected function terminalError(string $string): void
     {
-        return $this->output->writeln(messages: '<error>' . $string . '</error>');
+        $this->output->writeln(messages: '<error>' . $string . '</error>');
+    }
+
+    /**
+     * Output to the terminal with a blank line.
+     *
+     * @param int $count
+     */
+    protected function terminalNewLine(int $count = 1): void
+    {
+        $this->output->write(str_repeat(PHP_EOL, $count));
     }
 
     /**
