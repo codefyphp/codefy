@@ -34,7 +34,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
             : $this->configContainer->getConfigKey(key: 'cookies.lifetime');
 
             $this->sessionService::$options = [
-                'cookie-name' => 'USERSESSID',
+                'cookie-name' => $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID'),
                 'cookie-lifetime' => (int) $expire,
             ];
             $session = $this->sessionService->makeSession($request);
