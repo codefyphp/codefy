@@ -97,4 +97,43 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     {
         return new DefaultProviders();
     }
+
+    /**
+     * Register publishable paths for this provider.
+     *
+     * @param array<string,string> $paths [from => tag]
+     * @param string|null $group Optional tag/group name ("config", "migrations", etc.)
+     */
+    public function publishes(array $paths, ?string $group = null): void
+    {
+        foreach ($paths as $from => $tag) {
+            $tag = $group ?? $tag; // if group given, override
+            $this->publishes[$tag][$from] = $tag;
+        }
+    }
+
+    /**
+     * Get all publishable paths for this provider.
+     *
+     * @param string|null $tag Restrict to a tag (e.g. "config", "migrations")
+     * @return array<string,string> [from => tag]
+     */
+    public function pathsToPublish(?string $tag = null): array
+    {
+        if ($tag !== null) {
+            return $this->publishes[$tag] ?? [];
+        }
+
+        return array_merge(...array_values($this->publishes ?: [[]]));
+    }
+
+    /**
+     * List all tags defined by this provider.
+     *
+     * @return array<string>
+     */
+    public function publishTags(): array
+    {
+        return array_keys($this->publishes);
+    }
 }
