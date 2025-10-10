@@ -30,6 +30,7 @@ class DefaultCommands
             \Codefy\Framework\Console\Commands\UuidCommand::class,
             \Codefy\Framework\Console\Commands\UlidCommand::class,
             \Codefy\Framework\Console\Commands\FlushPipelineCommand::class,
+            \Codefy\Framework\Console\Commands\VendorPublishCommand::class,
         ];
     }
 }
