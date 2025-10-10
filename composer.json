@@ -27,7 +27,7 @@
         "qubus/error": "^3",
         "qubus/event-dispatcher": "^4",
         "qubus/exception": "^4",
-        "qubus/expressive": "^3.x-dev",
+        "qubus/expressive": "^3",
         "qubus/filesystem": "^4",
         "qubus/inheritance": "^4",
         "qubus/mail": "^5",
