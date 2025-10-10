@@ -13,7 +13,6 @@ use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
 use Qubus\Http\Factories\JsonResponseFactory;
 
-use function Qubus\Security\Helpers\t__;
 use function sprintf;
 
 class ApiMiddleware implements MiddlewareInterface
@@ -41,9 +40,6 @@ class ApiMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        return JsonResponseFactory::create(
-            data: t__(msgid: 'Unauthorized.', domain: 'codefy'),
-            status: 401
-        );
+        return JsonResponseFactory::create(data: 'Unauthorized.', status: 401);
     }
 }
