@@ -38,6 +38,12 @@ class VendorPublishCommand extends ConsoleCommand
 
         $this
             ->addOption(
+                name: 'provider',
+                shortcut: null,
+                mode: InputOption::VALUE_REQUIRED,
+                description: 'ServiceProvider class'
+            )
+            ->addOption(
                 name: 'tag',
                 shortcut: null,
                 mode: InputOption::VALUE_REQUIRED,
@@ -45,13 +51,13 @@ class VendorPublishCommand extends ConsoleCommand
             )
             ->addOption(
                 name: 'force',
-                shortcut: '--f',
+                shortcut: 'f',
                 mode: InputOption::VALUE_NONE,
                 description: 'Overwrite existing files.'
             )
             ->addOption(
                 name: 'list',
-                shortcut: '--l',
+                shortcut: 'l',
                 mode: InputOption::VALUE_NONE,
                 description: 'List publishable providers and tags.'
             )
@@ -64,6 +70,9 @@ EOT
             );
     }
 
+    /**
+     * @throws FilesystemException
+     */
     public function handle(): int
     {
         // If user wants to list publishable tags instead of publishing
@@ -71,12 +80,17 @@ EOT
             return $this->listPublishables();
         }
 
+        // If user wants to publish from a specific provider
+        if ($this->input->getOption('provider')) {
+            return $this->publishDefinedProvider();
+        }
+
         $tag      = $this->input->getOption('tag');
         $force    = $this->input->getOption('force');
 
-        $providers = $this->codefy->getRegisteredProviders();
+        $registeredProviders = $this->codefy->getRegisteredProviders();
 
-        foreach ($providers as $instance => $value) {
+        foreach ($registeredProviders as $instance => $value) {
 
             $paths = $instance->pathsToPublish($tag);
 
@@ -188,5 +202,65 @@ EOT
         }
 
         return ConsoleCommand::SUCCESS;
+    }
+
+    /**
+     * @throws FilesystemException
+     */
+    private function publishDefinedProvider(): int
+    {
+        $registeredProviders = $this->codefy->getRegisteredProviders();
+
+        $provider = $this->input->getOption('provider');
+        $tag      = $this->input->getOption('tag');
+        $force    = $this->input->getOption('force');
+
+        $providers = $this->findKeysLike($provider, $registeredProviders);
+
+        foreach ($providers as $int => $p) {
+
+            $paths = $p->pathsToPublish($tag);
+
+            foreach ($paths as $from => $type) {
+                $destination = $this->resolveDestination($from, $type);
+
+                if (is_dir($from)) {
+                    $this->copyDirectory($from, $destination, $force);
+                } else {
+                    $this->copyFile($from, $destination, $force);
+                }
+            }
+        }
+
+        return ConsoleCommand::SUCCESS;
+    }
+
+    /**
+     * Search array keys for a substring and return all matching keys.
+     *
+     * @param string $needle
+     * @param array  $haystack
+     * @param bool   $caseSensitive
+     *
+     * @return array List of matching keys (empty if none found).
+     */
+    protected function findKeysLike(string $needle, array $haystack, bool $caseSensitive = true): array
+    {
+        $matches = [];
+
+        foreach ($haystack as $key => $_) {
+            if (!is_string($key)) {
+                continue;
+            }
+
+            $hay = $caseSensitive ? $key : strtolower($key);
+            $needleCmp = $caseSensitive ? $needle : strtolower($needle);
+
+            if (str_contains($hay, $needleCmp)) {
+                $matches[] = $key;
+            }
+        }
+
+        return $matches;
     }
 }
