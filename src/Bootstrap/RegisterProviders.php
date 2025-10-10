@@ -26,6 +26,8 @@ final class RegisterProviders
      */
     protected static ?string $bootstrapProviderPath = null;
 
+    public static array $providers = [];
+
     /**
      * @throws TypeException
      * @throws Exception
@@ -71,6 +73,8 @@ final class RegisterProviders
                 array_values($packageProviders ?? []),
             )
         );
+
+        self::$providers = array_merge(self::$providers, $arrayMerge);
 
         $config->setConfigKey(key: 'app', value: ['providers' => $arrayMerge,]);
     }

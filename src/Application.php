@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework;
 
+use Codefy\Framework\Bootstrap\RegisterProviders;
 use Codefy\Framework\Configuration\ApplicationBuilder;
 use Codefy\Framework\Contracts\Http\Kernel;
 use Codefy\Framework\Factory\FileLoggerFactory;
@@ -46,6 +47,8 @@ use Qubus\Support\ArrayHelper;
 use Qubus\Support\StringHelper;
 use ReflectionException;
 
+use function array_merge;
+use function array_unique;
 use function dirname;
 use function get_class;
 use function is_string;
@@ -336,7 +339,8 @@ final class Application extends Container
         /** @var ConfigContainer $config */
         $config = $this->make(name: 'codefy.config');
 
-        $providers = $config->getConfigKey(key: 'app.providers');
+        $appProviders = $config->getConfigKey(key: 'app.providers');
+        $providers = array_unique(array_merge($appProviders, RegisterProviders::$providers));
 
         foreach ($providers as $serviceProvider) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
@@ -368,7 +372,7 @@ final class Application extends Container
 
         $serviceProvider->register();
 
-        $this->markServiceProviderAsRegistered(registered: $registered, serviceProvider: $serviceProvider);
+        $this->markServiceProviderAsRegistered(serviceProvider: $serviceProvider);
         // If application is booted, call the boot method on the service provider
         // if it exists.
         if ($this->booted) {
@@ -381,12 +385,14 @@ final class Application extends Container
     /**
      * Get the registered service provider instance if it exists.
      *
-     * @param  Serviceable|Bootable|string $provider
-     * @return string|null
+     * @param Serviceable|Bootable|string $provider
+     * @return Serviceable|Bootable|null
      */
-    public function getRegisteredServiceProvider(Serviceable|Bootable|string $provider): string|null
+    public function getRegisteredServiceProvider(Serviceable|Bootable|string $provider): Serviceable|Bootable|null
     {
-        return $this->serviceProviders[$provider] ?? null;
+        $registered = is_string(value: $provider) ? $provider : get_class(object: $provider);
+
+        return $this->serviceProviders[$registered] ?? null;
     }
 
     /**
@@ -416,7 +422,7 @@ final class Application extends Container
     /**
      * Get the service providers that have been registered.
      *
-     * @return array
+     * @return array<string, bool>
      */
     public function getRegisteredProviders(): array
     {
@@ -426,12 +432,14 @@ final class Application extends Container
     /**
      * Determine if the given service provider is registered.
      *
-     * @param  string  $provider
+     * @param string|Serviceable|Bootable $provider
      * @return bool
      */
-    public function providerIsRegistered(string $provider): bool
+    public function providerIsRegistered(string|Serviceable|Bootable $provider): bool
     {
-        return isset($this->serviceProvidersRegistered[$provider]);
+        $registered = is_string(value: $provider) ? $provider : get_class(object: $provider);
+
+        return isset($this->serviceProvidersRegistered[$registered]);
     }
 
     /**
@@ -498,16 +506,14 @@ final class Application extends Container
     /**
      * Mark the particular ServiceProvider as having been registered.
      *
-     * @param string|null $registered
      * @param Serviceable|Bootable $serviceProvider
      * @return void
      */
-    protected function markServiceProviderAsRegistered(
-        string|null $registered,
-        Serviceable|Bootable $serviceProvider
-    ): void {
-        $this->serviceProviders[$registered] = $serviceProvider;
-        $this->serviceProvidersRegistered[$registered] = true;
+    protected function markServiceProviderAsRegistered(Serviceable|Bootable $serviceProvider): void
+    {
+        $class = get_class($serviceProvider);
+        $this->serviceProviders[$class] = $serviceProvider;
+        $this->serviceProvidersRegistered[$class] = true;
     }
 
     /**

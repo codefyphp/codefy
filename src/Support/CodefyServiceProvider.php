@@ -23,6 +23,12 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
      */
     protected array $bootedCallbacks = [];
 
+    /** @var array<string, array<string,string>> */
+    protected array $publishes = [];
+
+    /** @var array<string, array<string>> */
+    protected array $publishGroups = [];
+
     public function __construct(protected Application $codefy)
     {
         parent::__construct($codefy);
