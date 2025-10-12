@@ -11,7 +11,10 @@ use Qubus\Exception\Exception;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 
+use function getcwd;
 use function Qubus\Support\Helpers\is_writable;
+use function sprintf;
+use function str_replace;
 
 class MigrateGenerateCommand extends PhpMigCommand
 {
@@ -122,7 +125,7 @@ EOT
 
 declare(strict_types=1);
 
-use Codefy\Framework\Migration\Migration;
+use Qubus\Expressive\Migration\Migration;
 
 class $className extends Migration
 {
@@ -144,17 +147,13 @@ PHP;
         }
 
         if (false === file_put_contents(filename: $path, data: $contents)) {
-            throw new RuntimeException(
-                message: sprintf(
-                    'The file "%s" could not be written to',
-                    $path
-                )
-            );
+            $this->terminalRaw(sprintf('<error>The file "%s" could not be generated.</error>', $path));
+            return ConsoleCommand::FAILURE;
         }
 
         $this->terminalRaw(
-            string: '<info>+f</info> ' .
-            '.' . str_replace(search: getcwd(), replace: '', subject: $path)
+            string: '<info>+f ' .
+            '.' . str_replace(search: getcwd(), replace: '', subject: $path) . '</info>'
         );
 
         return ConsoleCommand::SUCCESS;
