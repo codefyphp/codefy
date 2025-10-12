@@ -21,8 +21,8 @@ use Codefy\QueryBus\Enquire;
 use Codefy\QueryBus\Query;
 use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
 use Codefy\QueryBus\UnresolvableQueryHandlerException;
-use Qubus\Config\Collection;
 use Qubus\Exception\Exception;
+use Qubus\Expressive\Connection;
 use Qubus\Expressive\QueryBuilder;
 use ReflectionException;
 
@@ -38,7 +38,6 @@ use function Qubus\Security\Helpers\__observer;
 use function Qubus\Security\Helpers\esc_attr__;
 use function Qubus\Security\Helpers\esc_html__;
 use function Qubus\Security\Helpers\t__;
-use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
 use function file_exists;
 use function in_array;
@@ -76,19 +75,21 @@ function app(?string $name = null, array $args = []): mixed
 /**
  * Get the available config instance.
  *
- * @param string $key
- * @param array|bool $set
+ * @param array<string, mixed>|string|null  $key
  * @param mixed $default
  * @return mixed
  */
-function config(string $key, array|bool $set = false, mixed $default = ''): mixed
+function config(string|array|null $key, mixed $default = ''): mixed
 {
-    if (!is_false__(var: $set)) {
-        app(name: Collection::class)->setConfigKey($key, $set);
-        return app(name: Collection::class)->getConfigKey($key, $default);
+    if (is_null__($key)) {
+        return app(name: 'codefy.config');
     }
 
-    return app(name: Collection::class)->getConfigKey($key, $default);
+    if (is_array($key)) {
+        app(name: 'codefy.config')->setConfigKey($key[0], $key[1]);
+    }
+
+    return app(name: 'codefy.config')->getConfigKey($key, $default);
 }
 
 /**
@@ -120,14 +121,24 @@ function env(string $key, mixed $default = null): mixed
 }
 
 /**
- * QueryBuilder database instance.
+ * Database abstraction layer global function.
+ *
+ * @throws Exception
+ */
+function dbal(): Connection
+{
+    return Codefy::$PHP->getDbConnection();
+}
+
+/**
+ * QueryBuilder global function.
  *
  * @return QueryBuilder|null
  * @throws Exception
  */
 function queryBuilder(): ?QueryBuilder
 {
-    return Codefy::$PHP->getDb();
+    return dbal()->queryBuilder();
 }
 
 /**
