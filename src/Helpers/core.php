@@ -14,6 +14,8 @@ use Codefy\CommandBus\Resolvers\NativeCommandHandlerResolver;
 use Codefy\Framework\Application;
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Factory\FileLoggerFactory;
+use Codefy\Framework\Queue\NodeQueue;
+use Codefy\Framework\Queue\ShouldQueue;
 use Codefy\Framework\Support\CodefyMailer;
 use Codefy\Framework\Support\Server;
 use Codefy\QueryBus\Busses\SynchronousQueryBus;
@@ -413,4 +415,15 @@ function site_url(string $path = ''): string
     }
 
     return '';
+}
+
+/**
+ * Queues an item.
+ *
+ * @param ShouldQueue $queue
+ * @return NodeQueue
+ */
+function queue(ShouldQueue $queue): NodeQueue
+{
+    return new NodeQueue($queue);
 }

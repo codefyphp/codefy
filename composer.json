@@ -31,6 +31,7 @@
         "qubus/filesystem": "^4",
         "qubus/inheritance": "^4",
         "qubus/mail": "^5",
+        "qubus/nosql": "dev-master",
         "qubus/router": "^4",
         "qubus/security": "^4",
         "qubus/support": "^4",
