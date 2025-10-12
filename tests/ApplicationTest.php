@@ -2,7 +2,6 @@
 
 use Codefy\Framework\Application;
 use PHPUnit\Framework\Assert;
-use Psr\Http\Message\ServerRequestInterface;
 
 it(description: 'gets default charset value.', closure: function () {
     $charset = Application::getInstance()->charset;
