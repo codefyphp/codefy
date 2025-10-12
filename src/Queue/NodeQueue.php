@@ -89,7 +89,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
                 'name' => $this->queue->name,
                 'object' => new JsonSerializer()->serialize($this->queue),
                 'created' => time(),
-                'expire' => (int) 0
+                'expire' => (int) 0,
+                'executions' => (int) 0,
             ]);
             $query->commit();
             $lastId = $query->lastInsertId();
@@ -215,7 +216,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
         try {
             $update->where('_id', $item['_id'])
                 ->update([
-                    'expire' => (int) 0
+                    'expire' => (int) 0,
+                    'executions' => +1,
                 ]);
             $update->commit();
 
@@ -268,7 +270,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             /**
              * Clean up the queue for failed batches.
              */
-            $delete->where('created', '<', $_SERVER['REQUEST_TIME'] - 864000)
+            $delete
+                ->where('executions', '>=', $this->queue->executions)
                 ->where('name', $this->queue->name)
                 ->delete();
             $delete->commit();
@@ -316,8 +319,17 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
         );
     }
 
+    /**
+     * @throws ReflectionException
+     * @throws TypeException
+     */
     public function dispatch(): bool
     {
+        /**
+         * Delete queues that are considered dead.
+         */
+        $this->garbageCollection();
+
         /**
          * Check if queue is due or not due.
          */

@@ -20,4 +20,10 @@ trait QueueAware
      * When should the process run.
      */
     public string $schedule = '* * * * *';
+
+    /**
+     * How many times should a job execute before
+     * considered dead.
+     */
+    public int $executions = 3;
 }
