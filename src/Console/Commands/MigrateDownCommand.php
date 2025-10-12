@@ -8,7 +8,7 @@ use Codefy\Framework\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
 use Symfony\Component\Console\Input\InputArgument;
 
-class DownCommand extends PhpMigCommand
+class MigrateDownCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:down';
 

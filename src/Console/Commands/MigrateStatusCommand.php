@@ -10,7 +10,7 @@ use Symfony\Component\Console\Helper\Table;
 
 use function sprintf;
 
-class StatusCommand extends PhpMigCommand
+class MigrateStatusCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:status';
 

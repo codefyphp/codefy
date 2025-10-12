@@ -7,7 +7,7 @@ namespace Codefy\Framework\Console\Commands;
 use Qubus\Exception\Exception;
 use Symfony\Component\Console\Helper\Table;
 
-class CheckCommand extends PhpMigCommand
+class MigrateCheckCommand extends PhpMigCommand
 {
     protected string $name = 'migrate:check';
 
