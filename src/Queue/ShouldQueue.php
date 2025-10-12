@@ -9,9 +9,9 @@ interface ShouldQueue
     /**
      * The code/task that should be executed.
      *
-     * @return bool
+     * @return void
      */
-    public function handle(): bool;
+    public function handle(): void;
 
     public function node(): string;
 }

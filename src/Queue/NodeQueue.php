@@ -82,13 +82,6 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     {
         $lastId = '';
 
-        /**
-         * Check if queue is due or not due.
-         */
-        if (!$this->isDue($this->queue->schedule)) {
-            return '';
-        }
-
         $query = $this->db;
         $query->begin();
         try {
@@ -325,27 +318,33 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     public function dispatch(): bool
     {
-        $this->createItem();
+        /**
+         * Check if queue is due or not due.
+         */
+        if (!$this->isDue($this->queue->schedule)) {
+            return false;
+        }
+
+        $item = $this->claimItem();
 
         try {
-            if (false !== $item = $this->claimItem()) {
+            if (false !== $item) {
                 $object = new JsonSerializer()->unserialize($item['object']);
+
                 if (!$object instanceof ShouldQueue) {
+                    $this->deleteItem($item);
                     return false;
                 };
 
-                if (!method_exists(object_or_class: $object, method: 'handle')) {
-                    return false;
-                }
-
-                if (false === call_user_func([$object, 'handle'])) {
+                if (false !== call_user_func([$object, 'handle'])) {
+                    $this->deleteItem($item);
+                } else {
                     $this->releaseItem($item);
                     return false;
                 }
-
-                $this->deleteItem($item);
-                return true;
             }
+
+            return true;
         } catch (Exception $e) {
             $this->catchException($e);
         }

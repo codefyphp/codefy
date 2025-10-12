@@ -9,17 +9,15 @@ trait QueueAware
     /**
      * The name of the queue this instance is working with.
      */
-    protected string $name = '';
+    public string $name = '';
 
     /**
      * How long the processing is expected to take in seconds.
      */
-    protected int $leaseTime = 3600;
-
-    protected bool $debug = false;
+    public int $leaseTime = 3600;
 
     /**
      * When should the process run.
      */
-    protected string $schedule = '* * * * *';
+    public string $schedule = '* * * * *';
 }
