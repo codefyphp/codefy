@@ -9,9 +9,12 @@ use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Key;
 use Qubus\Http\Encryption\Env\File;
+use Symfony\Component\Console\Input\InputOption;
 
 use function Codefy\Framework\Helpers\base_path;
+use function file_exists;
 use function file_get_contents;
+use function sprintf;
 
 class EncryptEnvCommand extends ConsoleCommand
 {
@@ -19,16 +22,39 @@ class EncryptEnvCommand extends ConsoleCommand
 
     protected string $description = 'Encrypts .env data and saves the encrypted data to a new file.';
 
+    protected function configure(): void
+    {
+        parent::configure();
+
+        $this
+            ->addOption(
+                name: 'env',
+                shortcut: null,
+                mode: InputOption::VALUE_REQUIRED,
+                description: 'Set the environment file to encrypt.'
+            );
+    }
+
     public function handle(): int
     {
         $this->terminalRaw(string: 'Encrypting data and creating file . . .');
 
         try {
-            $file = file_get_contents(filename: base_path(path: '.enc.key'));
+            $savedKeyString = file_get_contents(filename: base_path(path: '.enc.key'));
+            $key = Key::loadFromAsciiSafeString(saved_key_string: $savedKeyString);
 
-            $key = Key::loadFromAsciiSafeString(saved_key_string: $file);
+            if ($this->getOptions('env')) {
+                $file = base_path(path: sprintf('.env.%s', $this->getOptions('env')));
+            } else {
+                $file = base_path(path: '.env');
+            }
 
-            File::encrypt(base_path(path: '.env'), base_path(path: '.env.enc'), $key);
+            if (!file_exists($file)) {
+                $this->output->writeln(sprintf('<error>File %s does not exist.</error>', $file));
+                return ConsoleCommand::FAILURE;
+            }
+
+            File::encrypt($file, base_path(path: '.env.enc'), $key);
         } catch (BadFormatException | EnvironmentIsBrokenException $e) {
             return ConsoleCommand::FAILURE;
         }
