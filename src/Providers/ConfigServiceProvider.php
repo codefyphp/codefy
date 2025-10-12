@@ -8,13 +8,13 @@ use Codefy\Framework\Support\CodefyServiceProvider;
 use Qubus\Config\Collection;
 use Qubus\Config\Configuration;
 use Qubus\Config\Path\PathNotFoundException;
-
-use function Codefy\Framework\Helpers\env;
+use Qubus\Exception\Exception;
 
 final class ConfigServiceProvider extends CodefyServiceProvider
 {
     /**
      * @throws PathNotFoundException
+     * @throws Exception
      */
     public function register(): void
     {
@@ -24,7 +24,7 @@ final class ConfigServiceProvider extends CodefyServiceProvider
                 [
                     'path' => $this->codefy->configPath(),
                     'dotenv' => $this->codefy->basePath(),
-                    'environment' => env(key: 'APP_ENV', default: 'local'),
+                    'environment' => $this->codefy->configContainer->getConfigKey(key: 'app.env', default: 'local'),
                 ]
             )
         );
