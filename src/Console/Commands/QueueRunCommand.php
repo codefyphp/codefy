@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Console\ConsoleCommand;
+use Qubus\Exception\Data\TypeException;
 use Qubus\NoSql\Exceptions\InvalidJsonException;
 use Qubus\NoSql\Node;
 use Qubus\Support\Serializer\JsonSerializer;
@@ -50,7 +51,7 @@ EOT;
                 $object = new JsonSerializer()->unserialize($queue['object']);
                 queue($object)->dispatch();
             }
-        } catch (InvalidJsonException | ReflectionException $e) {
+        } catch (InvalidJsonException | ReflectionException | TypeException $e) {
             return ConsoleCommand::FAILURE;
         }
 
