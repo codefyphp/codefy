@@ -16,8 +16,8 @@ CodefyPHP is __not__ a framework such as the likes of Symfony, Laravel, Codeigni
 light framework providing interfaces and implementations for architecting a Domain Driven project with 
 CQRS, Event Sourcing and implementations of [PSR-3](https://www.php-fig.org/psr/psr-3), 
 [PSR-6](https://www.php-fig.org/psr/psr-6), [PSR-7](https://www.php-fig.org/psr/psr-7), 
-[PSR-11](https://www.php-fig.org/psr/psr-11), [PSR-12](https://www.php-fig.org/psr/psr-12/), 
-[PSR-15](https://www.php-fig.org/psr/psr-15), [PSR-16](https://www.php-fig.org/psr/psr-16) 
+[PSR-11](https://www.php-fig.org/psr/psr-11), [PSR-12](https://www.php-fig.org/psr/psr-12/),
+[PSR-14](https://www.php-fig.org/psr/psr-14/), [PSR-15](https://www.php-fig.org/psr/psr-15), [PSR-16](https://www.php-fig.org/psr/psr-16) 
 and [PSR-17](https://www.php-fig.org/psr/psr-17).
 
 The philosophy of Codefy is that code should be systematized, maintainable, and follow OOP (Object-Oriented Programming). 
@@ -61,7 +61,7 @@ composer require codefyphp/codefy
 |---------|---------------------|----------------|-----------------|----------------------|
 | 1       | 8.2                 | September 2023 | July 2024       | EOL                  |
 | 2 - LTS | 8.2                 | September 2024 | September 2027  | January 2028         |
-| 3.0     | 8.4                 | December 2025  | August 2026     | December 2027        |
+| 3.0     | 8.4                 | October 2025   | August 2026     | December 2027        |
 | 3.1     | 8.4                 | June 2025      | February 2027   | June 2028            |
 
 ## 📘 Documentation
