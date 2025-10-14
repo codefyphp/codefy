@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Codefy\Framework\Providers;
+
+use Codefy\Framework\Support\CodefyServiceProvider;
+use Qubus\Expressive\Connection;
+
+final class DatabaseConnectionServiceProvider extends CodefyServiceProvider
+{
+    public function register(): void
+    {
+        $this->codefy->singleton(Connection::class, function () {
+            return $this->codefy->getDbConnection();
+        });
+
+        $this->codefy->share(nameOrInstance: Connection::class);
+    }
+}

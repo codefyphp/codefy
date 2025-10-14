@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Codefy\Framework\Providers;
+
+use Codefy\Framework\Support\CodefyServiceProvider;
+use Qubus\Config\Collection;
+use Qubus\Config\Configuration;
+use Qubus\Config\Path\PathNotFoundException;
+use Qubus\Exception\Exception;
+
+use function Codefy\Framework\Helpers\env;
+
+final class ConfigServiceProvider extends CodefyServiceProvider
+{
+    /**
+     * @throws PathNotFoundException
+     * @throws Exception
+     */
+    public function register(): void
+    {
+        $this->codefy->defineParam(
+            paramName: 'config',
+            value: new Configuration(
+                [
+                    'path' => $this->codefy->configPath(),
+                    'dotenv' => $this->codefy->basePath(),
+                    'environment' => env(key: 'APP_ENV', default: 'local'),
+                ]
+            )
+        );
+
+        $this->codefy->share(nameOrInstance: Configuration::class);
+        $this->codefy->alias(original: 'codefy.config', alias: Collection::class);
+        $this->codefy->share(nameOrInstance: 'codefy.config');
+    }
+}

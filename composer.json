@@ -11,43 +11,57 @@
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-pdo": "*",
-        "codefyphp/domain-driven-core": "^1",
+        "codefyphp/domain-driven-core": "^3",
+        "composer/class-map-generator": "^1",
         "dragonmantank/cron-expression": "^3",
-        "qubus/cache": "^3",
-        "qubus/error": "^2",
-        "qubus/event-dispatcher": "^3",
-        "qubus/exception": "^3",
-        "qubus/expressive": "^1",
-        "qubus/filesystem": "^3",
-        "qubus/injector": "^3",
-        "qubus/mail": "^4",
-        "qubus/router": "^3",
-        "qubus/security": "^3",
-        "qubus/support": "^3",
-        "qubus/view": "^2",
-        "symfony/console": "^6",
-        "symfony/options-resolver": "^6"
+        "melbahja/seo": "^2",
+        "middlewares/cache": "^3",
+        "middlewares/minifier": "^2",
+        "middlewares/referrer-spam": "^2",
+        "middlewares/whoops": "^2",
+        "paragonie/csp-builder": "^3",
+        "php-debugbar/php-debugbar": "^2.2",
+        "qubus/cache": "^4",
+        "qubus/error": "^3",
+        "qubus/event-dispatcher": "^4",
+        "qubus/exception": "^4",
+        "qubus/expressive": "^3",
+        "qubus/filesystem": "^4",
+        "qubus/inheritance": "^4",
+        "qubus/mail": "^5",
+        "qubus/nosql": "^4",
+        "qubus/router": "^4",
+        "qubus/security": "^4",
+        "qubus/support": "^4",
+        "qubus/view": "^3",
+        "symfony/console": "^7",
+        "symfony/options-resolver": "^7"
     },
     "autoload": {
         "psr-4": {
-            "Codefy\\Framework\\": ""
+            "Codefy\\Framework\\": "src/"
         },
         "files": [
-          "Helpers/core.php",
-          "Helpers/path.php"
+          "src/Helpers/core.php",
+          "src/Helpers/path.php",
+          "src/Http/Middleware/Csrf/helpers.php"
         ]
     },
     "require-dev": {
         "fenom/fenom": "^3.0",
         "fenom/providers-collection": "^1.0",
         "foil/foil": "^0.6.7",
-        "pestphp/pest": "^1.22",
-        "qubus/qubus-coding-standard": "^1.1"
+        "qubus/qubus-coding-standard": "^2"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codefy\\Framework\\Tests\\": "tests/"
+        }
     },
     "scripts": {
-        "test": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --min=50 --colors=always",
+        "test": "vendor/bin/pest",
         "cs-check": "phpcs",
         "cs-fix": "phpcbf"
     },
