@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 class ConsoleApplication extends SymfonyApplication
 {
@@ -24,6 +25,9 @@ class ConsoleApplication extends SymfonyApplication
         parent::__construct(name: 'CodefyPHP', version: Application::APP_VERSION);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
     {
         $this->getCommandName(input: $input = $input ?: new ArgvInput());
@@ -33,6 +37,7 @@ class ConsoleApplication extends SymfonyApplication
 
     /**
      * @throws Exception
+     * @throws Throwable
      */
     public function call($command, array $parameters = [], bool|OutputInterface|null $outputBuffer = null): int
     {
