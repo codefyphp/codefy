@@ -104,7 +104,7 @@ class ConsoleKernel implements Kernel
      */
     public function registerCommand(callable|Command $command): void
     {
-        $this->getCodex()->addCommand(command: $command);
+        $this->getCodex()->add(command: $command);
     }
 
     /**
