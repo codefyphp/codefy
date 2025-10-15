@@ -3,11 +3,11 @@
 </h1>
 
 <p align="center">
-    <a href="https://codefyphp.com/"><img src="https://img.shields.io/packagist/v/CodefyPHP/codefy?label=CodefyPHP" alt="Latest Stable Version"></a>
-    <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.4-777BB4.svg?style=flat&logo=php" alt="PHP 8.4"/></a>
-    <a href="https://packagist.org/packages/codefyphp/codefy"><img src="https://img.shields.io/packagist/l/codefyphp/codefy" alt="License"></a>
-    <a href="https://packagist.org/packages/codefyphp/codefy"><img src="https://img.shields.io/packagist/dt/codefyphp/codefy" alt="Total Downloads"></a>
-    <a href="https://codefyphp.com/community/"><img src="https://img.shields.io/badge/Forum-AE508D.svg?label=Support&style=flat" alt="CodefyPHP Support Forum"></a>
+    <a href="https://github.com/codefyphp/"><img src="https://img.shields.io/packagist/v/CodefyPHP/codefy?label=CodefyPHP&style=for-the-badge" alt="Latest Stable Version"></a>
+    <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.4-777BB4.svg?style=for-the-badge&logo=php" alt="PHP 8.4"/></a>
+    <a href="https://packagist.org/packages/codefyphp/codefy"><img src="https://img.shields.io/packagist/l/codefyphp/codefy?style=for-the-badge&color=0aa678" alt="License"></a>
+    <a href="https://packagist.org/packages/codefyphp/codefy"><img src="https://img.shields.io/packagist/dt/codefyphp/codefy?style=for-the-badge&color=CD5C5C" alt="Total Downloads"></a>
+    <a href="https://forum.codefyphp.com/"><img decoding="async" src="https://img.shields.io/badge/Forum-AE508D.svg?label=Support&style=for-the-badge" alt="CodefyPHP Support Forum"></a>
 </p>
 
 ---
