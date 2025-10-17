@@ -11,6 +11,8 @@
 </p>
 
 ---
+> This repository contains the CodefyPHP Framework. If you are looking for an easier way to get started quickly, you can 
+> check out the starter app: [CodefyPHP Skeleton](https://github.com/codefyphp/skeleton).
 
 CodefyPHP is __not__ a framework such as the likes of Symfony, Laravel, Codeigniter or CakePHP. Codefy is a simple, 
 light framework providing interfaces and implementations for architecting a Domain Driven project with 
