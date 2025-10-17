@@ -27,7 +27,11 @@ CodefyPHP tries not to be too opinionated, yet encourages best practices and cod
 Standards](https://github.com/QubusPHP/qubus-coding-standard). Use Codefy as you see fit. You can tap into all, some or 
 none of the features and instead use the interfaces to build your own implementations for a domain driven project.
 
-<h3 align="center">[![TDD With DomainEvents in CodefyPHP - ASMR With Mechanical Keyboard](https://downloads.joshuaparker.blog/images/tdd-codefyphp.png)](https://www.youtube.com/watch?v=PaKIZ7gJlRU "TDD With DomainEvents in CodefyPHP - ASMR With Mechanical Keyboard")</h3>
+<h3 align="center">
+    <a href="https://www.youtube.com/watch?v=yIMxbmc-gq8" target="_blank">
+        <img src="https://downloads.joshuaparker.blog/images/tdd-codefyphp.png" alt="TDD With DomainEvents in CodefyPHP - ASMR With Mechanical Keyboard" />
+    </a>
+</h3>
 
 ## 📍 Requirement
 - PHP 8.4+
