@@ -64,7 +64,7 @@ final class Application extends Container
     use InvokerAware;
     use LoggerAware;
 
-    public const string APP_VERSION = '3.0.0';
+    public const string APP_VERSION = '3.0.1';
 
     public const string MIN_PHP_VERSION = '8.4';
 
@@ -377,7 +377,7 @@ final class Application extends Container
         // if it exists.
         if ($this->booted) {
             $this->bootServiceProvider(provider: $serviceProvider);
-        };
+        }
 
         return $serviceProvider;
     }
