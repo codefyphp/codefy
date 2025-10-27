@@ -16,6 +16,7 @@
         "codefyphp/domain-driven-core": "^3",
         "composer/class-map-generator": "^1",
         "dragonmantank/cron-expression": "^3",
+        "forxer/gravatar": "^5.0",
         "melbahja/seo": "^2",
         "middlewares/cache": "^3",
         "middlewares/minifier": "^2",

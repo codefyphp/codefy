@@ -23,6 +23,8 @@ use Codefy\QueryBus\Enquire;
 use Codefy\QueryBus\Query;
 use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
 use Codefy\QueryBus\UnresolvableQueryHandlerException;
+use Gravatar\Image;
+use Gravatar\Profile;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\Connection;
 use Qubus\Expressive\QueryBuilder;
@@ -426,4 +428,26 @@ function site_url(string $path = ''): string
 function queue(ShouldQueue $queue): NodeQueue
 {
     return new NodeQueue($queue);
+}
+
+/**
+ * Return a new Gravatar Image instance.
+ *
+ * @param string|null $email
+ * @return Image
+ */
+function gravatar(?string $email = null): Image
+{
+    return new Image($email);
+}
+
+/**
+ * Return a new Gravatar Profile instance.
+ *
+ * @param string|null $email
+ * @return Profile
+ */
+function gravatar_profile(?string $email = null): Profile
+{
+    return new Profile($email);
 }
