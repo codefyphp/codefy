@@ -10,9 +10,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Qubus\Error\Handlers\Psr3ErrorHandler;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Http\HttpException;
 use Qubus\Http\Factories\RedirectResponseFactory;
-use Qubus\Http\Response;
+use ReflectionException;
 use Throwable;
 
 class ExceptionMiddleware implements MiddlewareInterface
@@ -29,14 +31,34 @@ class ExceptionMiddleware implements MiddlewareInterface
         try {
             $response = $handler->handle($request);
         } catch (HttpException $e) {
-            //$response = new Response($this->app->flash->error($e->getMessage()), $e->getStatusCode(), $e->getHeaders());
+            $this->logException(
+                $e,
+                [
+                    'uri' => $e->getUri(),
+                    'code' => $e->getStatusCode(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'method' => $request->getMethod(),
+                    'message' => $e->getMessage(),
+                ]
+            );
+
             return RedirectResponseFactory::create(
                 uri: $e->getUri() ?? $request->getServerParams()['HTTP_REFERER'] ?? '/',
                 status: $e->getStatusCode(),
                 headers: $e->getHeaders()
             )->withBody(new Stream($this->app->flash->error($e->getMessage())));
         } catch (Throwable $t) {
-            //$response = new Response($this->app->flash->error('Internal Error'), 500, []);
+            $this->logException(
+                $t,
+                [
+                    'message' => $t->getMessage(),
+                    'file' => $t->getFile(),
+                    'line' => $t->getLine(),
+                    'previous message' => $t->getPrevious()->getMessage()
+                ]
+            );
+
             return RedirectResponseFactory::create(
                 uri: $request->getServerParams()['HTTP_REFERER'] ?? '/',
                 status: 500,
@@ -45,5 +67,15 @@ class ExceptionMiddleware implements MiddlewareInterface
         }
 
         return $response;
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws TypeException
+     */
+    protected function logException(Throwable $t, array $context = []): void
+    {
+        $psrLogger = new Psr3ErrorHandler($this->app->getLogger());
+        $psrLogger->handle($t, $context);
     }
 }
