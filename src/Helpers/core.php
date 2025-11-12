@@ -461,7 +461,7 @@ function gravatar_profile(?string $email = null): Profile
  * @param ...$parameters
  * @return mixed
  */
-function throw_if(mixed $condition, string $exception = '\RuntimeException', ...$parameters): mixed
+function throw_if(mixed $condition, string $exception = RuntimeException::class, ...$parameters): mixed
 {
     if ($condition) {
         if (is_string($exception) && class_exists($exception)) {
