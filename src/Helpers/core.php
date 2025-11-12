@@ -29,6 +29,7 @@ use Qubus\Exception\Exception;
 use Qubus\Expressive\Connection;
 use Qubus\Expressive\QueryBuilder;
 use ReflectionException;
+use RuntimeException;
 
 use function dirname;
 use function error_log;
@@ -450,4 +451,25 @@ function gravatar(?string $email = null): Image
 function gravatar_profile(?string $email = null): Profile
 {
     return new Profile($email);
+}
+
+/**
+ * Throw the given exception if the given condition is true.
+ *
+ * @param mixed $condition
+ * @param string $exception
+ * @param ...$parameters
+ * @return mixed
+ */
+function throw_if(mixed $condition, string $exception = RuntimeException::class, ...$parameters): mixed
+{
+    if ($condition) {
+        if (is_string($exception) && class_exists($exception)) {
+            $exception = new $exception(...$parameters);
+        }
+
+        throw is_string($exception) ? new RuntimeException($exception) : $exception;
+    }
+
+    return $condition;
 }
