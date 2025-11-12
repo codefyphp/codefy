@@ -48,6 +48,22 @@ class ExceptionMiddleware implements MiddlewareInterface
                 status: $e->getStatusCode(),
                 headers: $e->getHeaders()
             )->withBody(new Stream($this->app->flash->error($e->getMessage())));
+        } catch (\Exception $e) {
+            $this->logException(
+                $e,
+                [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'previous message' => $e->getPrevious()->getMessage()
+                ]
+            );
+
+            return RedirectResponseFactory::create(
+                uri: $request->getServerParams()['HTTP_REFERER'] ?? '/',
+                status: 500,
+                headers: []
+            )->withBody(new Stream($this->app->flash->error('Internal Error')));
         } catch (Throwable $t) {
             $this->logException(
                 $t,
