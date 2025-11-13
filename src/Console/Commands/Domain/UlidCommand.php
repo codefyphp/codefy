@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework\Console\Commands;
+namespace Codefy\Framework\Console\Commands\Domain;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
-use Qubus\ValueObjects\Identity\Uuid;
+use Qubus\ValueObjects\Identity\Ulid;
 
-class UuidCommand extends ConsoleCommand
+class UlidCommand extends ConsoleCommand
 {
-    protected string $name = 'ddd:uuid';
+    protected string $name = 'ddd:ulid';
 
-    protected string $description = 'Generates a random Uuid string.';
+    protected string $description = 'Generates a random Ulid string.';
 
     public function __construct(protected Application $codefy)
     {
@@ -21,11 +21,11 @@ class UuidCommand extends ConsoleCommand
 
     public function handle(): int
     {
-        $uuid = Uuid::generateAsString();
+        $ulid = Ulid::generateAsString();
 
         $this->terminalRaw(string: sprintf(
-            'Uuid: <comment>%s</comment>',
-            $uuid
+            'Ulid: <comment>%s</comment>',
+            $ulid
         ));
 
         // return value is important when using CI
