@@ -25,6 +25,8 @@ class ExceptionMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
+     * @throws TypeException
+     * @throws ReflectionException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -33,37 +35,18 @@ class ExceptionMiddleware implements MiddlewareInterface
         } catch (HttpException | Psr7Exception $e) {
             $this->app->flash->error($e->getMessage());
 
-            $this->logException(
-                $e,
-                [
-                    'uri' => $e->getUri(),
-                    'code' => $e->getStatusCode(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
-                    'method' => $request->getMethod(),
-                    'message' => $e->getMessage(),
-                ]
-            );
+            $this->logException($e);
 
             return RedirectResponseFactory::create(
                 uri: $e->getUri() ?? $request->getServerParams()['HTTP_REFERER'] ?? '/',
-                headers: $e->getHeaders()
             );
         } catch (Throwable $t) {
             $this->app->flash->error('Internal Error');
 
-            $this->logException(
-                $t,
-                [
-                    'message' => $t->getMessage(),
-                    'file' => $t->getFile(),
-                    'line' => $t->getLine(),
-                ]
-            );
+            $this->logException($t);
 
             return RedirectResponseFactory::create(
                 uri: $request->getServerParams()['HTTP_REFERER'] ?? '/',
-                headers: []
             );
         }
 
