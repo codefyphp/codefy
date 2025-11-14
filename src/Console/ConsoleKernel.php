@@ -197,6 +197,7 @@ class ConsoleKernel implements Kernel
      *
      * @throws CommandNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
     public function call(string $command, array $parameters = [], bool|OutputInterface|null $outputBuffer = null): int
     {
