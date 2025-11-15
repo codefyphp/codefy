@@ -7,6 +7,7 @@ namespace Codefy\Framework\Http\Middleware\Csrf;
 use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
 use Codefy\Framework\Http\Status;
 use Codefy\Framework\Support\RequestMethod;
+use Codefy\Framework\Traits\TokenEncryptionAware;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,6 +22,7 @@ use function is_string;
 class CsrfProtectionMiddleware implements MiddlewareInterface
 {
     use CsrfTokenAware;
+    use TokenEncryptionAware;
 
     public function __construct(protected ConfigContainer $configContainer, protected HttpCookieFactory $cookie)
     {
