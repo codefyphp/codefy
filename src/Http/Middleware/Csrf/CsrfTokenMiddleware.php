@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Csrf;
 
 use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
+use Defuse\Crypto\Exception\BadFormatException;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
+use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
-use Qubus\Http\Session\SessionService;
+use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 
 use function sprintf;
 
@@ -25,7 +28,7 @@ class CsrfTokenMiddleware implements MiddlewareInterface
 
     private ?string $token = null;
 
-    public function __construct(protected ConfigContainer $configContainer, protected SessionService $sessionService)
+    public function __construct(protected ConfigContainer $configContainer, public readonly HttpCookieFactory $cookie,)
     {
         self::$current = $this;
     }
@@ -52,47 +55,41 @@ class CsrfTokenMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     * @throws Exception
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
+     * @throws WrongKeyOrModifiedCiphertextException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        try {
-            $this->sessionService::$options = [
-                'cookie-name' => $this->configContainer->getConfigKey(key: 'csrf.cookie_name', default: 'CSRFSESSID'),
-                'cookie-lifetime' => (int) $this->configContainer->getConfigKey(key: 'csrf.lifetime', default: 86400),
-            ];
 
-            $session = $this->sessionService->makeSession($request);
+        // Retrieve an existing token from the cookie or generate a new one.
+        $this->token = $this->prepareToken($request);
 
-            $this->token = $this->prepareToken(session: $session);
-
-            if (
-                $request->hasHeader($this->configContainer->getConfigKey(key: 'csrf.header'))
-                && $request->getHeaderLine($this->configContainer->getConfigKey(key: 'csrf.header')) !== ''
-            ) {
-                $this->token = $request->getHeaderLine($this->configContainer->getConfigKey(key: 'csrf.header'));
-            }
-
-            /**
-             * If true, the application will do a header check, if not,
-             * it will expect data submitted via an HTML form tag.
-             */
-            if ($this->configContainer->getConfigKey(key: 'csrf.request_header') === true) {
-                $request = $request->withHeader($this->configContainer->getConfigKey(key: 'csrf.header'), $this->token);
-            }
-
-            /** @var CsrfSession $csrf */
-            $csrf = $session->get(CsrfSession::class);
-            $csrf
-                ->withCsrfToken($this->token);
-
-            $response = $handler->handle(
-                $request
-                    ->withAttribute(self::CSRF_SESSION_ATTRIBUTE, $csrf)
-            );
-
-            return $this->sessionService->commitSession($response, $session);
-        } catch (\Exception $e) {
-            return $handler->handle($request);
+        if (
+            $request->hasHeader($this->configContainer->getConfigKey(key: 'csrf.header'))
+            && $request->getHeaderLine($this->configContainer->getConfigKey(key: 'csrf.header')) !== ''
+        ) {
+            $this->token = $request->getHeaderLine($this->configContainer->getConfigKey(key: 'csrf.header'));
         }
+
+        /**
+         * If true, the application will do a header check, if not,
+         * it will expect data submitted via an HTML form tag.
+         */
+        if ($this->configContainer->getConfigKey(key: 'csrf.request_header') === true) {
+            $request = $request->withHeader($this->configContainer->getConfigKey(key: 'csrf.header'), $this->token);
+        }
+
+        $response = $handler->handle(
+            $request
+                ->withAttribute(self::CSRF_SESSION_ATTRIBUTE, $this->token)
+        );
+
+        // Attach/Refresh the token cookie for the "next" request call.
+        return $this->createCookie($response, $this->token);
     }
 }
