@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Csrf;
 
 use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
+use Codefy\Framework\Traits\TokenEncryptionAware;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
@@ -21,6 +22,7 @@ use function sprintf;
 class CsrfTokenMiddleware implements MiddlewareInterface
 {
     use CsrfTokenAware;
+    use TokenEncryptionAware;
 
     public const string CSRF_SESSION_ATTRIBUTE = 'CSRF_TOKEN';
 
