@@ -485,8 +485,8 @@ function throw_if(mixed $condition, string $exception = RuntimeException::class,
  */
 function view(array|string $template, array $data = []): ResponseInterface
 {
-    /** @var Renderer $template */
-    $template = Codefy::$PHP->make(name: Renderer::class);
+    /** @var Renderer $view */
+    $view = Codefy::$PHP->make(name: Renderer::class);
 
-    return HtmlResponseFactory::create($template->render($template, $data));
+    return HtmlResponseFactory::create($view->render($template, $data));
 }
