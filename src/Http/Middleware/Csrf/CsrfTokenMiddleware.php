@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Csrf;
 
-use Codefy\Framework\Traits\CsrfTokenAware;
+use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
