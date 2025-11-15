@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Csrf;
 
-use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
 use Codefy\Framework\Http\Status;
 use Codefy\Framework\Support\RequestMethod;
+use Codefy\Framework\Traits\TokenAware;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,14 +14,13 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 
-use function hash_equals;
 use function is_array;
 use function is_string;
 use function strlen;
 
 class CsrfProtectionMiddleware implements MiddlewareInterface
 {
-    use CsrfTokenAware;
+    use TokenAware;
 
     public function __construct(protected ConfigContainer $configContainer)
     {
@@ -64,7 +63,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
         $expected = $this->fetchToken($request);
         $provided = $this->getTokenFromRequest($request);
 
-        return hash_equals($expected, $provided);
+        return $this->hashEquals($expected, $provided);
     }
 
 

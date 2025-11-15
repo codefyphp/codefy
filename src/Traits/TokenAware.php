@@ -2,31 +2,41 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework\Http\Middleware\Csrf\Traits;
+namespace Codefy\Framework\Traits;
 
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Defuse\Crypto\Key;
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Qubus\Exception\Exception;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Http\Cookies\CookiesResponse;
 
 use function sha1;
 use function uniqid;
 
-trait CsrfTokenAware
+trait TokenAware
 {
-    /**
-     * @throws Exception
-     */
+    //phpcs:disable
+    protected ?string $salt = null
+    {
+        get => $this->salt ?? $this->configContainer->getConfigKey(key: 'csrf.salt');
+        set(null|string $salt) => $this->salt = $salt;
+    }
+
+    protected ?string $key = null
+    {
+        get => $this->key ?? $this->configContainer->getConfigKey(key: 'app.crypto_key');
+        set(null|string $key) => $this->key = $key;
+    }
+    //phpcs:enable
+
     protected function generateToken(): string
     {
-        $salt = $this->configContainer->getConfigKey(key: 'csrf.salt');
-
-        return sha1(string: uniqid(prefix: sha1(string: $salt), more_entropy: true));
+        return sha1(string: uniqid(prefix: sha1(string: $this->salt), more_entropy: true));
     }
 
     /**
@@ -58,22 +68,17 @@ trait CsrfTokenAware
      *
      * @param array $cookies
      * @return string|null
-     * @throws Exception
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
+     * @throws Exception
      * @throws WrongKeyOrModifiedCiphertextException
      */
     private function getTokenFromCookie(array $cookies): ?string
     {
-        $key = Key::loadFromAsciiSafeString($this->configContainer->getConfigKey(key: 'app.crypto_key'));
         $name = $this->configContainer->getConfigKey(key: 'csrf.cookie_name', default: 'CSRFSESSID');
         $value = $cookies[$name] ?? '';
 
-        if ('' === $value) {
-            return null;
-        }
-
-        return Crypto::decrypt(ciphertext: $value, key: $key);
+        return '' === $value ? null : $this->unsign($value);
     }
 
     /**
@@ -84,24 +89,63 @@ trait CsrfTokenAware
      * @param ResponseInterface $response
      * @param string $token
      * @return ResponseInterface
-     * @throws Exception
-     * @throws EnvironmentIsBrokenException
      * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
+     * @throws Exception
+     * @throws TypeException
      */
     private function createCookie(ResponseInterface $response, string $token): ResponseInterface
     {
-        $key = Key::loadFromAsciiSafeString($this->configContainer->getConfigKey(key: 'app.crypto_key'));
         $name = $this->configContainer->getConfigKey(key: 'csrf.cookie_name', default: 'CSRFSESSID');
-        $value = Crypto::encrypt(plaintext: $token, key: $key);
         $expires = (int) $this->configContainer->getConfigKey(key: 'csrf.lifetime', default: 86400);
+        $signed = $this->sign($token);
 
         return CookiesResponse::set(
             response: $response,
             setCookieCollection: $this->cookie->make(
                 name: $name,
-                value: $value,
+                value: $signed,
                 maxAge: $expires
             )
         );
+    }
+
+    /**
+     * Sign the value.
+     *
+     * @param string $value
+     * @return string
+     * @throws EnvironmentIsBrokenException
+     * @throws BadFormatException
+     */
+    protected function sign(string $value): string
+    {
+        return Crypto::encrypt($value, Key::loadFromAsciiSafeString($this->key));
+    }
+
+    /**
+     * Unsign the value.
+     *
+     * @param string $value Encrypted value.
+     * @return string Return the value if signature is valid.
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
+     * @throws WrongKeyOrModifiedCiphertextException
+     */
+    protected function unsign(string $value): string
+    {
+        return Crypto::decrypt($value, Key::loadFromAsciiSafeString($this->key));
+    }
+
+    /**
+     * @param string $knownString
+     * @param string $userString
+     * @return bool
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
+     */
+    protected function hashEquals(string $knownString, string $userString): bool
+    {
+        return $this->sign($knownString) === $this->sign($userString);
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Csrf;
 
-use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
+use Codefy\Framework\Traits\TokenAware;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
@@ -20,7 +20,7 @@ use function sprintf;
 
 class CsrfTokenMiddleware implements MiddlewareInterface
 {
-    use CsrfTokenAware;
+    use TokenAware;
 
     public const string CSRF_SESSION_ATTRIBUTE = 'CSRF_TOKEN';
 
@@ -66,7 +66,7 @@ class CsrfTokenMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
 
-        // Retrieve an existing token from the cookie or generate a new one.
+        // Retrieve an existing token from the cookie or generate a new one. Plaintext.
         $this->token = $this->prepareToken($request);
 
         if (
@@ -89,7 +89,7 @@ class CsrfTokenMiddleware implements MiddlewareInterface
                 ->withAttribute(self::CSRF_SESSION_ATTRIBUTE, $this->token)
         );
 
-        // Attach/Refresh the token cookie for the "next" request call.
+        // Attach/Refresh the token cookie for the "next" request call. Will get encrypted.
         return $this->createCookie($response, $this->token);
     }
 }
