@@ -102,7 +102,11 @@ final class UserSessionMiddleware implements MiddlewareInterface
         ResponseInterface $response,
         string $token
     ): ResponseInterface {
-        if (isset($request->getCookieParams()[$this->cookieName()]) && false === $this->tokensMatch($request)) {
+        if (
+                (isset($request->getCookieParams()[$this->cookieName()])
+                        && !empty($request->getCookieParams()[$this->cookieName()]))
+                && false === $this->tokensMatch($request)
+        ) {
             return $response;
         }
 
