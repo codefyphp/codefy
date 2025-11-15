@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Auth;
 
-use Codefy\Framework\Auth\UserSession;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -13,13 +12,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Http\Cookies\CookiesResponse;
-use Qubus\Http\Session\SessionService;
+use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 
 class ExpireUserSessionMiddleware implements MiddlewareInterface
 {
     public const string SESSION_ATTRIBUTE = 'EXPIRE_USERSESSION';
 
-    public function __construct(protected ConfigContainer $configContainer, protected SessionService $sessionService)
+    public function __construct(protected ConfigContainer $configContainer, protected HttpCookieFactory $cookie)
     {
     }
 
@@ -30,30 +29,18 @@ class ExpireUserSessionMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $this->sessionService::$options = [
-            'cookie-name' => $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID'),
-            'cookie-lifetime' => 0,
-        ];
-        $session = $this->sessionService->makeSession($request);
+        $cookieName = $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID');
 
-        /** @var UserSession $user */
-        $user = $session->get(type: UserSession::class);
-        $user
-            ->clear();
-
-        $request = $request->withAttribute(self::SESSION_ATTRIBUTE, $session);
-
+        $request = $request->withAttribute(self::SESSION_ATTRIBUTE, '');
         $response = $handler->handle($request);
 
-        $response = CookiesResponse::set(
+        return CookiesResponse::set(
             response: $response,
-            setCookieCollection: $this->sessionService->cookie->make(
-                name: $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID'),
+            setCookieCollection: $this->cookie->make(
+                name: $cookieName,
                 value: '',
                 maxAge: 0
             )
         );
-
-        return $this->sessionService->commitSession($response, $session);
     }
 }

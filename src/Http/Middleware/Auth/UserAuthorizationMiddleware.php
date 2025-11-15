@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Auth;
 
-use Codefy\Framework\Auth\UserSession;
 use Exception;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -46,19 +45,13 @@ class UserAuthorizationMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws TypeException
      * @throws Exception
      */
     private function isLoggedIn(ServerRequestInterface $request): bool
     {
-        $this->sessionService::$options = [
-            'cookie-name' => $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID'),
-        ];
-        $session = $this->sessionService->makeSession($request);
+        $user = $request->getAttribute(UserSessionMiddleware::SESSION_ATTRIBUTE);
 
-        /** @var UserSession $user */
-        $user = $session->get(type: UserSession::class);
-        if ($user->isEmpty()) {
+        if (empty($user)) {
             return false;
         }
 
