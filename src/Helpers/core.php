@@ -25,9 +25,12 @@ use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
 use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Gravatar\Image;
 use Gravatar\Profile;
+use Psr\Http\Message\ResponseInterface;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\Connection;
 use Qubus\Expressive\QueryBuilder;
+use Qubus\Http\Factories\HtmlResponseFactory;
+use Qubus\View\Renderer;
 use ReflectionException;
 use RuntimeException;
 
@@ -472,4 +475,18 @@ function throw_if(mixed $condition, string $exception = RuntimeException::class,
     }
 
     return $condition;
+}
+
+/**
+ * @param array|string $template
+ * @param array $data
+ * @return ResponseInterface
+ * @throws \Exception
+ */
+function view(array|string $template, array $data = []): ResponseInterface
+{
+    /** @var Renderer $template */
+    $template = Codefy::$PHP->make(name: Renderer::class);
+
+    return HtmlResponseFactory::create($template->render($template, $data));
 }
