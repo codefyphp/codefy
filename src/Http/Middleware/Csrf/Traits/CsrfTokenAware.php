@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework\Traits;
+namespace Codefy\Framework\Http\Middleware\Csrf\Traits;
 
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Exception\BadFormatException;
@@ -18,7 +18,7 @@ use Qubus\Http\Cookies\CookiesResponse;
 use function sha1;
 use function uniqid;
 
-trait TokenAware
+trait CsrfTokenAware
 {
     //phpcs:disable
     protected ?string $salt = null
@@ -33,6 +33,8 @@ trait TokenAware
         set(null|string $key) => $this->key = $key;
     }
     //phpcs:enable
+
+    protected bool $isNew = false;
 
     protected function generateToken(): string
     {
@@ -54,6 +56,7 @@ trait TokenAware
 
         // If token isn't present in the session, we generate a new token.
         if ($token === null) {
+            $this->isNew = true;
             $token = $this->generateToken();
         }
 
@@ -100,6 +103,10 @@ trait TokenAware
         $expires = (int) $this->configContainer->getConfigKey(key: 'csrf.lifetime', default: 86400);
         $signed = $this->sign($token);
 
+        if (false === $this->isNew) {
+            return $response;
+        }
+
         return CookiesResponse::set(
             response: $response,
             setCookieCollection: $this->cookie->make(
@@ -141,11 +148,9 @@ trait TokenAware
      * @param string $knownString
      * @param string $userString
      * @return bool
-     * @throws BadFormatException
-     * @throws EnvironmentIsBrokenException
      */
-    protected function hashEquals(string $knownString, string $userString): bool
+    protected function compareTokens(string $knownString, string $userString): bool
     {
-        return $this->sign($knownString) === $this->sign($userString);
+        return $knownString === $userString;
     }
 }

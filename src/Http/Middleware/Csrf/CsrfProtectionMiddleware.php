@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Csrf;
 
+use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
 use Codefy\Framework\Http\Status;
 use Codefy\Framework\Support\RequestMethod;
-use Codefy\Framework\Traits\TokenAware;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
+use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 
 use function is_array;
 use function is_string;
-use function strlen;
 
 class CsrfProtectionMiddleware implements MiddlewareInterface
 {
-    use TokenAware;
+    use CsrfTokenAware;
 
-    public function __construct(protected ConfigContainer $configContainer)
+    public function __construct(protected ConfigContainer $configContainer, protected HttpCookieFactory $cookie)
     {
     }
 
@@ -63,7 +63,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
         $expected = $this->fetchToken($request);
         $provided = $this->getTokenFromRequest($request);
 
-        return $this->hashEquals($expected, $provided);
+        return $this->compareTokens($expected, $provided);
     }
 
 
@@ -75,11 +75,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
         $token = $request->getAttribute(CsrfTokenMiddleware::CSRF_SESSION_ATTRIBUTE);
 
         // Ensure the token stored previously by the CsrfTokenMiddleware is present and has a valid format.
-        if (
-                is_string($token) &&
-                ctype_alnum($token) &&
-                strlen($token) === $this->configContainer->getConfigKey(key: 'csrf.csrf_token_length')
-        ) {
+        if (is_string($token) && ctype_alnum($token)) {
             return $token;
         }
 
