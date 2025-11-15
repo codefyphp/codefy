@@ -6,12 +6,13 @@ namespace Codefy\Framework\Http\Middleware\Csrf;
 
 use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
 use Codefy\Framework\Support\RequestMethod;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
+use Qubus\Exception\Exception;
+use Qubus\Http\Factories\JsonResponseFactory;
 use Qubus\Http\Session\SessionService;
 
 use function hash_equals;
@@ -29,20 +30,23 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
-     * @throws TokenMismatchException
-     * @throws Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (true === $this->needsProtection($request) && false === $this->tokensMatch($request)) {
-            throw new TokenMismatchException(
-                uri: $request->getServerParams()['HTTP_REFERER'],
-                message: 'Bad CSRF token.',
-                code: 412
-            );
-        }
+        try {
+            $response = $handler->handle($request);
 
-        return $handler->handle($request);
+            if (true === $this->needsProtection($request) && false === $this->tokensMatch($request)) {
+                return JsonResponseFactory::create(
+                    data: 'Bad CSRF Token.',
+                    status: $this->configContainer->getConfigKey(key: 'csrf.error_status_code')
+                );
+            }
+
+            return $response;
+        } catch (\Exception $e) {
+            return $handler->handle($request);
+        }
     }
 
     /**
@@ -70,25 +74,23 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
 
     /**
      * @throws Exception
+     * @throws \Exception
      */
     private function fetchToken(ServerRequestInterface $request): string
     {
-        $token = $request->getAttribute(CsrfTokenMiddleware::CSRF_SESSION_ATTRIBUTE);
+        /** @var CsrfSession $csrf */
+        $csrf = $request->getAttribute(CsrfTokenMiddleware::CSRF_SESSION_ATTRIBUTE);
 
         // Ensure the token stored previously by the CsrfTokenMiddleware is present and has a valid format.
         if (
-                is_string($token) &&
-                ctype_alnum($token) &&
-                strlen($token) === $this->configContainer->getConfigKey(key: 'csrf.csrf_token_length')
+                is_string($csrf->csrfToken()) &&
+                ctype_alnum($csrf->csrfToken()) &&
+                strlen($csrf->csrfToken()) === $this->configContainer->getConfigKey(key: 'csrf.csrf_token_length')
         ) {
-            return $token;
+            return $csrf->csrfToken();
         }
 
-        throw new InvalidTokenException(
-            uri: $request->getServerParams()['HTTP_REFERER'],
-            message: 'Missing or invalid CSRF token.',
-            code: 403
-        );
+        return '';
     }
 
     /**

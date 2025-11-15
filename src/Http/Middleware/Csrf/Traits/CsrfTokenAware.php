@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Csrf\Traits;
 
-use Defuse\Crypto\Crypto;
-use Defuse\Crypto\Exception\BadFormatException;
-use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
-use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
-use Defuse\Crypto\Key;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Exception;
-use Qubus\Http\Cookies\CookiesResponse;
+use Qubus\Http\Session\HttpSession;
 
+use function hash_equals;
+use function hash_hmac;
 use function sha1;
 use function uniqid;
 
@@ -30,73 +25,35 @@ trait CsrfTokenAware
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @return string
-     * @throws BadFormatException
-     * @throws EnvironmentIsBrokenException
      * @throws Exception
-     * @throws WrongKeyOrModifiedCiphertextException
      */
-    protected function prepareToken(ServerRequestInterface $request): string
+    protected function prepareToken(HttpSession $session): string
     {
-        // Try to retrieve an existing token from the cookie request.
-        $token = $this->getTokenFromCookie($request->getCookieParams());
+        // Try to retrieve an existing token from the session.
+        $token = $session->clientSessionId();
 
         // If token isn't present in the session, we generate a new token.
         if ($token === '') {
             $token = $this->generateToken();
         }
-
-        return $token;
+        return hash_hmac(
+            algo: $this->configContainer->getConfigKey(key: 'csrf.hash_algo', default: 'sha256'),
+            data: $token,
+            key: $this->configContainer->getConfigKey(key: 'csrf.salt')
+        );
     }
 
     /**
-     * Get the token from the request cookie if it's present.
-     * Decrypt the cookie token value using the app crypto key.
-     *
-     * Return null if the cookie is missing or if the decryption fails.
-     *
-     * @param array $cookies
-     * @return string|null
      * @throws Exception
-     * @throws BadFormatException
-     * @throws EnvironmentIsBrokenException
-     * @throws WrongKeyOrModifiedCiphertextException
      */
-    private function getTokenFromCookie(array $cookies): ?string
+    protected function hashEquals(string $knownString, string $userString): bool
     {
-        $key = Key::loadFromAsciiSafeString($this->configContainer->getConfigKey(key: 'app.crypto_key'));
-        $name = $this->configContainer->getConfigKey(key: 'csrf.cookie_name', default: 'CSRFSESSID');
-        $value = $cookies[$name] ?? '';
-
-        return Crypto::decrypt(ciphertext: $value, key: $key);
-    }
-
-    /**
-     * Create CSRF cookie to store the encrypted token value.
-     *
-     * Encrypt the value for better security (in case of XSS attack).
-     *
-     * @param ResponseInterface $response
-     * @param string $token
-     * @return ResponseInterface
-     * @throws Exception
-     * @throws EnvironmentIsBrokenException
-     * @throws BadFormatException
-     */
-    private function createCookie(ResponseInterface $response, string $token): ResponseInterface
-    {
-        $key = Key::loadFromAsciiSafeString($this->configContainer->getConfigKey(key: 'app.crypto_key'));
-        $name = $this->configContainer->getConfigKey(key: 'csrf.cookie_name', default: 'CSRFSESSID');
-        $value = Crypto::encrypt(plaintext: $token, key: $key);
-        $expires = (int) $this->configContainer->getConfigKey(key: 'csrf.lifetime', default: 86400);
-
-        return CookiesResponse::set(
-            response: $response,
-            setCookieCollection: $this->cookie->make(
-                name: $name,
-                value: $value,
-                maxAge: $expires
+        return hash_equals(
+            $knownString,
+            hash_hmac(
+                algo: $this->configContainer->getConfigKey(key: 'csrf.hash_algo', default: 'sha256'),
+                data: $userString,
+                key: $this->configContainer->getConfigKey(key: 'csrf.salt')
             )
         );
     }
