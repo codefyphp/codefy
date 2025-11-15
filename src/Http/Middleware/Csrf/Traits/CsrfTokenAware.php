@@ -43,7 +43,7 @@ trait CsrfTokenAware
         $token = $this->getTokenFromCookie($request->getCookieParams());
 
         // If token isn't present in the session, we generate a new token.
-        if ($token === '') {
+        if ($token === null) {
             $token = $this->generateToken();
         }
 
@@ -68,6 +68,10 @@ trait CsrfTokenAware
         $key = Key::loadFromAsciiSafeString($this->configContainer->getConfigKey(key: 'app.crypto_key'));
         $name = $this->configContainer->getConfigKey(key: 'csrf.cookie_name', default: 'CSRFSESSID');
         $value = $cookies[$name] ?? '';
+
+        if ('' === $value) {
+            return null;
+        }
 
         return Crypto::decrypt(ciphertext: $value, key: $key);
     }
