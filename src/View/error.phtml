@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<head>
+    <title>{{ code }}</title>
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Open+Sans);
+        html{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 98vh;
+            background-color: #FAFAFA;
+        }
+        body{
+            font-family: Open Sans, Arial, serif;
+            font-size:.9rem;
+            margin:2em auto;
+            max-width:800px;
+            padding:1em;
+            line-height:1.4;
+            color: #454545;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-middle{
+            display: block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="error-middle">
+    <h1>{{ code }} | {{ message }}</h1>
+</div>
+</body>
+</html>
