@@ -59,4 +59,26 @@ class PdoRepository implements AuthUserRepository
 
         return null;
     }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function find(string $token): bool|null|object
+    {
+        $sql = sprintf(
+            "SELECT * FROM %s WHERE token = :token",
+            $this->config->getConfigKey('auth.pdo.table'),
+        );
+
+        $stmt = $this->connection->pdo->prepare($sql);
+        if (false === $stmt) {
+            return null;
+        }
+
+        $stmt->bindParam(':token', $token);
+        $stmt->execute();
+
+        return $stmt->fetchObject();
+    }
 }
