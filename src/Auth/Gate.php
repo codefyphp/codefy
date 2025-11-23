@@ -14,7 +14,6 @@ use Codefy\Framework\Http\RequestContext;
 use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Data\TypeException;
-use Qubus\Expressive\Database;
 use ReflectionException;
 use Throwable;
 
@@ -56,11 +55,11 @@ class Gate
     /**
      * Get the current authenticated user model.
      *
-     * @return Database|false
+     * @return object|bool|null
      * @throws ReflectionException
      * @throws TypeException
      */
-    public function current(): Database|false
+    public function current(): object|bool|null
     {
         $token = $this->getToken();
 
