@@ -25,6 +25,16 @@ class Middleware
 
     public static function defaultMiddlewares(): DefaultMiddlewares
     {
-        return new DefaultMiddlewares()->merge(self::$customAliases);
+        return new DefaultMiddlewares();
+    }
+
+    /**
+     * Returns additional middleware aliases.
+     *
+     * @return array
+     */
+    public function getAliases(): array
+    {
+        return self::$customAliases;
     }
 }

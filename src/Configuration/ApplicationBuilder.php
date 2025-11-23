@@ -96,11 +96,16 @@ final class ApplicationBuilder
      *
      * @throws Exception
      */
-    public function withMiddlewares(array $middlewares = []): self
+    public function withMiddleware(?callable $callback = null): self
     {
+        $middleware = new Middleware();
+        if (!is_null__($callback)) {
+            $callback($middleware);
+        }
+
         $arrayMerge = array_unique(
             array_merge(
-                $middlewares,
+                $middleware->getAliases(),
                 $this->app->configContainer->getConfigKey(
                     key: 'app.middlewares',
                     default: Middleware::defaultMiddlewares()->toArray()
