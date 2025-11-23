@@ -43,9 +43,6 @@ final class Kernel implements HttpKernel
     {
         $this->codefy = $codefy;
         $this->router = $router;
-        $this->router->baseMiddleware =  $this->codefy->getBaseMiddlewares();
-        $this->router->setBasePath(basePath: router_basepath(path: public_path()));
-        $this->router->setDefaultNamespace(namespace: $this->codefy->controllerNamespace);
 
         $this->registerErrorHandler();
     }
