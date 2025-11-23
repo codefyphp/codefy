@@ -6,11 +6,11 @@ namespace Codefy\Framework\Auth;
 
 use Codefy\Framework\Auth\Rbac\Rbac;
 use Codefy\Framework\Auth\Repository\AuthUserRepository;
+use Exception;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Config\ConfigContainer;
-use Qubus\Exception\Exception;
 use Qubus\Http\Factories\JsonResponseFactory;
 use Qubus\Http\Factories\RedirectResponseFactory;
 use Qubus\Http\Session\SessionEntity;
@@ -51,7 +51,7 @@ class Auth implements Sentinel
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function unauthorized(ServerRequestInterface $request): ResponseInterface
     {
