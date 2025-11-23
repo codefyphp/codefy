@@ -13,7 +13,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Http\Factories\RedirectResponseFactory;
-use Qubus\Http\Session\SessionService;
 
 use function Qubus\Support\Helpers\is_false__;
 
@@ -23,7 +22,6 @@ class UserAuthorizationMiddleware implements MiddlewareInterface
 
     public function __construct(
         protected ConfigContainer $configContainer,
-        protected SessionService $sessionService,
         protected ResponseFactoryInterface $responseFactory
     ) {
     }
@@ -49,7 +47,8 @@ class UserAuthorizationMiddleware implements MiddlewareInterface
      */
     private function isLoggedIn(ServerRequestInterface $request): bool
     {
-        $user = $request->getAttribute(UserSessionMiddleware::SESSION_ATTRIBUTE);
+        $userCookie = $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID');
+        $user = $request->getCookieParams()[$userCookie];
 
         if (empty($user)) {
             return false;
