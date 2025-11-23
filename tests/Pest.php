@@ -24,6 +24,8 @@
 |
 */
 
+use Codefy\Framework\Application;
+
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
@@ -39,7 +41,8 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function codefy(): Application
 {
-    // ..
+    $app = require(dirname(__DIR__) . '/bootstrap/app.php');
+    return $app;
 }

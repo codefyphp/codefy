@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Codefy\Framework\Application;
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Pipeline\Pipeline;
 use Codefy\Framework\tests\Pipes\PipeFour;
@@ -11,8 +10,7 @@ use Codefy\Framework\tests\Pipes\PipeThree;
 use Codefy\Framework\tests\Pipes\PipeTwo;
 use PHPUnit\Framework\Assert;
 
-/** @var Application $app */
-$app = require_once __DIR__ . '/../vendor/bootstrap.php';
+$app = codefy();
 
 $pipeline = new Pipeline($app);
 
