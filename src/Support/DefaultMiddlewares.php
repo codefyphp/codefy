@@ -14,6 +14,7 @@ class DefaultMiddlewares
     {
         $this->collection = $collection ?: [
             'api' => \Codefy\Framework\Http\Middleware\ApiMiddleware::class,
+            // phpcs:ignore Generic.Files.LineLength.TooLong
             'security.headers' => \Codefy\Framework\Http\Middleware\SecureHeaders\ContentSecurityPolicyMiddleware::class,
             'content.cache' => \Codefy\Framework\Http\Middleware\ContentCacheMiddleware::class,
             'cors' => \Codefy\Framework\Http\Middleware\CorsMiddleware::class,
@@ -34,7 +35,13 @@ class DefaultMiddlewares
             'user.authorization' => \Codefy\Framework\Http\Middleware\Auth\UserAuthorizationMiddleware::class,
             'user.session.expire' => \Codefy\Framework\Http\Middleware\Auth\ExpireUserSessionMiddleware::class,
             'php.debugbar' => \Codefy\Framework\Http\Middleware\DebugBarMiddleware::class,
-            'http.exception' => \Codefy\Framework\Http\Middleware\ExceptionMiddleware::class,
+            'http.exception' => \Codefy\Framework\Http\Middleware\Exception\HttpExceptionMiddleware::class,
+            'html.http.exception' => \Codefy\Framework\Http\Middleware\Exception\HtmlHttpExceptionMiddleware::class,
+            'json.http.exception' => \Codefy\Framework\Http\Middleware\Exception\JsonHttpExceptionMiddleware::class,
+            // phpcs:ignore Generic.Files.LineLength.TooLong
+            'redirect.http.exception' => \Codefy\Framework\Http\Middleware\Exception\RedirectionHttpExceptionMiddleware::class,
+            'bind.request' => \Codefy\Framework\Http\Middleware\BindRequestMiddleware::class,
+            'user.cookie.decrypt' => \Codefy\Framework\Http\Middleware\Auth\UserCookieDecryptMiddleware::class,
         ];
     }
 }
