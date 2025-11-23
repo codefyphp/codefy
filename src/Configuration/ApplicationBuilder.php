@@ -9,9 +9,12 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Bootstrap\RegisterProviders;
 use Codefy\Framework\Providers\RoutingServiceProvider;
 use Qubus\Exception\Data\TypeException;
+use Qubus\Exception\Exception;
 use Qubus\Routing\Route\RoutingRegistrar;
 use Qubus\Routing\Router;
 
+use function array_merge;
+use function array_unique;
 use function is_array;
 use function is_callable;
 use function is_string;
@@ -85,6 +88,27 @@ final class ApplicationBuilder
             $this->app->singleton($key, $callable);
         };
 
+        return $this;
+    }
+
+    /**
+     * Register custom middleware aliases.
+     *
+     * @throws Exception
+     */
+    public function withMiddlewares(array $middlewares = []): self
+    {
+        $arrayMerge = array_unique(
+            array_merge(
+                $middlewares,
+                $this->app->configContainer->getConfigKey(
+                    key: 'app.middlewares',
+                    default: Middleware::defaultMiddlewares()->toArray()
+                )
+            )
+        );
+
+        $this->app->configContainer->setConfigKey(key: 'app', value: ['middlewares' => $arrayMerge]);
         return $this;
     }
 
