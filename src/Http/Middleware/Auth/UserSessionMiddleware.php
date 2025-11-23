@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Auth;
 
 use Codefy\Framework\Http\Middleware\Csrf\InvalidTokenException;
-use Codefy\Framework\Http\Status;
 use Codefy\Framework\Traits\TokenEncryptionAware;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
@@ -20,6 +19,7 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Http\Cookies\CookiesRequest;
 use Qubus\Http\Cookies\CookiesResponse;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
+use Qubus\Http\Status;
 
 use function is_string;
 use function Qubus\Support\Helpers\is_null__;
