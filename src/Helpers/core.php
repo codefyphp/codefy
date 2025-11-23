@@ -12,6 +12,8 @@ use Codefy\CommandBus\Exceptions\UnresolvableCommandHandlerException;
 use Codefy\CommandBus\Odin;
 use Codefy\CommandBus\Resolvers\NativeCommandHandlerResolver;
 use Codefy\Framework\Application;
+use Codefy\Framework\Auth\Gate;
+use Codefy\Framework\Http\RequestContext;
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Queue\NodeQueue;
@@ -26,13 +28,17 @@ use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Gravatar\Image;
 use Gravatar\Profile;
 use Psr\Http\Message\ResponseInterface;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
+use Qubus\Exception\Http\HttpExceptionFactory;
 use Qubus\Expressive\Connection;
+use Qubus\Expressive\Database;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Factories\HtmlResponseFactory;
 use Qubus\View\Renderer;
 use ReflectionException;
 use RuntimeException;
+use Throwable;
 
 use function dirname;
 use function error_log;
@@ -478,6 +484,71 @@ function throw_if(mixed $condition, string $exception = RuntimeException::class,
 }
 
 /**
+ * Throw an HttpException with the given data.
+ *
+ * @param int $code
+ * @param string|null $uri
+ * @param string $message
+ * @param Throwable|null $previous
+ * @return never
+ */
+function abort(
+    int $code = 500,
+    ?string $uri = null,
+    string $message = '',
+    ?Throwable $previous = null
+): never {
+    throw HttpExceptionFactory::make(
+        status: $code,
+        uri: $uri,
+        message: $message,
+        previous: $previous
+    );
+}
+
+/**
+ * Abort (throw an HttpException) if the given condition is true.
+ *
+ * @param bool $condition
+ * @param int $code
+ * @param string $message
+ * @param string|null $uri
+ * @return void
+ *
+ */
+function abort_if(
+    bool $condition,
+    int $code,
+    ?string $uri = null,
+    string $message = '',
+): void {
+    if ($condition) {
+        abort(code: $code, uri: $uri, message: $message);
+    }
+}
+
+/**
+ * Abort (throw an HttpException) unless the given condition is true.
+ *
+ * @param bool $condition
+ * @param int $code
+ * @param string $message
+ * @param string|null $uri
+ * @return void
+ *
+ */
+function abort_unless(
+    bool $condition,
+    int $code,
+    ?string $uri = null,
+    string $message = '',
+): void {
+    if (! $condition) {
+        abort(code: $code, uri: $uri, message: $message);
+    }
+}
+
+/**
  * @param array|string $template
  * @param array $data
  * @return ResponseInterface
@@ -489,4 +560,39 @@ function view(array|string $template, array $data = []): ResponseInterface
     $view = Codefy::$PHP->make(name: Renderer::class);
 
     return HtmlResponseFactory::create($view->render($template, $data));
+}
+
+/**
+ * Returns the gate instance.
+ *
+ * @param string|null $permission
+ * @param array $rules
+ * @return Gate|bool|null
+ */
+function gate(?string $permission = null, array $rules = []): Gate|null|bool
+{
+    $request = RequestContext::get();
+
+    if (! $request) {
+        return null;
+    }
+
+    $auth = app(name: Gate::class);
+
+    if (is_null__($permission)) {
+        return $auth;
+    }
+
+    return $auth->can($permission, $rules);
+}
+
+/**
+ * The authenticated user details.
+ *
+ * @throws ReflectionException
+ * @throws TypeException
+ */
+function user(): Database|false|null
+{
+    return gate()?->current();
 }
