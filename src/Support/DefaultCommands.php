@@ -14,6 +14,8 @@ class DefaultCommands
     {
         $this->collection = $collection ?: [
             \Codefy\Framework\Console\Commands\MakeCommand::class,
+            \Codefy\Framework\Console\Commands\Domain\MakeCommand::class,
+            \Codefy\Framework\Console\Commands\Domain\MakeDomainCommand::class,
             \Codefy\Framework\Console\Commands\ScheduleRunCommand::class,
             \Codefy\Framework\Console\Commands\PasswordHashCommand::class,
             \Codefy\Framework\Console\Commands\InitCommand::class,

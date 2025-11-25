@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Codefy\Framework\Console\ConsoleCommand;
+
+class {{ class }} extends ConsoleCommand
+{
+    protected string $name = 'command:name';
+
+    protected string $description = 'Command description';
+
+    public function handle(): int
+    {
+        // return value is important when using CI
+        // to fail the build when the command fails
+        // 0 = success, other values = fail
+        return ConsoleCommand::SUCCESS;
+    }
+}

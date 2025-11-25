@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Qubus\Routing\Router;
+
+readonly class {{ class }}
+{
+    public function __construct(public Router $router)
+    {
+    }
+
+    public function handle(): void
+    {
+        //
+    }
+}

@@ -1,0 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Codefy\Domain\Aggregate\AggregateId;
+use Codefy\Domain\EventSourcing\AggregateChanged;
+
+final class {{ class }} extends AggregateChanged
+{
+}

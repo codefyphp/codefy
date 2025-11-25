@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Codefy\QueryBus\Query;
+use Codefy\QueryBus\QueryHandler;
+use Qubus\Expressive\Database;
+
+final readonly class {{ class }} implements QueryHandler
+{
+    public function __construct(private Database $db)
+    {
+    }
+
+    public function handle(Query $query): Database|bool
+    {
+        //
+    }
+}

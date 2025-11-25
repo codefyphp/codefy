@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Codefy\CommandBus\Command;
+use Codefy\CommandBus\CommandHandler;
+use Codefy\Domain\Aggregate\AggregateRepository;
+
+final readonly class {{ class }} implements CommandHandler
+{
+    public function __construct(public AggregateRepository $aggregateRepository)
+    {
+    }
+
+    public function handle(Command $command): void
+    {
+        //
+
+        $this->aggregateRepository->saveAggregateRoot(aggregate: $user);
+    }
+}
