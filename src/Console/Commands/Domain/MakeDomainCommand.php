@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Console\Commands\Domain;
 
 use Codefy\Framework\Console\ConsoleCommand;
+use Codefy\Framework\Support\AutoloadResolver;
 use Symfony\Component\Console\Input\InputArgument;
 
 class MakeDomainCommand extends ConsoleCommand

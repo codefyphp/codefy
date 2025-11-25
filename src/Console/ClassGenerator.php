@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Console;
 
 use Codefy\Framework\Application;
+use Codefy\Framework\Support\AutoloadResolver;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
 use Qubus\FileSystem\FileSystem;

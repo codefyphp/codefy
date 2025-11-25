@@ -8,6 +8,7 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Console\ClassGenerator;
 use Codefy\Framework\Console\ConsoleCommand;
 use Codefy\Framework\Console\PresetRegistry;
+use Codefy\Framework\Support\AutoloadResolver;
 use Exception;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
