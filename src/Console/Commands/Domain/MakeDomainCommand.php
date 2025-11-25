@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Codefy\Framework\Console\Commands\Domain;
 
 use Codefy\Framework\Console\ConsoleCommand;
-use Codefy\Framework\Support\AutoloadResolver;
 use Symfony\Component\Console\Input\InputArgument;
+
+use function basename;
+use function is_dir;
+use function rtrim;
 
 class MakeDomainCommand extends ConsoleCommand
 {
@@ -34,34 +37,49 @@ class MakeDomainCommand extends ConsoleCommand
 
         if ($domainName === '') {
             $this->output->writeln('<error>You must supply a domain name.</error>');
-            return ConsoleCommand::FAILURE;
+            return self::FAILURE;
         }
 
         /** ------------------------------------------------------
          * 1. Resolve the base namespace that contains "Domain/"
          * ------------------------------------------------------*/
-        $mappings = AutoloadResolver::getPsr4Mappings();
+        if (empty($mappings)) {
+            $this->terminalError('No PSR-4 namespaces found in your project composer.json.');
+            return self::FAILURE;
+        }
+
         $domainRootNamespace = null;
         $domainRootPath = null;
 
         foreach ($mappings as $namespace => $path) {
-            // We treat ANY namespace with a "Domain" folder as valid
-            $possibleDomainPath = $path . $this->codefy::DS . 'Domain';
+            $normalizedPath = rtrim($path, $this->codefy::DS);
 
-            if (is_dir($possibleDomainPath)) {
+            // CASE 1: The mapping path itself *is* the Domain root
+            // e.g. "Codefy\\Domain\\": "src/Domain/"
+            if (basename($normalizedPath) === 'Domain') {
+                $domainRootNamespace = rtrim($namespace, '\\') . '\\';
+                $domainRootPath = $normalizedPath;
+                break;
+            }
+
+            // CASE 2: The Domain folder lives directly under the namespace root
+            // e.g. "Codefy\\": "src/" and we have "src/Domain"
+            $candidate = $normalizedPath . $this->codefy::DS . 'Domain';
+
+            if (is_dir($candidate)) {
                 $domainRootNamespace = rtrim($namespace, '\\') . '\\Domain\\';
-                $domainRootPath = $possibleDomainPath;
+                $domainRootPath = $candidate;
                 break;
             }
         }
 
-        if (!$domainRootNamespace || !$domainRootPath) {
-            $this->output->writeln('<error>No Domain namespace found in PSR-4 mappings.</error>');
-            $this->output->writeln('Make sure your project has something like:');
-            $this->output->writeln('');
-            $this->output->writeln('  "App\\\\": "App/",');
-            $this->output->writeln('  "Domain directory exists: App/Domain"');
-            return ConsoleCommand::FAILURE;
+        if ($domainRootPath === null) {
+            $this->terminalError(
+                'Unable to locate a Domain root. ' .
+                'Expected either a "Domain" mapping (e.g. "Codefy\\\\Domain\\\\": "src/Domain/") ' .
+                'or a Domain subdirectory under a PSR-4 root (e.g. "Codefy\\\\": "src/" with src/Domain).'
+            );
+            return self::FAILURE;
         }
 
         /** ------------------------------------------------------
@@ -94,24 +112,19 @@ class MakeDomainCommand extends ConsoleCommand
         /** ------------------------------------------------------
          * 4. Output results
          * ------------------------------------------------------*/
-        $this->output->writeln("<info>Domain module created:</info> {$domainName}");
-        $this->output->writeln('');
-        $this->output->writeln('<comment>Directory structure:</comment>');
+        $this->terminalInfo("Domain module '{$domainName}' created successfully.\n");
 
-        $tree = <<<TXT
-Domain
-└── {$domainName}
-    ├── Command
-    ├── Event
-    ├── Exception
-    ├── Query
-    ├── Repository
-    ├── Service
-    └── ValueObject
-TXT;
+        $this->output->writeln("<comment>Directory structure:</comment>\n");
+        $this->output->writeln("Domain");
+        $this->output->writeln("└── {$domainName}");
+        $this->output->writeln("    ├── Command");
+        $this->output->writeln("    ├── Event");
+        $this->output->writeln("    ├── Exception");
+        $this->output->writeln("    ├── Query");
+        $this->output->writeln("    ├── Repository");
+        $this->output->writeln("    ├── Service");
+        $this->output->writeln("    └── ValueObject");
 
-        $this->output->writeln($tree);
-
-        return ConsoleCommand::SUCCESS;
+        return self::SUCCESS;
     }
 }

@@ -12,20 +12,37 @@ class AutoloadResolver
 {
     public static function getPsr4Mappings(): array
     {
-        $map = require base_path(path: 'vendor/composer/autoload_psr4.php');
+        $composer = json_decode(
+            file_get_contents(base_path(path: 'composer.json')),
+            true
+        );
 
-        // normalize paths (Composer returns arrays of paths)
-        return array_map(fn($paths) => rtrim($paths[0], Codefy::$PHP::DS), $map);
+        if (!isset($composer['autoload']['psr-4'])) {
+            return [];
+        }
+
+        $mappings = $composer['autoload']['psr-4'];
+
+        // Normalize paths
+        foreach ($mappings as $ns => &$path) {
+            $path = rtrim(base_path($path), Codefy::$PHP::DS);
+        }
+
+        return $mappings;
     }
 
+    /**
+     * Resolves a namespace to its PSR-4 path.
+     */
     public static function resolveNamespaceToPath(string $namespace): ?string
     {
         $mappings = self::getPsr4Mappings();
 
         foreach ($mappings as $prefix => $directory) {
             if (str_starts_with($namespace, $prefix)) {
-                $sub = str_replace('\\', Codefy::$PHP::DS, substr($namespace, strlen($prefix)));
-                return $directory . Codefy::$PHP::DS . $sub;
+                $sub = substr($namespace, strlen($prefix));
+                $sub = str_replace('\\', Codefy::$PHP::DS, $sub);
+                return rtrim($directory . Codefy::$PHP::DS . $sub, Codefy::$PHP::DS);
             }
         }
 
