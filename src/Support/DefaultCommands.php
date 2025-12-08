@@ -38,6 +38,7 @@ class DefaultCommands
             \Codefy\Framework\Console\Commands\EncryptEnvCommand::class,
             \Codefy\Framework\Console\Commands\QueueListCommand::class,
             \Codefy\Framework\Console\Commands\QueueRunCommand::class,
+            \Codefy\Framework\Console\Commands\RouteListCommand::class,
         ];
     }
 }
