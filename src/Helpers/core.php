@@ -35,6 +35,8 @@ use Qubus\Expressive\Connection;
 use Qubus\Expressive\Database;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Factories\HtmlResponseFactory;
+use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
+use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
 use Qubus\View\Renderer;
 use ReflectionException;
 use RuntimeException;
@@ -577,7 +579,7 @@ function gate(?string $permission = null, array $rules = []): Gate|null|bool
         return null;
     }
 
-    $auth = app(name: Gate::class);
+    $auth = Codefy::$PHP->make(name: Gate::class);
 
     if (is_null__($permission)) {
         return $auth;
@@ -595,4 +597,18 @@ function gate(?string $permission = null, array $rules = []): Gate|null|bool
 function user(): Database|false|null
 {
     return gate()?->current();
+}
+
+/**
+ * Generate url's from named routes.
+ *
+ * @param string $name Name of the route.
+ * @param array $params Data parameters.
+ * @return string The url.
+ * @throws NamedRouteNotFoundException
+ * @throws RouteParamFailedConstraintException
+ */
+function route(string $name, array $params = []): string
+{
+    return Codefy::$PHP->router->url($name, $params);
 }
