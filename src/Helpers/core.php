@@ -32,11 +32,12 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Exception\Http\HttpExceptionFactory;
 use Qubus\Expressive\Connection;
-use Qubus\Expressive\Database;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Factories\HtmlResponseFactory;
 use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
 use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
+use Qubus\Routing\Exceptions\TooLateToAddNewRouteException;
+use Qubus\Routing\Route\RouteAttributes;
 use Qubus\View\Renderer;
 use ReflectionException;
 use RuntimeException;
@@ -594,7 +595,7 @@ function gate(?string $permission = null, array $rules = []): Gate|null|bool
  * @throws ReflectionException
  * @throws TypeException
  */
-function user(): Database|false|null
+function user(): object|bool|null
 {
     return gate()?->current();
 }
@@ -604,11 +605,21 @@ function user(): Database|false|null
  *
  * @param string $name Name of the route.
  * @param array $params Data parameters.
- * @return string The url.
+ * @return string|null The url.
  * @throws NamedRouteNotFoundException
  * @throws RouteParamFailedConstraintException
+ * @throws TooLateToAddNewRouteException
  */
-function route(string $name, array $params = []): string
+function route(string $name, array $params = []): ?string
 {
-    return Codefy::$PHP->router->url($name, $params);
+    $request = RequestContext::get();
+    $routable = $request->getAttribute(RouteAttributes::ROUTE);
+    if (null === $routable) {
+        return null;
+    }
+
+    $router = Codefy::$PHP->router;
+    $router->hydrateRoute($routable);
+
+    return $router->url($name, $params);
 }
