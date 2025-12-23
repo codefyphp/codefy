@@ -103,6 +103,17 @@ abstract class FormRequest extends ServerRequest
     }
 
     /**
+     * Return validated or filtered value.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    public function value(mixed $value): mixed
+    {
+        return $this->validated()[$value] ?? null;
+    }
+
+    /**
      * Get custom messages for validator errors.
      *
      * @return array
@@ -127,9 +138,8 @@ abstract class FormRequest extends ServerRequest
 
         if (!method_exists($this, 'validator')) {
             $validator = $this->createDefaultValidator($factory);
+            $this->setValidator($validator);
         }
-
-        $this->setValidator($validator);
 
         return $this->validator;
     }
@@ -194,7 +204,7 @@ abstract class FormRequest extends ServerRequest
     protected function validationRules(): array
     {
         return method_exists(object_or_class: $this, method: 'rules')
-        ? $this->container->execute(callableOrMethodStr: [$this, 'rules'])
+        ? $this->rules()
         : [];
     }
 }
