@@ -85,20 +85,10 @@ abstract class FormRequest extends ServerRequest
      *
      * @throws Exception
      */
-    public function validate(): array
+    public function validated(): array
     {
         $this->validateResolved();
 
-        return $this->validated();
-    }
-
-    /**
-     * Return the final validated and filtered data.
-     */
-    public function validated(): array
-    {
-        // At this point, $this->data already reflects only/excluded keys
-        // and possibly other transformations
         return $this->data;
     }
 
@@ -107,6 +97,7 @@ abstract class FormRequest extends ServerRequest
      *
      * @param mixed $value
      * @return mixed
+     * @throws Exception
      */
     public function value(mixed $value): mixed
     {

@@ -78,7 +78,6 @@ it('returns a validated id.', function () use ($requestFactory) {
         ->withParsedBody(['id' => '01K9T2ZFJBE3PAPDB0V0K9M6WF']);
     $handler = new RequestHandler(new ResponseFactory());
     $formRequest = new ExampleFormRequest(queryParams: $request->getParsedBody());
-    $formRequest->validate();
 
     $response = $handler->handle($formRequest);
 
@@ -90,5 +89,5 @@ it('throws a ValidationException when the id is null.', function () use ($reques
     $request = $requestFactory
         ->createServerRequest('GET', 'http://example.com/example');
     $formRequest = new ExampleFormRequest(parsedBody: $request->getParsedBody());
-    $formRequest->validate();
+    $formRequest->validated();
 })->throws(ValidationException::class);

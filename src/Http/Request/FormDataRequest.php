@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Request;
 
+use Exception;
+
 abstract class FormDataRequest extends FormRequest
 {
+    /**
+     * @throws Exception
+     */
     protected function passedValidation(): void
     {
         foreach ($this->validated() as $key => $value) {
