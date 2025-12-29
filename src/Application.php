@@ -44,6 +44,7 @@ use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Mail\Mailer;
 use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
+use Qubus\Support\DataType;
 use Qubus\Support\StringHelper;
 use ReflectionException;
 
@@ -64,7 +65,7 @@ final class Application extends Container
     use InvokerAware;
     use LoggerAware;
 
-    public const string APP_VERSION = '3.0.1';
+    public const string APP_VERSION = '3.1.0';
 
     public const string MIN_PHP_VERSION = '8.4';
 
@@ -152,6 +153,11 @@ final class Application extends Container
     private array $param = [] {
         &get => $this->param;
     }
+
+    /**
+     * The Application's namespace.
+     */
+    private ?string $namespace = null;
     // phpcs:enable
 
     /**
@@ -261,6 +267,7 @@ final class Application extends Container
                 Providers\DatabaseConnectionServiceProvider::class,
                 Providers\FlysystemServiceProvider::class,
                 Providers\RouterServiceProvider::class,
+                Providers\HttpExceptionServiceProvider::class,
             ] as $serviceProvider
         ) {
             $this->registerServiceProvider(serviceProvider: $serviceProvider);
@@ -874,6 +881,16 @@ final class Application extends Container
     }
 
     /**
+     * Returns the application environment.
+     *
+     * @return string
+     */
+    public function getEnvironment(): string
+    {
+        return env(key: 'APP_ENV');
+    }
+
+    /**
      * Determine if the application is in production.
      *
      * @return bool
@@ -932,6 +949,33 @@ final class Application extends Container
         self::loadEnvironment($basePath);
 
         return self::$APP;
+    }
+
+    /**
+     * Get the application namespace.
+     *
+     * @throws TypeException
+     */
+    public function getNamespace(): string
+    {
+        if (!is_null__($this->namespace)) {
+            return $this->namespace;
+        }
+
+        $composer = json_decode(file_get_contents($this->basePath() . self::DS . 'composer.json'), true);
+
+        foreach ((array) new DataType()->array->get($composer, 'autoload.psr-4') as $namespace => $path) {
+            if (
+                array_any(
+                    (array) $path,
+                    fn($pathChoice) => realpath($this->path()) === realpath($this->basePath() . self::DS . $pathChoice)
+                )
+            ) {
+                return $this->namespace = $namespace;
+            }
+        }
+
+        throw new TypeException("Unable to detect the application's namespace.");
     }
 
     //phpcs:disable
