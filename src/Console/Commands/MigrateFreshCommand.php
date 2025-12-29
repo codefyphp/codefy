@@ -28,7 +28,6 @@ final class MigrateFreshCommand extends PhpMigCommand
                 )
                 ->addOption(
                     name: 'seed',
-                    shortcut: '-s',
                     mode: InputOption::VALUE_NONE,
                     description: 'Run database seeders after migration.'
                 )
