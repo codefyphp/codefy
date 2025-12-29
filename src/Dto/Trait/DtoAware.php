@@ -8,6 +8,7 @@ use Codefy\Framework\Dto\Attribute\UseDto;
 use ReflectionClass;
 use RuntimeException;
 
+use function get_object_vars;
 use function sprintf;
 
 trait DtoAware
@@ -56,5 +57,10 @@ trait DtoAware
         }
 
         return '';
+    }
+
+    public function toDtoArray(): array
+    {
+        return get_object_vars($this->toDto());
     }
 }
