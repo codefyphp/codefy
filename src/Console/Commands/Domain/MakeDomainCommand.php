@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Console\Commands\Domain;
 
 use Codefy\Framework\Console\ConsoleCommand;
+use Codefy\Framework\Support\AutoloadResolver;
 use Symfony\Component\Console\Input\InputArgument;
 
 use function basename;
@@ -40,9 +41,8 @@ class MakeDomainCommand extends ConsoleCommand
             return self::FAILURE;
         }
 
-        /** ------------------------------------------------------
-         * 1. Resolve the base namespace that contains "Domain/"
-         * ------------------------------------------------------*/
+        $mappings = AutoloadResolver::getPsr4Mappings();
+
         if (empty($mappings)) {
             $this->terminalError('No PSR-4 namespaces found in your project composer.json.');
             return self::FAILURE;

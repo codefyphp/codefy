@@ -8,8 +8,11 @@ use Codefy\Framework\Application;
 use Qubus\Exception\Data\TypeException;
 use ReflectionException;
 use ReflectionMethod;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,6 +23,9 @@ use Symfony\Component\Console\Question\Question;
 
 use function count;
 use function method_exists;
+use function Qubus\Inheritance\Helpers\tap;
+use function Qubus\Support\Helpers\collect;
+use function Qubus\Support\Helpers\is_null__;
 use function str_repeat;
 
 use const PHP_EOL;
@@ -308,5 +314,119 @@ abstract class ConsoleCommand extends SymfonyCommand
         }
 
         return true;
+    }
+
+    /**
+     * Resolve the console command instance for the given command.
+     *
+     * @param Command|string $command
+     * @return Command
+     */
+    protected function resolveCommand(Command|string $command): Command
+    {
+        if (is_string($command)) {
+            if (! class_exists($command)) {
+                return $this->getApplication()->find($command);
+            }
+
+            $command = $this->codefy->make($command);
+        }
+
+        if ($command instanceof SymfonyCommand) {
+            $command->setApplication($this->getApplication());
+        }
+
+        return $command;
+    }
+
+    /**
+     * Call another console command.
+     *
+     * @param Command|string $command
+     * @param array $arguments
+     * @return int
+     * @throws ExceptionInterface
+     */
+    public function call(Command|string $command, array $arguments = []): int
+    {
+        return $this->runCommand($command, $arguments, $this->output);
+    }
+
+    /**
+     * Get the value of a command option.
+     *
+     * @param string|null $key
+     * @return string|array|bool|null
+     */
+    public function option(?string $key = null): bool|array|string|null
+    {
+        if (is_null__($key)) {
+            return $this->input->getOptions();
+        }
+
+        return $this->input->getOption($key);
+    }
+
+    /**
+     * Get all the options passed to the command.
+     *
+     * @return bool|array|string|null
+     */
+    public function options(): bool|array|string|null
+    {
+        return $this->option();
+    }
+
+    /**
+     * Run the given console command.
+     *
+     * @param Command|string $command
+     * @param array $arguments
+     * @param OutputInterface $output
+     * @return int
+     * @throws ExceptionInterface
+     */
+    protected function runCommand(Command|string $command, array $arguments, OutputInterface $output): int
+    {
+        $arguments['command'] = $command;
+
+        return $this->resolveCommand($command)->run(
+            $this->createInputFromArguments($arguments),
+            $output
+        );
+    }
+
+    /**
+     * Create an input instance from the given arguments.
+     *
+     * @param array $arguments
+     * @return ArrayInput
+     */
+    protected function createInputFromArguments(array $arguments): ArrayInput
+    {
+        return tap(new ArrayInput(array_merge($this->context(), $arguments)), function ($input) {
+            if ($input->getParameterOption('--no-interaction')) {
+                $input->setInteractive(false);
+            }
+        });
+    }
+    /**
+     * Get all the context passed to the command.
+     *
+     * @return array
+     */
+    protected function context(): array
+    {
+        return collect($this->option())
+            ->only([
+                'ansi',
+                'no-ansi',
+                'no-interaction',
+                'quiet',
+                'verbose',
+            ])
+            ->filter()
+            ->mapWithKeys(fn ($value, $key) => ["--{$key}" => $value])
+            ->all();
     }
 }

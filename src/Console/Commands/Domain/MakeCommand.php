@@ -93,7 +93,7 @@ class MakeCommand extends ConsoleCommand
          * --------------------------------------------------------------*/
         $created = $this->generator->generate(
             preset: $preset,
-            namespace: $namespace . ($directory ? '\\' . str_replace('/', '\\', $directory) : ''),
+            namespace: $this->buildNamespace($namespace, $directory),
             directory: $directory,
             className: $className,
             overridePath: $finalFilePath   // <-- NEW!
@@ -147,4 +147,17 @@ class MakeCommand extends ConsoleCommand
         // Clean double slashes
         return preg_replace('#/+#', '/', $full);
     }
+
+    private function buildNamespace(string $baseNamespace, string $directory): string
+    {
+        $base = rtrim($baseNamespace, '\\');
+        $dir  = trim(str_replace('/', '\\', $directory), '\\');
+
+        if ($dir === '' || $dir === '[root directory]') {
+            return $base;
+        }
+
+        return $base . '\\' . $dir;
+    }
+
 }
