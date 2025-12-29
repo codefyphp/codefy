@@ -96,12 +96,13 @@ abstract class FormRequest extends ServerRequest
      * Return validated or filtered value.
      *
      * @param mixed $value
+     * @param mixed|null $default
      * @return mixed
      * @throws Exception
      */
-    public function value(mixed $value): mixed
+    public function value(mixed $value, mixed $default = null): mixed
     {
-        return $this->validated()[$value] ?? null;
+        return $this->validated()[$value] ?? $default;
     }
 
     /**
