@@ -97,7 +97,7 @@ abstract class ConsoleCommand extends SymfonyCommand
      */
     protected function getArgument(?string $key = null): mixed
     {
-        return $this->input->getArgument(name: $key) ?? '';
+        return $this->input->getArgument(name: $key) ?? null;
     }
 
     /**
@@ -108,7 +108,7 @@ abstract class ConsoleCommand extends SymfonyCommand
      */
     protected function getOptions(?string $key = null): mixed
     {
-        return $this->input->getOption(name: $key) ?? '';
+        return $this->input->getOption(name: $key) ?? null;
     }
 
     /**
@@ -364,7 +364,7 @@ abstract class ConsoleCommand extends SymfonyCommand
             return $this->input->getOptions();
         }
 
-        return $this->input->getOption($key);
+        return $this->input->getOption($key) ?? null;
     }
 
     /**
