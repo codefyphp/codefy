@@ -75,6 +75,10 @@ final class ClassGenerator
             $stubFile = $stubsPath . $this->codefy::DS . $file['stub'];
             $content  = $this->filesystem->getContents($stubFile);
 
+            // Normalize namespace (remove duplicates + trailing slash)
+            $namespace = preg_replace('#\\\\+#', '\\', $namespace);
+            $namespace = rtrim($namespace, '\\');
+
             // Replace placeholders
             $content = str_replace(
                 ['{{ namespace }}', '{{ class }}'],
