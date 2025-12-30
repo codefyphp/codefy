@@ -17,7 +17,7 @@ use Qubus\Validation\Validation;
 use function array_merge;
 use function method_exists;
 
-abstract class FormRequest extends ServerRequest
+abstract class FormRequest extends ServerRequest implements FormDataServerRequest
 {
     use FormRequestDelegateAware;
 
@@ -45,7 +45,7 @@ abstract class FormRequest extends ServerRequest
     protected ?Validation $validator = null;
 
     /**
-     * Return all input data as an array.
+     * @inheritDoc
      */
     public function all(): array
     {
@@ -61,7 +61,7 @@ abstract class FormRequest extends ServerRequest
     }
 
     /**
-     * Replace internal data with only the specified keys.
+     * @inheritDoc
      */
     public function only(array $keys): static
     {
@@ -71,7 +71,7 @@ abstract class FormRequest extends ServerRequest
     }
 
     /**
-     * Replace internal data excluding the specified keys.
+     * @inheritDoc
      */
     public function except(array $keys): static
     {
@@ -81,9 +81,7 @@ abstract class FormRequest extends ServerRequest
     }
 
     /**
-     * Validate the request data and return validated data.
-     *
-     * @throws Exception
+     * @inheritDoc
      */
     public function validated(): array
     {
@@ -93,12 +91,7 @@ abstract class FormRequest extends ServerRequest
     }
 
     /**
-     * Return validated or filtered value.
-     *
-     * @param mixed $value
-     * @param mixed|null $default
-     * @return mixed
-     * @throws Exception
+     * @inheritDoc
      */
     public function value(mixed $value, mixed $default = null): mixed
     {
@@ -181,7 +174,7 @@ abstract class FormRequest extends ServerRequest
     }
 
     /**
-     * Return validation errors.
+     * @inheritDoc
      */
     public function errors(): ErrorBag
     {
