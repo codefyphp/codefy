@@ -59,6 +59,11 @@ trait DtoAware
         return '';
     }
 
+    /**
+     * Convert DTO object data to array.
+     *
+     * @return array
+     */
     public function toDtoArray(): array
     {
         return get_object_vars($this->toDto());
