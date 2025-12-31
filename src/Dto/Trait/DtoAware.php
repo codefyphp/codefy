@@ -25,15 +25,15 @@ trait DtoAware
     {
         $dtoClass = $this->getDtoClass();
 
-        if (! class_exists($dtoClass)) {
+        if (! class_exists(class: $dtoClass)) {
             throw new RuntimeException(
-                sprintf("DTO class [%s] not found.", $dtoClass)
+                message: sprintf("DTO class [%s] not found.", $dtoClass)
             );
         }
 
-        if (! method_exists($dtoClass, 'fromRequest')) {
+        if (! method_exists(object_or_class: $dtoClass, method: 'fromRequest')) {
             throw new RuntimeException(
-                sprintf("DTO class [%s] must have a 'fromRequest' method.", $dtoClass)
+                message: sprintf("DTO class [%s] must have a 'fromRequest' method.", $dtoClass)
             );
         }
 
@@ -47,8 +47,8 @@ trait DtoAware
      */
     public function getDtoClass(): string
     {
-        $reflection = new ReflectionClass(static::class);
-        $attributes = $reflection->getAttributes(UseDto::class);
+        $reflection = new ReflectionClass(objectOrClass: static::class);
+        $attributes = $reflection->getAttributes(name: UseDto::class);
 
         if ($attributes !== []) {
             $attribute = $attributes[0]->newInstance();
@@ -66,6 +66,6 @@ trait DtoAware
      */
     public function toDtoArray(): array
     {
-        return get_object_vars($this->toDto());
+        return get_object_vars(object: $this->toDto());
     }
 }
