@@ -17,7 +17,7 @@ use Qubus\Validation\Validation;
 use function array_merge;
 use function method_exists;
 
-abstract class FormRequest extends ServerRequest implements FormDataServerRequest
+abstract class FormRequest extends ServerRequest implements DataTransformerRequest
 {
     use FormRequestDelegateAware;
 

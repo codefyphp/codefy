@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Request;
 
 use Exception;
+use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Validation\ErrorBag;
 
-interface FormDataServerRequest
+interface DataTransformerRequest extends ServerRequestInterface
 {
     /**
      * Return all input data as an array.
