@@ -639,7 +639,7 @@ function route(string $name, array $params = []): ?string
  */
 function method_field(string $method): string
 {
-    return sprintf('<input type="hidden" name="_method" value="%s" />', $method);
+    return sprintf('<input type="hidden" name="_method" value="%s" />', $method) . "\n";
 }
 
 /**
