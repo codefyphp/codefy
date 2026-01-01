@@ -21,6 +21,7 @@ class DefaultMiddlewares
             'csrf.token' => \Codefy\Framework\Http\Middleware\Csrf\CsrfTokenMiddleware::class,
             'csrf.protection' => \Codefy\Framework\Http\Middleware\Csrf\CsrfProtectionMiddleware::class,
             'css.minify' => \Codefy\Framework\Http\Middleware\CssMinifierMiddleware::class,
+            'gate' => \Codefy\Framework\Http\Middleware\Auth\GateMiddleware::class,
             'honeypot' => \Codefy\Framework\Http\Middleware\Spam\HoneyPotMiddleware::class,
             'html.minify' => \Codefy\Framework\Http\Middleware\HtmlMinifierMiddleware::class,
             'http.cache' => \Codefy\Framework\Http\Middleware\Cache\CacheMiddleware::class,
