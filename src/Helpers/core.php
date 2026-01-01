@@ -47,7 +47,6 @@ use Qubus\View\Renderer;
 use ReflectionException;
 use RuntimeException;
 use Throwable;
-
 use UnitEnum;
 
 use function dirname;
@@ -641,4 +640,20 @@ function route(string $name, array $params = []): ?string
 function method_field(string $method): string
 {
     return sprintf('<input type="hidden" name="_method" value="%s" />', $method);
+}
+
+/**
+ * Return an array of system user roles.
+ *
+ * @throws Exception
+ */
+function get_system_roles(): array
+{
+    $userRoles = [];
+    $roles = Codefy::$PHP->configContainer->getConfigKey(key: 'rbac.roles');
+    foreach ($roles as $role => $description) {
+        $userRoles[] = $role;
+    }
+
+    return $userRoles;
 }
