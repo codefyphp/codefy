@@ -16,10 +16,10 @@ trait DtoAware
     /**
      * Convert validated data to DTO.
      *
-     * This method creates a DTO instance using only validated data from the Form Request.
+     * This method creates a DTO instance using only validated data from Input Validator or Form Request.
      *
      * @return object The corresponding DTO instance.
-     * @throws RuntimeException If DTO class is not found or doesn't have fromRequest method.
+     * @throws RuntimeException If DTO class is not found or doesn't have fromData method.
      */
     public function toDto(): object
     {
@@ -31,17 +31,17 @@ trait DtoAware
             );
         }
 
-        if (! method_exists(object_or_class: $dtoClass, method: 'fromRequest')) {
+        if (! method_exists(object_or_class: $dtoClass, method: 'fromData')) {
             throw new RuntimeException(
-                message: sprintf("DTO class [%s] must have a 'fromRequest' method.", $dtoClass)
+                message: sprintf("DTO class [%s] must have a 'fromData' method.", $dtoClass)
             );
         }
 
-        return $dtoClass::fromRequest($this);
+        return $dtoClass::fromData($this);
     }
 
     /**
-     * Get the DTO class name for this Form Request.
+     * Get the DTO class name for this Input Validator or Form Request.
      *
      * @return string The fully qualified DTO class name
      */

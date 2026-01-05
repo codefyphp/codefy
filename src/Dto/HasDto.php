@@ -14,7 +14,7 @@ interface HasDto
     public function toDto(): object;
 
     /**
-     * Get the DTO class name for this Form Request.
+     * Get the DTO class name for this Input Validator or Form Request.
      *
      * @return string The fully qualified DTO class name.
      */

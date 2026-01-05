@@ -17,7 +17,7 @@ class ValidationFormRequest extends FormRequest
     protected function rules(): array
     {
         return [
-                'id' => 'required|integer',
+            'id' => 'required|integer',
         ];
     }
 }

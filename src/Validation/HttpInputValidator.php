@@ -7,7 +7,7 @@ namespace Codefy\Framework\Validation;
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Traits\InputValidationAware;
 use Exception;
-use Qubus\Http\ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Injector\ServiceContainer;
 use Qubus\Support\DataType;
 use Qubus\Validation\ErrorBag;
@@ -44,8 +44,19 @@ abstract class HttpInputValidator implements DataValidator
      */
     protected ?Validation $validator = null;
 
-    public function __construct(protected ServerRequest $request)
+    private function __construct(protected ServerRequestInterface $request)
     {
+    }
+
+    /**
+     * Factory.
+     *
+     * @param ServerRequestInterface $request
+     * @return self
+     */
+    public static function make(ServerRequestInterface $request): self
+    {
+        return new static($request);
     }
 
     /**

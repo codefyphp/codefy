@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Request;
 
 use Codefy\Framework\Proxy\Codefy;
-use Codefy\Framework\Traits\FormRequestDelegateAware;
+use Codefy\Framework\Traits\InputValidationAware;
 use Exception;
 use Qubus\Http\ServerRequest;
 use Qubus\Injector\ServiceContainer;
@@ -19,7 +19,7 @@ use function method_exists;
 
 abstract class FormRequest extends ServerRequest implements DataTransformerRequest
 {
-    use FormRequestDelegateAware;
+    use InputValidationAware;
 
     /**
      * The filtered input data.
