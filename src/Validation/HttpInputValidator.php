@@ -54,7 +54,7 @@ abstract class HttpInputValidator implements DataValidator
      * @param ServerRequestInterface $request
      * @return self
      */
-    public static function make(ServerRequestInterface $request): self
+    public static function make(ServerRequestInterface $request): static
     {
         return new static($request);
     }
