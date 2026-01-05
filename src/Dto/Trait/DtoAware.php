@@ -31,13 +31,13 @@ trait DtoAware
             );
         }
 
-        if (! method_exists(object_or_class: $dtoClass, method: 'fromData')) {
+        if (! method_exists(object_or_class: $dtoClass, method: 'fromValidatedData')) {
             throw new RuntimeException(
-                message: sprintf("DTO class [%s] must have a 'fromData' method.", $dtoClass)
+                message: sprintf("DTO class [%s] must have a 'fromValidatedData' method.", $dtoClass)
             );
         }
 
-        return $dtoClass::fromData($this);
+        return $dtoClass::fromValidatedData($this);
     }
 
     /**

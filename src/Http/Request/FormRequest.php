@@ -6,6 +6,7 @@ namespace Codefy\Framework\Http\Request;
 
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Traits\InputValidationAware;
+use Codefy\Framework\Validation\DataValidator;
 use Exception;
 use Qubus\Http\ServerRequest;
 use Qubus\Injector\ServiceContainer;
@@ -17,7 +18,7 @@ use Qubus\Validation\Validation;
 use function array_merge;
 use function method_exists;
 
-abstract class FormRequest extends ServerRequest implements DataTransformerRequest
+abstract class FormRequest extends ServerRequest implements DataValidator
 {
     use InputValidationAware;
 
