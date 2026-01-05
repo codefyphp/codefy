@@ -15,7 +15,7 @@ use function sprintf;
 
 use const JSON_THROW_ON_ERROR;
 
-trait FormRequestDelegateAware
+trait InputValidationAware
 {
     /**
      * Validate the class instance.
