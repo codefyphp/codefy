@@ -12,8 +12,6 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\View\Renderer;
 
-use function Codefy\Framework\Helpers\config;
-
 final class FenomView implements Renderer
 {
     private Fenom $fenom;

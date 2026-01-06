@@ -10,7 +10,6 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\View\Renderer;
 
-use function Codefy\Framework\Helpers\config;
 use function Foil\engine;
 
 final class FoilView implements Renderer
