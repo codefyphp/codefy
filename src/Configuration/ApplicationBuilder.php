@@ -152,7 +152,7 @@ final class ApplicationBuilder
         });
 
         // Class-based routes
-        if (!is_null__($class) && is_array($class)) {
+        if (!is_null__($class)) {
             foreach ($class as $route) {
                 $this->app->execute([$route, 'handle']);
             }
