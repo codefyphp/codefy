@@ -48,7 +48,6 @@ class MakeDomainCommand extends ConsoleCommand
             return self::FAILURE;
         }
 
-        $domainRootNamespace = null;
         $domainRootPath = null;
 
         foreach ($mappings as $namespace => $path) {
@@ -57,7 +56,6 @@ class MakeDomainCommand extends ConsoleCommand
             // CASE 1: The mapping path itself *is* the Domain root
             // e.g. "Codefy\\Domain\\": "src/Domain/"
             if (basename($normalizedPath) === 'Domain') {
-                $domainRootNamespace = rtrim($namespace, '\\') . '\\';
                 $domainRootPath = $normalizedPath;
                 break;
             }
@@ -67,7 +65,6 @@ class MakeDomainCommand extends ConsoleCommand
             $candidate = $normalizedPath . $this->codefy::DS . 'Domain';
 
             if (is_dir($candidate)) {
-                $domainRootNamespace = rtrim($namespace, '\\') . '\\Domain\\';
                 $domainRootPath = $candidate;
                 break;
             }
@@ -90,11 +87,14 @@ class MakeDomainCommand extends ConsoleCommand
         /** subfolders we want to scaffold */
         $directories = [
             'Command',
+            'Dto',
+            'Enum',
             'Event',
             'Exception',
             'Query',
             'Repository',
             'Service',
+            'Validator',
             'ValueObject',
         ];
 
@@ -118,11 +118,14 @@ class MakeDomainCommand extends ConsoleCommand
         $this->output->writeln("Domain");
         $this->output->writeln("└── {$domainName}");
         $this->output->writeln("    ├── Command");
+        $this->output->writeln("    ├── Dto");
+        $this->output->writeln("    ├── Enum");
         $this->output->writeln("    ├── Event");
         $this->output->writeln("    ├── Exception");
         $this->output->writeln("    ├── Query");
         $this->output->writeln("    ├── Repository");
         $this->output->writeln("    ├── Service");
+        $this->output->writeln("    ├── Validator");
         $this->output->writeln("    └── ValueObject");
 
         return self::SUCCESS;
