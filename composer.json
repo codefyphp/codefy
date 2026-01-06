@@ -36,7 +36,7 @@
         "qubus/router": "^4",
         "qubus/security": "^4",
         "qubus/support": "^4",
-        "qubus/validation": "^5.0",
+        "qubus/validation": "^5",
         "qubus/view": "^3",
         "symfony/console": "^7",
         "symfony/options-resolver": "^7"
