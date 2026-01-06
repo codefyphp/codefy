@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Helpers;
 
-use BackedEnum;
-use Carbon\Carbon;
 use Codefy\CommandBus\Busses\SynchronousCommandBus;
 use Codefy\CommandBus\Command;
 use Codefy\CommandBus\Containers\ContainerFactory;
@@ -27,7 +25,6 @@ use Codefy\QueryBus\Enquire;
 use Codefy\QueryBus\Query;
 use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
 use Codefy\QueryBus\UnresolvableQueryHandlerException;
-use DateTimeZone;
 use Gravatar\Image;
 use Gravatar\Profile;
 use Psr\Http\Message\ResponseInterface;
@@ -41,13 +38,10 @@ use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
 use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
 use Qubus\Routing\Exceptions\TooLateToAddNewRouteException;
 use Qubus\Routing\Route\RouteAttributes;
-use Qubus\Support\DateTime\QubusDateTime;
-use Qubus\ValueObjects\DateTime\Date;
 use Qubus\View\Renderer;
 use ReflectionException;
 use RuntimeException;
 use Throwable;
-use UnitEnum;
 
 use function dirname;
 use function error_log;
@@ -65,12 +59,12 @@ use function Qubus\Support\Helpers\is_null__;
 use function file_exists;
 use function in_array;
 use function is_string;
-use function Qubus\Support\Helpers\value;
 use function realpath;
 use function sprintf;
 use function str_contains;
 use function str_starts_with;
 use function strlen;
+use function strtoupper;
 use function substr;
 use function substr_count;
 use function ucfirst;
@@ -639,7 +633,7 @@ function route(string $name, array $params = []): ?string
  */
 function method_field(string $method): string
 {
-    return sprintf('<input type="hidden" name="_method" value="%s" />', $method) . "\n";
+    return sprintf('<input type="hidden" name="_method" value="%s" />', strtoupper($method)) . "\n";
 }
 
 /**
