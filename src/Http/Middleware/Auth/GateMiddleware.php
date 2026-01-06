@@ -20,7 +20,7 @@ final class GateMiddleware implements MiddlewareInterface
 {
     private ?string $permission = null;
     private ?string $redirect = null;
-    private bool $redirectIfAuthorized = false;
+    private bool|string $redirectIfAuthorized = false;
 
     public function __construct(private readonly Gate $user, private readonly ConfigContainer $configContainer)
     {
@@ -29,7 +29,7 @@ final class GateMiddleware implements MiddlewareInterface
     public function withArguments(
         ?string $permission = null,
         ?string $redirect = null,
-        bool $redirectIfAuthorized = false
+        bool|string $redirectIfAuthorized = false
     ): self {
         $clone = clone $this;
         $clone->permission = $permission;
@@ -63,7 +63,7 @@ final class GateMiddleware implements MiddlewareInterface
             : JsonResponseFactory::create(data: 'Access denied.');
         }
 
-        if ($this->redirectIfAuthorized && $this->redirect !== null) {
+        if ((bool) $this->redirectIfAuthorized && $this->redirect !== null) {
             return RedirectResponseFactory::create(uri: $this->redirect);
         }
 
