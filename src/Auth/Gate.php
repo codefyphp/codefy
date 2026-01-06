@@ -140,7 +140,7 @@ class Gate
      */
     private function getToken(): ?string
     {
-        $request = RequestContext::get();
+        $request = $this->getRequest();
 
         return $request?->getAttribute(UserCookieDecryptMiddleware::USER_COOKIE);
     }

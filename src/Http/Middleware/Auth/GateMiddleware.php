@@ -5,29 +5,36 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Auth;
 
 use Codefy\Framework\Auth\Gate;
+use Codefy\Framework\Proxy\Codefy;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Http\Factories\JsonResponseFactory;
 use Qubus\Http\Factories\RedirectResponseFactory;
 
-class GateMiddleware implements MiddlewareInterface
+final class GateMiddleware implements MiddlewareInterface
 {
-    protected ?string $permission = null;
-    protected ?string $redirect = null;
+    private ?string $permission = null;
+    private ?string $redirect = null;
+    private bool $redirectIfAuthorized = false;
 
-    public function __construct(protected Gate $user)
+    public function __construct(private readonly Gate $user, private readonly ConfigContainer $configContainer)
     {
     }
 
-    public function withArguments(?string $permission = null, ?string $redirect = null): static
-    {
+    public function withArguments(
+        ?string $permission = null,
+        ?string $redirect = null,
+        bool $redirectIfAuthorized = false
+    ): self {
         $clone = clone $this;
         $clone->permission = $permission;
         $clone->redirect = $redirect;
+        $clone->redirectIfAuthorized = $redirectIfAuthorized;
 
         return $clone;
     }
@@ -43,14 +50,21 @@ class GateMiddleware implements MiddlewareInterface
             return JsonResponseFactory::create('Gate is not set properly.');
         }
 
-        $permission = $this->user->can(permissionName: $this->permission);
+        if (false === $this->user->can(permissionName: $this->permission)) {
+            Codefy::$PHP->flash->error(
+                message: $this->configContainer->getConfigKey(
+                    key: 'auth.access_denied_message',
+                    default: 'Access denied.'
+                ),
+            );
 
-        if (false === $this->user->current() || false === $permission) {
-            if (null !== $this->redirect) {
-                return RedirectResponseFactory::create(uri: $this->redirect);
-            } else {
-                return JsonResponseFactory::create(data: 'Access denied.');
-            }
+            return $this->redirect !== null
+            ? RedirectResponseFactory::create(uri: $this->redirect)
+            : JsonResponseFactory::create(data: 'Access denied.');
+        }
+
+        if ($this->redirectIfAuthorized && $this->redirect !== null) {
+            return RedirectResponseFactory::create(uri: $this->redirect);
         }
 
         return $handler->handle($request);
