@@ -17,7 +17,5 @@ final readonly class {{ class }} implements CommandHandler
     public function handle(Command $command): void
     {
         //
-
-        $this->aggregateRepository->saveAggregateRoot(aggregate: $user);
     }
 }

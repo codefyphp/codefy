@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace {{ namespace }}
+namespace {{ namespace }};
 
 use Codefy\Framework\Http\BaseController;
 
 class {{ class }} extends BaseController
 {
-
 }

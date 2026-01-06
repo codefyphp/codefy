@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace {{ namespace }};
 
-use Codefy\Framework\Http\Request\FormRequest;
+use Codefy\Framework\Validation\HttpInputValidator;
 
-final class {{ class }} extends FormRequest
+final class {{ class }} extends HttpInputValidator
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the user is authorized to make this action.
      *
      * @return bool
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -29,7 +29,7 @@ final class {{ class }} extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Get the validation rules that apply to the validator.
      *
      * @return array
      */

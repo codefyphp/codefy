@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace {{ namespace }}
+namespace {{ namespace }};
 
 use Codefy\Domain\Aggregate\AggregateId;
 use Codefy\Domain\Aggregate\AggregateNotFoundException;
@@ -20,7 +20,8 @@ final class {{ class }} implements AggregateRepository
      *
      * @param AggregateId $aggregateId
      * @return RecordsEvents|null
-     * @throws AggregateNotFoundException|CorruptEventStreamException
+     * @throws AggregateNotFoundException
+     * @throws CorruptEventStreamException
      */
     public function loadAggregateRoot(AggregateId $aggregateId): RecordsEvents|null
     {
