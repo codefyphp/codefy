@@ -379,6 +379,15 @@ final class Application extends Container
 
         $serviceProvider->register();
 
+        // If there are aliases set as properties on the provider we will spin
+        // through them and register them with the application, which serves
+        // as a convenience layer while registering a lot of aliases.
+        if (property_exists(object_or_class: $serviceProvider, property: 'aliases')) {
+            foreach ($serviceProvider->aliases as $original => $alias) {
+                $this->alias($original, $alias);
+            }
+        }
+
         $this->markServiceProviderAsRegistered(serviceProvider: $serviceProvider);
         // If application is booted, call the boot method on the service provider
         // if it exists.
