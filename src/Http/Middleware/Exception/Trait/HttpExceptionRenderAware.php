@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Exception\Trait;
 
+use Codefy\Framework\View\ErrorViewRenderer;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,6 +19,8 @@ use function Qubus\Security\Helpers\esc_html;
 
 trait HttpExceptionRenderAware
 {
+    protected ErrorViewRenderer $errorView;
+
     /**
      * @throws NotFoundException
      * @throws Exception

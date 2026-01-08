@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Csrf;
 
 use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
-use Codefy\Framework\Http\Status;
 use Codefy\Framework\Support\RequestMethod;
 use Codefy\Framework\Traits\TokenEncryptionAware;
 use Exception;
@@ -15,6 +14,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
+use Qubus\Http\Status;
 
 use function is_array;
 use function is_string;

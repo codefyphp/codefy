@@ -6,7 +6,7 @@ namespace Codefy\Framework\Support;
 
 use Codefy\Framework\Support\Traits\CollectionStackAware;
 
-class DefaultProviders
+final class DefaultProviders
 {
     use CollectionStackAware;
 

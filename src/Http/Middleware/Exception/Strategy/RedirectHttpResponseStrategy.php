@@ -7,8 +7,6 @@ namespace Codefy\Framework\Http\Middleware\Exception\Strategy;
 use Codefy\Framework\Application;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Qubus\Exception\Http\HttpException;
-use Qubus\Exception\Http\Psr7Exception;
 use Qubus\Http\Factories\RedirectResponseFactory;
 use Throwable;
 

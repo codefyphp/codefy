@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Providers;
 
 use Closure;
+use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Support\CodefyServiceProvider;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Routing\Psr7Router;
@@ -87,7 +88,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
             // Handle arrays recursively
             if (is_array($routes)) {
                 foreach ($routes as $route) {
-                    $callback = $this->normalizeRoutes($route);
+                    $callback = static::normalizeRoutes($route);
                     $callback($router);
                 }
                 return;
@@ -107,7 +108,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
                     // PHP route file
                     if (file_exists($routes)) {
                         $result = new RouteFileRegistrar()->register($routes);
-                        $result($this->codefy->router);
+                        $result(Codefy::$PHP->router);
                     }
                     return;
                 }
@@ -115,7 +116,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
                 if ($ext === 'json') {
                     // JSON routes
                     if (file_exists($routes)) {
-                        $this->codefy->router->loadRoutesFromJson($routes);
+                        Codefy::$PHP->router->loadRoutesFromJson($routes);
                     }
                     return;
                 }

@@ -8,6 +8,7 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionHandlerAware;
 use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionRenderAware;
 use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionUtilityAware;
+use Codefy\Framework\View\ErrorViewRenderer;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,7 +26,7 @@ class RedirectionHttpExceptionMiddleware implements MiddlewareInterface
     use HttpExceptionRenderAware;
     use HttpExceptionUtilityAware;
 
-    public function __construct(protected Application $app)
+    public function __construct(protected Application $app, protected ErrorViewRenderer $errorView)
     {
     }
 

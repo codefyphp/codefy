@@ -8,7 +8,7 @@ use Qubus\Http\Session\SessionEntity;
 
 use function Qubus\Support\Helpers\is_null__;
 
-class CsrfSession implements SessionEntity
+final class CsrfSession implements SessionEntity
 {
     public ?string $csrfToken = null;
 

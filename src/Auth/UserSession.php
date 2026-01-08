@@ -6,7 +6,7 @@ namespace Codefy\Framework\Auth;
 
 use Qubus\Http\Session\SessionEntity;
 
-class UserSession implements SessionEntity
+final class UserSession implements SessionEntity
 {
     public protected(set) ?string $token = null;
 

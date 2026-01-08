@@ -6,7 +6,7 @@ namespace Codefy\Framework\Support;
 
 use Codefy\Framework\Support\Traits\CollectionStackAware;
 
-class DefaultCommands
+final class DefaultCommands
 {
     use CollectionStackAware;
 
