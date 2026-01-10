@@ -29,6 +29,7 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\Connection;
 use Qubus\Expressive\Connection\DriverConnection;
+use Qubus\Expressive\Database;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 use Qubus\Http\Encryption\Env\SecureEnv;
@@ -203,24 +204,19 @@ final class Application extends Container
     }
 
     /**
-     * @throws Exception
+     * @return Connection
      */
     public function getDbConnection(): Connection
     {
-        /** @var ConfigContainer $config */
-        $config = $this->make(name: 'codefy.config');
-        $default = $config->getConfigKey(key: 'database.default');
-
-        return DriverConnection::make($config->getConfigKey(key: "database.connections.{$default}"));
+        return $this->make(name: Connection::class);
     }
 
     /**
      * @return QueryBuilder|null
-     * @throws Exception
      */
     public function getDb(): ?QueryBuilder
     {
-        return QueryBuilder::fromInstance($this->getDbConnection());
+        return $this->make(name: Database::class);
     }
 
     /**
