@@ -15,12 +15,12 @@ interface Permission
     /**
      * @param Permission $permission
      */
-    public function addChild(Permission $permission);
+    public function addChild(Permission $permission): void;
 
     /**
      * @param string $permissionName
      */
-    public function removeChild(string $permissionName);
+    public function removeChild(string $permissionName): void;
 
     /**
      * @return Permission[]
@@ -30,10 +30,10 @@ interface Permission
     /**
      * @param string $ruleClass
      */
-    public function setRuleClass(string $ruleClass);
+    public function setRuleClass(string $ruleClass): void;
 
     /**
-     * @return string|null;
+     * @return string|null
      */
     public function getRuleClass(): ?string;
 

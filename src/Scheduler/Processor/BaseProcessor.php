@@ -70,7 +70,7 @@ abstract class BaseProcessor implements Processor
     }
 
     /**
-     * Unique name to use for a mutually exclusive lock.
+     * @inheritDoc
      */
     public function mutexName(): string
     {
@@ -90,7 +90,7 @@ abstract class BaseProcessor implements Processor
     }
 
     /**
-     * Set a command description.
+     * @inheritDoc
      */
     public function description(string $description): self
     {
@@ -130,7 +130,7 @@ abstract class BaseProcessor implements Processor
     }
 
     /**
-     * Check if the command can run in background.
+     * @inheritDoc
      */
     public function canRunCommandInBackground(): bool
     {
@@ -230,9 +230,7 @@ abstract class BaseProcessor implements Processor
     }
 
     /**
-     * Check if process con only have one instance.
-     *
-     * @return bool
+     * @inheritDoc
      */
     public function canRunOnlyOneInstance(): bool
     {
@@ -245,7 +243,7 @@ abstract class BaseProcessor implements Processor
     }
 
     /**
-     * Gets the current cron expression for the task.
+     * @inheritDoc
      */
     public function getExpression(): ?string
     {
@@ -262,7 +260,7 @@ abstract class BaseProcessor implements Processor
     }
 
     /**
-     * Determine if the given command should run based on the Cron expression.
+     * @inheritDoc
      * @throws Exception
      */
     public function isDue(string|DateTimeZone|null $timeZone = null): bool
@@ -293,9 +291,7 @@ abstract class BaseProcessor implements Processor
     }
 
     /**
-     * Returns the command.
-     *
-     * @return callable|string
+     * @inheritDoc
      */
     public function getCommand(): callable|string
     {

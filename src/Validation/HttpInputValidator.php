@@ -44,7 +44,7 @@ abstract class HttpInputValidator implements DataValidator
      */
     protected ?Validation $validator = null;
 
-    private function __construct(protected ServerRequestInterface $request)
+    final private function __construct(protected ServerRequestInterface $request)
     {
     }
 

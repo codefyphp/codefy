@@ -139,20 +139,18 @@ function env(string $key, mixed $default = null): mixed
 }
 
 /**
- * Database abstraction layer global function.
+ * Database abstraction layer singleton function.
  *
- * @throws Exception
  */
 function dbal(): Connection
 {
-    return Codefy::$PHP->getDbConnection();
+    return app()->getDbConnection();
 }
 
 /**
- * QueryBuilder global function.
+ * QueryBuilder singleton function.
  *
  * @return QueryBuilder|null
- * @throws Exception
  */
 function queryBuilder(): ?QueryBuilder
 {

@@ -17,12 +17,12 @@ interface Role
     /**
      * @param Role $role
      */
-    public function addChild(Role $role);
+    public function addChild(Role $role): void;
 
     /**
      * @param string $roleName
      */
-    public function removeChild(string $roleName);
+    public function removeChild(string $roleName): void;
 
     /**
      * @return Role[]
@@ -32,12 +32,12 @@ interface Role
     /**
      * @param Permission $permission
      */
-    public function addPermission(Permission $permission);
+    public function addPermission(Permission $permission): void;
 
     /**
      * @param string $permissionName
      */
-    public function removePermission(string $permissionName);
+    public function removePermission(string $permissionName): void;
 
     /**
      * @param bool $withChildren

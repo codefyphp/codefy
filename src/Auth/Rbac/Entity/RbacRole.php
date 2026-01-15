@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Auth\Rbac\Entity;
 
 use Codefy\Framework\Auth\Rbac\Resource\StorageResource;
+use Override;
 
 use function array_keys;
 use function array_merge;
@@ -33,24 +34,27 @@ class RbacRole implements Role
     //phpcs:enable
 
     /**
-     * @param Role $role
+     * @inheritDoc
      */
+    #[Override]
     public function addChild(Role $role): void
     {
         $this->childrenNames[$role->name] = true;
     }
 
     /**
-     * @param string $roleName
+     * @inheritDoc
      */
+    #[Override]
     public function removeChild(string $roleName): void
     {
         unset($this->childrenNames[$roleName]);
     }
 
     /**
-     * @return Role[]
+     * @inheritDoc
      */
+    #[Override]
     public function getChildren(): array
     {
         $result = [];
@@ -62,25 +66,27 @@ class RbacRole implements Role
     }
 
     /**
-     * @param Permission $permission
+     * @inheritDoc
      */
+    #[Override]
     public function addPermission(Permission $permission): void
     {
         $this->permissionNames[$permission->name] = true;
     }
 
     /**
-     * @param string $permissionName
+     * @inheritDoc
      */
+    #[Override]
     public function removePermission(string $permissionName): void
     {
         unset($this->permissionNames[$permissionName]);
     }
 
     /**
-     * @param bool $withChildren
-     * @return Permission[]
+     * @inheritDoc
      */
+    #[Override]
     public function getPermissions(bool $withChildren = false): array
     {
         $result = [];
@@ -104,10 +110,9 @@ class RbacRole implements Role
     }
 
     /**
-     * @param string $permissionName
-     * @param array|null $params
-     * @return bool
+     * @inheritDoc
      */
+    #[Override]
     public function checkAccess(string $permissionName, ?array $params = null): bool
     {
         $permissions = $this->getPermissions(withChildren: true);
@@ -121,9 +126,9 @@ class RbacRole implements Role
 
     /**
      * @param Permission $permission
-     * @param $result
+     * @param mixed $result
      */
-    protected function collectChildrenPermissions(Permission $permission, &$result): void
+    protected function collectChildrenPermissions(Permission $permission, mixed &$result): void
     {
         foreach ($permission->getChildren() as $childPermission) {
             $childPermissionName = $childPermission->name;

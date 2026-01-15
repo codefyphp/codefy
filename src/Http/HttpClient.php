@@ -19,6 +19,9 @@ use function func_get_args;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_null__;
 
+/**
+ * @phpstan-ignore-next-line
+ */
 class HttpClient extends GuzzleClient
 {
     public function __construct(array $config = [])

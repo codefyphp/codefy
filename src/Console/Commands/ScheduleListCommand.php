@@ -7,6 +7,7 @@ namespace Codefy\Framework\Console\Commands;
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
 use Codefy\Framework\Scheduler\Processor\Callback;
+use Codefy\Framework\Scheduler\Processor\Processor;
 use Codefy\Framework\Scheduler\Schedule;
 use Cron\CronExpression;
 use Exception;
@@ -42,6 +43,7 @@ EOT;
             "Run Only One Instance",
         ]);
 
+        /** @var array<Processor> $jobs */
         $jobs = $this->schedule->allProcessors();
 
         foreach ($jobs as $job) {

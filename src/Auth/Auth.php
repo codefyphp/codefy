@@ -26,6 +26,7 @@ class Auth implements Sentinel
     }
 
     /**
+     * @inheritDoc
      * @throws Exception
      */
     public function authenticate(ServerRequestInterface $request): ?SessionEntity
@@ -51,6 +52,7 @@ class Auth implements Sentinel
     }
 
     /**
+     * @inheritDoc
      * @throws Exception
      */
     public function unauthorized(ServerRequestInterface $request): ResponseInterface

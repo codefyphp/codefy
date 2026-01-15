@@ -7,17 +7,17 @@ namespace Codefy\Framework\Support;
 use Qubus\Exception\Data\TypeException;
 
 /**
- * @property-read string path
- * @property-read string base
- * @property-read string bootstrap
- * @property-read string config
- * @property-read string database
- * @property-read string locale
- * @property-read string public
- * @property-read string storage
- * @property-read string resource
- * @property-read string view
- * @property-read string vendor
+ * @property-read string $path
+ * @property-read string $base
+ * @property-read string $bootstrap
+ * @property-read string $config
+ * @property-read string $database
+ * @property-read string $locale
+ * @property-read string $public
+ * @property-read string $storage
+ * @property-read string $resource
+ * @property-read string $view
+ * @property-read ?string $vendor
  */
 final class Paths
 {

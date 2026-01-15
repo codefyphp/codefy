@@ -122,7 +122,7 @@ class FileResource extends BaseStorageResource
     /**
      * @throws SentinelException
      */
-    protected function restoreRoles($rolesData): void
+    protected function restoreRoles(array $rolesData): void
     {
         /** @var string[][] $rolesChildrenNames */
         $rolesChildrenNames = [];

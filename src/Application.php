@@ -23,12 +23,12 @@ use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\EventDispatcher\ActionFilter\Observer;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\Connection;
-use Qubus\Expressive\Connection\DriverConnection;
 use Qubus\Expressive\Database;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
@@ -81,7 +81,7 @@ final class Application extends Container
 
     // phpcs:disable
     /**
-     * @var string Charset of the application.
+     * @var string $charset Charset of the application.
      */
     public string $charset = 'UTF-8' {
         get => $this->charset;
@@ -89,7 +89,7 @@ final class Application extends Container
     }
 
     /**
-     * @var string Language of the application.
+     * @var string $language Language of the application.
      */
     public string $language = 'en' {
         get => $this->language;
@@ -97,66 +97,82 @@ final class Application extends Container
     }
 
     /**
-     * @var string Language of translatable source files.
+     * @var string $locale Language of translatable source files.
      */
     public string $locale = 'en' {
         get => $this->locale;
         set(string $locale) => $this->locale = $locale;
     }
 
+    /** @var string $controllerNamespace */
     public string $controllerNamespace = 'App\\Infrastructure\\Http\\Controllers' {
         get => $this->controllerNamespace;
         set(string $controllerNamespace) => $this->controllerNamespace = $controllerNamespace;
     }
 
+    /** @var string $ROOT_PATH */
     public static string $ROOT_PATH = '';
 
+    /** @var bool $encryptedEnv */
     public static bool $encryptedEnv = false;
 
+    /** @var string $basePath */
     private string $basePath = '' {
         get => $this->basePath;
     }
 
+    /** @var string|null $appPath */
     private ?string $appPath = null {
         get => $this->appPath;
     }
 
+    /** @var array<Serviceable, Bootable> $serviceProviders */
     private array $serviceProviders = [] {
         &get => $this->serviceProviders;
     }
 
+    /** @var array<Serviceable, Bootable> $serviceProvidersRegistered */
     private array $serviceProvidersRegistered = [] {
         &get => $this->serviceProvidersRegistered;
     }
 
+    /** @var array<MiddlewareInterface, string> $baseMiddlewares */
     private array $baseMiddlewares = [] {
         &get => $this->baseMiddlewares;
     }
 
+    /** @var bool $booted */
     public private(set) bool $booted = false;
 
+    /** @var bool $hasBeenBootstrapped */
     private bool $hasBeenBootstrapped = false {
         get => $this->hasBeenBootstrapped;
     }
 
+    /** @var array $bootingCallbacks */
     private array $bootingCallbacks = [] {
         &get => $this->bootingCallbacks;
     }
 
+    /** @var array<callable> $bootedCallbacks */
     private array $bootedCallbacks = [] {
         &get => $this->bootedCallbacks;
     }
 
+    /** @var array<callable> $registeredCallbacks */
     private array $registeredCallbacks = [] {
         &get => $this->registeredCallbacks;
     }
 
+    /** @var array $param */
     private array $param = [] {
         &get => $this->param;
     }
 
     /**
      * The Application's namespace.
+     *
+     * @var string|null $namespace
      */
     private ?string $namespace = null;
     // phpcs:enable
@@ -179,6 +195,9 @@ final class Application extends Container
         Codefy::$PHP = $this::getInstance();
     }
 
+    /**
+     * @return void
+     */
     private function registerBaseBindings(): void
     {
         self::$APP = $this;
@@ -253,6 +272,7 @@ final class Application extends Container
 
     /**
      * @throws TypeException
+     * @return void
      */
     protected function registerDefaultServiceProviders(): void
     {
@@ -270,7 +290,10 @@ final class Application extends Container
         }
     }
 
-
+    /**
+     * @param array<string> $bootstrappers
+     * @return void
+     */
     public function bootstrapWith(array $bootstrappers): void
     {
         $this->hasBeenBootstrapped = true;
@@ -284,11 +307,18 @@ final class Application extends Container
         }
     }
 
+    /**
+     * @return ServiceContainer|ContainerInterface
+     */
     public function getContainer(): ServiceContainer|ContainerInterface
     {
         return $this;
     }
 
+    /**
+     * @param bool $bool
+     * @return void
+     */
     public function setBooted(bool $bool = false): void
     {
         $this->booted = $bool;
@@ -322,10 +352,10 @@ final class Application extends Container
      * Force register a service provider with the application.
      *
      * @param string|Serviceable|Bootable $provider
-     * @return Serviceable|Bootable
+     * @return Serviceable|Bootable|string
      * @throws TypeException
      */
-    public function forceRegisterServiceProvider(string|Serviceable|Bootable $provider): Serviceable|Bootable
+    public function forceRegisterServiceProvider(string|Serviceable|Bootable $provider): Serviceable|Bootable|string
     {
         return $this->registerServiceProvider(serviceProvider: $provider, force: true);
     }
@@ -434,7 +464,7 @@ final class Application extends Container
     /**
      * Get the service providers that have been registered.
      *
-     * @return array<string, bool>
+     * @return array<Serviceable, Bootable>
      */
     public function getRegisteredProviders(): array
     {
@@ -542,7 +572,7 @@ final class Application extends Container
      * Set the Application's base directory.
      *
      * @param string $basePath
-     * @return mixed
+     * @return self
      */
     public function withBasePath(string $basePath): self
     {
@@ -553,6 +583,9 @@ final class Application extends Container
         return $this;
     }
 
+    /**
+     * @return void
+     */
     protected function bindPathsToContainer(): void
     {
         $this->define(name: Paths::class, args: [
@@ -711,11 +744,19 @@ final class Application extends Container
         return $this->locale;
     }
 
+    /**
+     * @param string $namespace
+     * @return void
+     */
     public function withControllerNamespace(string $namespace): void
     {
         $this->controllerNamespace = $namespace;
     }
 
+    /**
+     * @param array<MiddlewareInterface, string> $middlewares
+     * @return void
+     */
     public function withBaseMiddlewares(array $middlewares): void
     {
         $this->baseMiddlewares = $middlewares;
@@ -723,6 +764,7 @@ final class Application extends Container
 
     /**
      * @throws Exception
+     * @return array<MiddlewareInterface, string>
      */
     public function getBaseMiddlewares(): array
     {
@@ -732,6 +774,9 @@ final class Application extends Container
         return array_merge($config->getConfigKey(key: 'app.base_middlewares'), $this->baseMiddlewares);
     }
 
+    /**
+     * @return bool
+     */
     public function isRunningInConsole(): bool
     {
         return in_array(php_sapi_name(), ['cli', 'phpdbg']);
@@ -766,6 +811,9 @@ final class Application extends Container
         $this->registeredCallbacks[] = $callback;
     }
 
+    /**
+     * @return array[]
+     */
     protected function coreAliases(): array
     {
         return [
@@ -813,7 +861,8 @@ final class Application extends Container
     }
 
     /**
-     * @throws \Exception
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -823,6 +872,10 @@ final class Application extends Container
         return $kernel->handle($request);
     }
 
+    /**
+     * @param ServerRequestInterface|null $request
+     * @return void
+     */
     public function handleRequest(?ServerRequestInterface $request = null): void
     {
         /** @var Kernel $kernel */
@@ -857,20 +910,38 @@ final class Application extends Container
         }
     }
 
-    public function __get(mixed $name)
+    /**
+     * @param mixed $name
+     * @return mixed
+     */
+    public function __get(mixed $name): mixed
     {
         return $this->param[$name];
     }
 
+    /**
+     * @param mixed $name
+     * @return bool
+     */
     public function __isset(mixed $name): bool
     {
         return isset($this->data[$name]);
     }
+
+    /**
+     * @param mixed $name
+     * @param mixed $value
+     * @return void
+     */
     public function __set(mixed $name, mixed $value): void
     {
         $this->param[$name] = $value;
     }
 
+    /**
+     * @param mixed $name
+     * @return void
+     */
     public function __unset(mixed $name): void
     {
         unset($this->param[$name]);
@@ -918,8 +989,10 @@ final class Application extends Container
     /**
      * Create a new CodefyPHP application instance.
      *
-     * @throws TypeException
+     * @param array<string> $config
+     * @return ApplicationBuilder
      * @throws ReflectionException
+     * @throws TypeException
      */
     public static function create(array $config): ApplicationBuilder
     {
@@ -931,11 +1004,12 @@ final class Application extends Container
     /**
      * Get the globally available instance of the container.
      *
-     * @return static
-     * @throws TypeException
+     * @param string|null $path
+     * @return null|self
      * @throws ReflectionException
+     * @throws TypeException
      */
-    public static function getInstance(?string $path = null): self
+    public static function getInstance(?string $path = null): self|null
     {
         $basePath = match (true) {
             self::$ROOT_PATH !== '' => self::$ROOT_PATH,
@@ -960,8 +1034,9 @@ final class Application extends Container
      * Get the application namespace.
      *
      * @throws TypeException
+     * @return string|null
      */
-    public function getNamespace(): string
+    public function getNamespace(): ?string
     {
         if (!is_null__($this->namespace)) {
             return $this->namespace;

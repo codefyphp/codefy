@@ -9,6 +9,7 @@ use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Scheduler\Traits\ExpressionAware;
 use Cron\CronExpression;
 use DateTime;
+use DateTimeZone;
 use Exception;
 use Qubus\Exception\Data\TypeException;
 use Qubus\NoSql\Collection;
@@ -17,6 +18,7 @@ use Qubus\Support\Serializer\JsonSerializer;
 use ReflectionException;
 
 use function call_user_func;
+use function is_callable;
 
 class NodeQueue implements ReliableQueue, QueueGarbageCollection
 {
@@ -25,10 +27,19 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     protected ?ShouldQueue $queue = null;
     private ?Collection $db = null;
 
-    public function __construct(ShouldQueue $queue, ?string $node = null)
+    /** @var array $filters */
+    protected array $filters = [];
+
+    /** @var array $rejects */
+    protected array $rejects = [];
+
+    protected DateTimeZone|string $timezone;
+
+    public function __construct(ShouldQueue $queue, ?string $node = null, DateTimeZone|string|null $timezone = null)
     {
         $this->queue = $queue;
         $this->db = Node::open(file: $node ?? $this->queue->node());
+        $this->timezone = $timezone;
     }
 
     /**
@@ -51,6 +62,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     /**
      * @inheritDoc
+     * @throws TypeException
+     * @throws ReflectionException
      */
     public function createItem(): string
     {
@@ -73,7 +86,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
      *
      * @return string A unique ID if the item was successfully created and was (best effort)
      *                added to the queue, otherwise false. We don't guarantee the item was
-     *                committed to disk etc, but as far as we know, the item is now in the
+     *                committed to disk etc., but as far as we know, the item is now in the
      *                queue.
      * @throws TypeException
      * @throws ReflectionException
@@ -109,6 +122,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     /**
      * @inheritDoc
+     * @throws TypeException
+     * @throws ReflectionException
      */
     public function numberOfItems(): int
     {
@@ -125,6 +140,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     /**
      * @inheritDoc
+     * @throws TypeException
+     * @throws ReflectionException
      */
     public function claimItem(int $leaseTime = 3600): array|object|bool
     {
@@ -155,7 +172,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             try {
                 /**
                  * Try to update the item. Only one thread can succeed in
-                 * UPDATEing the same row. We cannot rely on REQUEST_TIME
+                 * UPDATE-ing the same row. We cannot rely on REQUEST_TIME
                  * because items might be claimed by a single consumer which
                  * runs longer than 1 second. If we continue to use REQUEST_TIME
                  * instead of the current time(), we steal time from the lease,
@@ -191,6 +208,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     /**
      * @inheritDoc
+     * @throws TypeException
+     * @throws ReflectionException
      */
     public function deleteItem(mixed $item): void
     {
@@ -208,6 +227,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     /**
      * @inheritDoc
+     * @throws TypeException
+     * @throws ReflectionException
      */
     public function releaseItem(mixed $item): bool
     {
@@ -243,6 +264,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     /**
      * @inheritDoc
+     * @throws TypeException
+     * @throws ReflectionException
      */
     public function deleteQueue(): void
     {
@@ -348,6 +371,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
                     return false;
                 };
 
+                // @phpstan-ignore function.void
                 if (false !== call_user_func([$object, 'handle'])) {
                     $this->deleteItem($item);
                 } else {
@@ -362,5 +386,25 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
         }
 
         return false;
+    }
+
+    /**
+     * Truth test to determine if a queue should run when it is due.
+     */
+    public function skip(callable|bool $callback): self
+    {
+        $this->rejects[] = is_callable($callback) ? $callback : fn () => $callback;
+
+        return $this;
+    }
+
+    /**
+     * Truth test to determine if a queue should run when it is due.
+     */
+    public function when(callable|bool $callback): self
+    {
+        $this->filters[] = is_callable($callback) ? $callback : fn () => $callback;
+
+        return $this;
     }
 }

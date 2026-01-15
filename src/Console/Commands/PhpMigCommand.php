@@ -27,6 +27,9 @@ abstract class PhpMigCommand extends ConsoleCommand
 
     protected array $migrations = [];
 
+    /**
+     * @return void
+     */
     protected function configure(): void
     {
         $this->addOption(
@@ -66,7 +69,11 @@ abstract class PhpMigCommand extends ConsoleCommand
         $objectmap['phpmig.migrator'] = $this->bootstrapMigrator(output: $output);
     }
 
-    protected function findBootstrapFile($filename): string
+    /**
+     * @param string $filename
+     * @return string
+     */
+    protected function findBootstrapFile(string $filename): string
     {
         if (null === $filename) {
             $filename = 'phpmig.php';
@@ -75,6 +82,9 @@ abstract class PhpMigCommand extends ConsoleCommand
         return $this->codefy->bootStrapPath() . Application::DS . $filename;
     }
 
+    /**
+     * @return ArrayAccess
+     */
     protected function bootstrapObjectMap(): ArrayAccess
     {
         $bootstrapFile = $this->getBootstrap();
@@ -132,6 +142,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             $adapter = $objectmap['phpmig.adapter'];
         }
 
+        // @phpstan-ignore variable.undefined
         if (!($adapter instanceof MigrationAdapter)) {
             throw new RuntimeException(
                 message: "phpmig.adapter or phpmig.sets must be an 
@@ -310,7 +321,7 @@ abstract class PhpMigCommand extends ConsoleCommand
      * Set bootstrap.
      *
      * @param string $bootstrap
-     * @return PhpMigCommand
+     * @return static
      */
     public function setBootstrap(string $bootstrap): static
     {
@@ -332,7 +343,7 @@ abstract class PhpMigCommand extends ConsoleCommand
      * Set migrations
      *
      * @param array $migrations
-     * @return PhpMigCommand
+     * @return static
      */
     public function setMigrations(array $migrations): static
     {
@@ -354,7 +365,7 @@ abstract class PhpMigCommand extends ConsoleCommand
      * Set objectmap.
      *
      * @param ArrayAccess $objectmap
-     * @return PhpMigCommand
+     * @return static
      */
     public function setObjectMap(ArrayAccess $objectmap): static
     {
@@ -377,7 +388,7 @@ abstract class PhpMigCommand extends ConsoleCommand
      * Set adapter.
      *
      * @param MigrationAdapter $adapter
-     * @return PhpMigCommand
+     * @return static
      */
     public function setAdapter(MigrationAdapter $adapter): static
     {

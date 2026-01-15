@@ -6,6 +6,7 @@ namespace Codefy\Framework\Auth\Rbac\Entity;
 
 use Codefy\Framework\Auth\Rbac\Exception\SentinelException;
 use Codefy\Framework\Auth\Rbac\Resource\StorageResource;
+use Override;
 use Throwable;
 
 use function array_keys;
@@ -35,24 +36,27 @@ class RbacPermission implements Permission
     //phpcs.enable
 
     /**
-     * @param Permission $permission
+     * @inheritDoc
      */
+    #[Override]
     public function addChild(Permission $permission): void
     {
         $this->childrenNames[$permission->name] = true;
     }
 
     /**
-     * @param string $permissionName
+     * @inheritDoc
      */
+    #[Override]
     public function removeChild(string $permissionName): void
     {
         unset($this->childrenNames[$permissionName]);
     }
 
     /**
-     * @return Permission[]
+     * @inheritDoc
      */
+    #[Override]
     public function getChildren(): array
     {
         $result = [];
@@ -64,26 +68,28 @@ class RbacPermission implements Permission
     }
 
     /**
-     * @param string $ruleClass
+     * @inheritDoc
      */
+    #[Override]
     public function setRuleClass(string $ruleClass): void
     {
         $this->ruleClass = $ruleClass;
     }
 
     /**
-     * @return string|null;
+     * @inheritDoc
      */
+    #[Override]
     public function getRuleClass(): ?string
     {
         return $this->ruleClass;
     }
 
     /**
-     * @param array|null $params
-     * @return bool
+     * @inheritDoc
      * @throws SentinelException
      */
+    #[Override]
     public function checkAccess(?array $params = null): bool
     {
         $result = true;
@@ -94,7 +100,7 @@ class RbacPermission implements Permission
                     throw new SentinelException(
                         sprintf(
                             'Rule class: %s is not an instance of %s.',
-                            $rule,
+                            $rule::class,
                             AssertionRule::class
                         )
                     );

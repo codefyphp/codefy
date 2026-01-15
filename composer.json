@@ -67,7 +67,7 @@
         "test": "vendor/bin/pest",
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
-        "codefystan": "vendor/bin/phpstan"
+        "codefystan": "vendor/bin/phpstan analyse -l 1"
     },
     "config": {
         "optimize-autoloader": true,

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Console\Commands\Traits;
 
-use Codefy\Framework\Application;
 use Codefy\Framework\Console\Exceptions\MakeCommandFileAlreadyExistsException;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Support\LocalStorage;
@@ -24,7 +23,9 @@ use function str_replace;
 trait MakeCommandAware
 {
     /**
-     * @throws TypeException|MakeCommandFileAlreadyExistsException
+     * @throws TypeException
+     * @throws MakeCommandFileAlreadyExistsException
+     * @throws ReflectionException
      */
     private function resolveResource(string $resource, mixed $options): void
     {
@@ -47,7 +48,9 @@ trait MakeCommandAware
      * @param string $classNamePrefix
      * @param mixed|null $options
      * @throws MakeCommandFileAlreadyExistsException
+     * @throws ReflectionException
      * @throws TypeException
+     * @throws Exception
      */
     private function resolveClassNameSuffix(
         string $classNameSuffix,
@@ -85,7 +88,7 @@ trait MakeCommandAware
             qualifiedClass: $qualifiedClass,
             contentStream: $newContentStream,
             classNameSuffix: $classNameSuffix,
-            options: $options,
+            flag: $options,
             qualifiedNamespaces: $qualifiedNamespace
         );
     }
@@ -100,18 +103,18 @@ trait MakeCommandAware
      * @param string $qualifiedClass
      * @param string|null $contentStream
      * @param string|null $classNameSuffix
-     * @param mixed|null $options
+     * @param string|null $flag
      * @param string|null $qualifiedNamespaces - will return the namespace for the stub command
      * @return void
      * @throws MakeCommandFileAlreadyExistsException
-     * @throws \Qubus\Exception\Exception
+     * @throws Exception
      * @throws ReflectionException
      */
     public function createClassFromStub(
         string $qualifiedClass,
         ?string $contentStream = null,
         ?string $classNameSuffix = null,
-        mixed $options = null,
+        ?string $flag = null,
         ?string $qualifiedNamespaces = null
     ): void {
         if ($classNameSuffix === null || $contentStream === null) {
@@ -120,10 +123,10 @@ trait MakeCommandAware
             );
         }
 
-        $filePath = Application::$ROOT_PATH . Application::DS
-        . $qualifiedNamespaces . $this->addOptionalDirFlag(options: $options);
+        $filePath = $this->codefy::$ROOT_PATH . $this->codefy::DS
+        . $qualifiedNamespaces . $this->addOptionalDirFlag(flag: $flag);
 
-        $normalizePath = str_replace(search: '\\', replace: Application::DS, subject: $filePath);
+        $normalizePath = str_replace(search: '\\', replace: $this->codefy::DS, subject: $filePath);
 
         if (!is_dir(filename: $normalizePath)) {
             try {
@@ -137,7 +140,7 @@ trait MakeCommandAware
 
         $realFilepath = realpath(path: $normalizePath);
         $className = $qualifiedClass . self::FILE_EXTENSION;
-        $newClassFileAndPath = $realFilepath . Application::DS . $className;
+        $newClassFileAndPath = $realFilepath . $this->codefy::DS . $className;
 
         /* We will need to check $newClassFileAndPath doesn't already exist else this will wipe the content */
         if (file_exists(filename: $newClassFileAndPath)) {
@@ -155,13 +158,13 @@ trait MakeCommandAware
      * console command option flag. Use --dir={directory_name} to add a directory to the end
      * of the filepath to create a subdirectory within a main directory
      *
-     * @param mixed $options
+     * @param string $flag
      * @return string
      */
-    private function addOptionalDirFlag(mixed $options): string
+    private function addOptionalDirFlag(string $flag): string
     {
-        return (isset($options) && $options !== '' || $options !== null)
-        ? Application::DS . Inflector::wordsToUpper(class: $options) :
+        return $flag !== ''
+        ? $this->codefy::DS . Inflector::wordsToUpper(class: $flag) :
         '';
     }
 
@@ -176,7 +179,7 @@ trait MakeCommandAware
      */
     private function getStubFiles(string $classNameSuffix): string|false
     {
-        $files = glob(pattern: Application::$ROOT_PATH . '/vendor/codefyphp/codefy/src/Stubs/*.stub');
+        $files = glob(pattern: $this->codefy::$ROOT_PATH . '/vendor/codefyphp/codefy/src/Stubs/*.stub');
         if (is_array(value: $files) && count($files)) {
             foreach ($files as $file) {
                 if (is_file(filename: $file)) {
@@ -215,7 +218,7 @@ trait MakeCommandAware
 
                 foreach ($patterns as $pattern) {
                     if (str_contains($contentStream, $pattern)) {
-                        if (isset($pattern) && $pattern != '') {
+                        if ($pattern !== '') {
                             $qualifiedClass = studly_case(string: $classNamePrefix . ucwords(string: $classNameSuffix));
 
                             $qualifiedNamespace = array_filter(

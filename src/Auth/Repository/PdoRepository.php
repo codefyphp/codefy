@@ -26,11 +26,14 @@ class PdoRepository implements AuthUserRepository
      */
     public function authenticate(string $credential, #[SensitiveParameter] ?string $password = null): ?SessionEntity
     {
+        /** @var array<string, int> $fields */
         $fields = $this->config->getConfigKey(key: 'auth.pdo.fields');
+        /** @var string $table */
+        $table = $this->config->getConfigKey(key: 'auth.pdo.table');
 
         $sql = sprintf(
             "SELECT * FROM %s WHERE %s = :identity",
-            $this->config->getConfigKey('auth.pdo.table'),
+            $table,
             $fields['identity']
         );
 
@@ -42,12 +45,14 @@ class PdoRepository implements AuthUserRepository
         $stmt->bindParam(':identity', $credential);
         $stmt->execute();
 
+        /** @var false|null|object $result */
         $result = $stmt->fetchObject();
         if (! $result) {
             return null;
         }
 
-        $passwordHash = (string) ($result->{$fields['password']} ?? '');
+        /** @var string $passwordHash */
+        $passwordHash = $result->{$fields['password']} ?? '';
 
         if (Password::verify(password: $password ?? '', hash: $passwordHash)) {
             $user = new UserSession();
