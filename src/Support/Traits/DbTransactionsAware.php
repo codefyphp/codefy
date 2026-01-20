@@ -30,8 +30,6 @@ trait DbTransactionsAware
 
     /**
      * Begin the transaction if enabled.
-     *
-     * @throws Exception
      */
     protected function beginTransaction(): void
     {
@@ -44,8 +42,6 @@ trait DbTransactionsAware
 
     /**
      * Commit the transaction if enabled.
-     *
-     * @throws Exception
      */
     protected function commitTransaction(): void
     {
@@ -58,8 +54,6 @@ trait DbTransactionsAware
 
     /**
      * Rollback the transaction if enabled.
-     *
-     * @throws Exception
      */
     protected function rollbackTransaction(): void
     {

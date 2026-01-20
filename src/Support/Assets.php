@@ -20,9 +20,7 @@ final class Assets extends \Qubus\Support\Assets
      * Get the instance of the assets manager for a given group.
      *
      * @param string $group
-     *
      * @return Assets
-     *
      */
     public function group(string $group = 'default'): self
     {

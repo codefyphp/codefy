@@ -28,6 +28,7 @@ final class Paths
     //phpcs:enable
 
     /**
+     * @param array<string, string> $paths
      * @throws TypeException
      */
     public function __construct(array $paths)

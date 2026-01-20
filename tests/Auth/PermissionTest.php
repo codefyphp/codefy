@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Codefy\Framework\Tests\Auth\AuthorRule;
 use PHPUnit\Framework\Assert;
 
 $resource = Mockery::mock(\Codefy\Framework\Auth\Rbac\Resource\StorageResource::class);
@@ -71,7 +72,7 @@ it(description: 'should set and get rule.', closure: function () use ($resource)
         rbacStorageCollection: $resource
     );
 
-    $permission->setRuleClass(ruleClass: 'AuthorRule');
+    $permission->setRuleClass(ruleClass: AuthorRule::class);
 
-    Assert::assertEquals('AuthorRule', $permission->getRuleClass());
+    Assert::assertEquals(AuthorRule::class, $permission->getRuleClass());
 });

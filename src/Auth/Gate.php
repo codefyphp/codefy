@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Auth;
 
 use Codefy\CommandBus\Exceptions\CommandPropertyNotFoundException;
+use Codefy\Framework\Auth\Rbac\Entity\AssertionRule;
 use Codefy\Framework\Auth\Rbac\Rbac;
 use Codefy\Framework\Auth\Repository\AuthUserRepository;
 use Codefy\Framework\Factory\FileLoggerFactory;
@@ -28,10 +29,11 @@ class Gate
     /**
      * Authorization check.
      *
-     * @throws TypeException
-     * @throws CommandPropertyNotFoundException
-     * @throws UnresolvableQueryHandlerException
+     * @param string $permissionName
+     * @param AssertionRule[] $ruleParams
+     * @return bool
      * @throws ReflectionException
+     * @throws TypeException
      */
     public function can(string $permissionName, array $ruleParams = []): bool
     {

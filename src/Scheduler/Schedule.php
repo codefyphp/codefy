@@ -113,16 +113,19 @@ class Schedule
     }
 
     /**
+     * @param class-string $task
      * @throws ReflectionException
-     * @throws \Qubus\Exception\Exception
+     * @throws Exception
      */
-    public function task(Task $task, array $options = []): BaseTask
+    public function task(string $task, array $options = []): Task
     {
         $instance = new ReflectionClass($task);
-        $task = $instance->newInstanceArgs([$this->mutex, $this->timeZone]);
-        $task->withOptions($options);
-        $task->withScheduler($this);
-        $task->withDispatcher($this->dispatcher);
+        /** @var Task $task */
+        $task = $instance->newInstanceArgs([$this->mutex, '', [], $this->timeZone]);
+        $task
+            ->withOptions($options)
+            ->withScheduler($this)
+            ->withDispatcher($this->dispatcher);
 
         $this->queueProcessor($task);
 

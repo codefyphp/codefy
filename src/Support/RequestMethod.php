@@ -28,15 +28,15 @@ final class RequestMethod
     public const string TRACE = 'TRACE';
 
     public const array ANY = [
-            self::GET,
-            self::POST,
-            self::PUT,
-            self::DELETE,
-            self::PATCH,
-            self::HEAD,
-            self::OPTIONS,
-            self::CONNECT,
-            self::TRACE,
+        self::GET,
+        self::POST,
+        self::PUT,
+        self::DELETE,
+        self::PATCH,
+        self::HEAD,
+        self::OPTIONS,
+        self::CONNECT,
+        self::TRACE,
     ];
 
     /**

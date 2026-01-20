@@ -10,6 +10,8 @@ use Codefy\Framework\Bootstrap\RegisterProviders;
 use Codefy\Framework\Providers\RoutingServiceProvider;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
+use Qubus\Injector\ServiceProvider\Bootable;
+use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Routing\Route\RoutingRegistrar;
 use Qubus\Routing\Router;
 
@@ -50,7 +52,7 @@ final class ApplicationBuilder
     /**
      * Register additional service providers.
      *
-     * @param array $providers
+     * @param array<Serviceable|Bootable|string> $providers
      * @param bool $withBootstrapProviders
      * @return $this
      * @throws TypeException
@@ -75,7 +77,7 @@ final class ApplicationBuilder
      * Register an array of singletons that are resource intensive
      * or are not called often.
      *
-     * @param array $singletons
+     * @param array<string, callable> $singletons
      * @return $this
      */
     public function withSingletons(array $singletons = []): self
@@ -120,12 +122,12 @@ final class ApplicationBuilder
     /**
      * Register the routing services for the application.
      *
-     * @param callable|Closure|null $using
-     * @param array|string|null     $web
-     * @param array|null            $class
-     * @param array|string|null     $api
-     * @param string                $apiPrefix
-     * @param callable|null         $then
+     * @param callable|Closure|null    $using
+     * @param array|string|null        $web
+     * @param array<class-string>|null $class
+     * @param array|string|null        $api
+     * @param string                   $apiPrefix
+     * @param callable|null            $then
      * @return $this
      * @throws TypeException
      */

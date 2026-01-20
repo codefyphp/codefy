@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Configuration;
 
 use Codefy\Framework\Support\DefaultMiddlewares;
+use Psr\Http\Server\MiddlewareInterface;
 
 class Middleware
 {
@@ -13,7 +14,7 @@ class Middleware
     /**
      * Register additional middleware aliases.
      *
-     * @param array $aliases
+     * @param array<string, MiddlewareInterface> $aliases
      * @return $this
      */
     public function alias(array $aliases): static

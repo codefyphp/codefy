@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Codefy\Framework\Support;
 
 use Codefy\Framework\Support\Traits\CollectionStackAware;
+use Psr\Http\Server\MiddlewareInterface;
 
 final class DefaultMiddlewares
 {
     use CollectionStackAware;
 
+    /**
+     * @param array<string, MiddlewareInterface> $collection
+     */
     public function __construct(array $collection = [])
     {
         $this->collection = $collection ?: [

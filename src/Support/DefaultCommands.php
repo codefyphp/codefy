@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Codefy\Framework\Support;
 
 use Codefy\Framework\Support\Traits\CollectionStackAware;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
 
 final class DefaultCommands
 {
     use CollectionStackAware;
 
+    /**
+     * @param array<SignalableCommandInterface> $collection
+     */
     public function __construct(array $collection = [])
     {
         $this->collection = $collection ?: [

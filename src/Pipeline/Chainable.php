@@ -49,6 +49,8 @@ interface Chainable
 
     /**
      * Run a single pipe.
+     *
+     * @param class-string $pipe
      */
     public function run(string $pipe, mixed $data = true): mixed;
 }

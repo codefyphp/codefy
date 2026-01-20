@@ -126,17 +126,17 @@ final class Application extends Container
         get => $this->appPath;
     }
 
-    /** @var array<Serviceable, Bootable> $serviceProviders */
+    /** @var array<Serviceable|Bootable> $serviceProviders */
     private array $serviceProviders = [] {
         &get => $this->serviceProviders;
     }
 
-    /** @var array<Serviceable, Bootable> $serviceProvidersRegistered */
+    /** @var array<Serviceable|Bootable> $serviceProvidersRegistered */
     private array $serviceProvidersRegistered = [] {
         &get => $this->serviceProvidersRegistered;
     }
 
-    /** @var array<MiddlewareInterface, string> $baseMiddlewares */
+    /** @var array<MiddlewareInterface|string> $baseMiddlewares */
     private array $baseMiddlewares = [] {
         &get => $this->baseMiddlewares;
     }
@@ -178,7 +178,7 @@ final class Application extends Container
     // phpcs:enable
 
     /**
-     * @param array $params
+     * @param array<string> $params
      * @throws ReflectionException
      * @throws TypeException
      */
@@ -245,7 +245,7 @@ final class Application extends Container
      */
     public function version(): string
     {
-        return Application::APP_VERSION;
+        return self::APP_VERSION;
     }
 
     /**
@@ -464,7 +464,7 @@ final class Application extends Container
     /**
      * Get the service providers that have been registered.
      *
-     * @return array<Serviceable, Bootable>
+     * @return array<Serviceable|Bootable>
      */
     public function getRegisteredProviders(): array
     {
@@ -505,7 +505,7 @@ final class Application extends Container
     /**
      * Register a new boot listener.
      *
-     * @param  callable  $callback
+     * @param callable $callback
      * @return void
      */
     public function booting(callable $callback): void
@@ -516,7 +516,7 @@ final class Application extends Container
     /**
      * Register a new "booted" listener.
      *
-     * @param  callable  $callback
+     * @param callable $callback
      * @return void
      */
     public function booted(callable $callback): void
@@ -754,7 +754,7 @@ final class Application extends Container
     }
 
     /**
-     * @param array<MiddlewareInterface, string> $middlewares
+     * @param MiddlewareInterface[] | string[] $middlewares
      * @return void
      */
     public function withBaseMiddlewares(array $middlewares): void
@@ -764,7 +764,7 @@ final class Application extends Container
 
     /**
      * @throws Exception
-     * @return array<MiddlewareInterface, string>
+     * @return MiddlewareInterface[] | string[]
      */
     public function getBaseMiddlewares(): array
     {
@@ -989,7 +989,7 @@ final class Application extends Container
     /**
      * Create a new CodefyPHP application instance.
      *
-     * @param array<string> $config
+     * @param string[] $config
      * @return ApplicationBuilder
      * @throws ReflectionException
      * @throws TypeException

@@ -24,6 +24,9 @@ use function Qubus\Support\Helpers\is_null__;
  */
 class HttpClient extends GuzzleClient
 {
+    /**
+     * @param array<array, int, string, callable, bool, UriInterface> $config
+     */
     public function __construct(array $config = [])
     {
         parent::__construct($config);

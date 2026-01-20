@@ -12,6 +12,7 @@ use Codefy\Framework\Scheduler\Processor\BaseProcessor;
 use Codefy\Framework\Scheduler\Traits\MailerAware;
 use Codefy\Framework\Scheduler\ValueObject\TaskId;
 use Closure;
+use Cron\CronExpression;
 use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Exception\Data\TypeException;
@@ -27,6 +28,9 @@ abstract class BaseTask extends BaseProcessor implements Task
 
     protected ?TaskId $pid = null;
 
+    /**
+     * @var array<array, int, string, bool, CronExpression, null>
+     */
     protected array $options = [];
 
     protected string|null $timeZone = null;
@@ -42,6 +46,7 @@ abstract class BaseTask extends BaseProcessor implements Task
     protected ?EventDispatcherInterface $dispatcher = null;
 
     /**
+     * @inheritDoc
      * @throws TypeException
      */
     public function withOptions(array $options): self
@@ -56,8 +61,8 @@ abstract class BaseTask extends BaseProcessor implements Task
             'enabled'        => true,
             ];
 
-        if ($new->options['expression'] instanceof Expressional) {
-            $new->expression = $new->options['expression'];
+        if ($new->options['expression'] instanceof CronExpression) {
+            $new->expression = $new->options['expression']->getExpression();
         }
 
         if (is_string($new->options['expression'])) {
@@ -67,6 +72,9 @@ abstract class BaseTask extends BaseProcessor implements Task
         return $new;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function withScheduler(Schedule $schedule): self
     {
         $new = clone $this;
@@ -75,6 +83,9 @@ abstract class BaseTask extends BaseProcessor implements Task
         return $new;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function withDispatcher(EventDispatcherInterface $dispatcher): self
     {
         $new = clone $this;
