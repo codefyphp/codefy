@@ -26,7 +26,7 @@ class HtmlHttpExceptionMiddleware implements MiddlewareInterface
 
     public function __construct(
         protected readonly Application $app,
-        protected readonly ErrorViewRenderer $errorView
+        protected ErrorViewRenderer $errorView
     ) {
     }
 
