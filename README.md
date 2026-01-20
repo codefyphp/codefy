@@ -61,12 +61,16 @@ composer require codefyphp/codefy
 
 ## 🕑 Releases
 
-| Version | Minimum PHP Version | Release Date   | Bug Fixes Until | Security Fixes Until |
-|---------|---------------------|----------------|-----------------|----------------------|
-| 1       | 8.2                 | September 2023 | July 2024       | EOL                  |
-| 2 - LTS | 8.2                 | September 2024 | September 2027  | January 2028         |
-| 3.0     | 8.4                 | October 2025   | August 2026     | December 2027        |
-| 3.1     | 8.4                 | June 2026      | February 2027   | June 2028            |
+| Version   | Minimum PHP Version | Release Date   | Bug Fixes Until | Security Fixes Until |
+|-----------|---------------------|----------------|-----------------|----------------------|
+| 1         | 8.2                 | September 2023 | July 2024       | EOL                  |
+| 2 - LTS   | 8.2                 | September 2024 | September 2027  | January 2028         |
+| 3.0       | 8.4                 | October 2025   | August 2026     | December 2027        |
+| 3.1       | 8.4                 | January 2026   | February 2027   | June 2028            |
+| 3.2       | 8.4                 | April 2026     | March 2027      | July 2028            |
+| 3.3       | 8.4                 | July 2026      | Aprile 2027     | August 2028          |
+| 3.4 - LTS | 8.4                 | April 2026     | March 2027      | July 2028            |
+| 4.0       | 8.5                 | May 2026       | June 2027       | October 2028         |
 
 ## 📘 Documentation
 
