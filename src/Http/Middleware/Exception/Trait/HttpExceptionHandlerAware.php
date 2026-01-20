@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Exception\Trait;
 
+use Codefy\Framework\Traits\ThrowableTransformAware;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,6 +17,8 @@ use Throwable;
 
 trait HttpExceptionHandlerAware
 {
+    use ThrowableTransformAware;
+
     /**
      * @throws ReflectionException
      * @throws TypeException

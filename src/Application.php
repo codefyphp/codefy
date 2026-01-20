@@ -48,6 +48,7 @@ use Qubus\Support\ArrayHelper;
 use Qubus\Support\DataType;
 use Qubus\Support\StringHelper;
 use ReflectionException;
+use Throwable;
 
 use function array_merge;
 use function array_unique;
@@ -115,6 +116,11 @@ final class Application extends Container
 
     /** @var bool $encryptedEnv */
     public static bool $encryptedEnv = false;
+
+    /**
+     * @var array<class-string<Throwable>, callable> $exceptionMaps
+     */
+    public array $exceptionMaps = [];
 
     /** @var string $basePath */
     private string $basePath = '' {
