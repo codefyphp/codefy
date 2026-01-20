@@ -4,6 +4,7 @@ config
 files
 storage
 /vendor/
+.cache
 .env
 .env.development
 .env.local
