@@ -8,6 +8,7 @@ use Closure;
 use Codefy\Framework\Support\Traits\DbTransactionsAware;
 use Exception;
 use Qubus\EventDispatcher\ActionFilter\Traits\ActionAware;
+use Qubus\Inheritance\ConditionalAware;
 use Qubus\Injector\ServiceContainer;
 use RuntimeException;
 use Throwable;
@@ -15,6 +16,7 @@ use Throwable;
 final class Pipeline implements Chainable
 {
     use ActionAware;
+    use ConditionalAware;
     use DbTransactionsAware;
 
     /**
