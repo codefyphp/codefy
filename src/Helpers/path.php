@@ -134,6 +134,7 @@ function vendor_path(?string $path = null): string
 }
 
 /**
+ * @internal
  * @throws Exception
  */
 function router_basepath(string $path): string

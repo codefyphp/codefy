@@ -113,6 +113,7 @@ function config(string|array|null $key, mixed $default = ''): mixed
 /**
  * Retrieve a fresh instance of the bootstrap.
  *
+ * @internal
  * @return mixed
  */
 function get_fresh_bootstrap(): mixed
