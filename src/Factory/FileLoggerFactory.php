@@ -20,7 +20,7 @@ class FileLoggerFactory implements LoggerFactory
     use FileLoggerAware;
 
     /**
-     * @throws ReflectionException|TypeException
+     * @throws ReflectionException
      */
     public static function getLogger(): LoggerInterface
     {
@@ -28,7 +28,7 @@ class FileLoggerFactory implements LoggerFactory
 
         $filesystem = LocalStorage::disk(name: 'logs');
 
-        $storage->attach(
+        $storage->offsetSet(
             object: new FileLogger(filesystem: $filesystem, threshold: LogLevel::INFO)
         );
 

@@ -24,7 +24,6 @@ class FileLoggerSmtpFactory implements LoggerFactory
 
     /**
      * @throws ReflectionException
-     * @throws TypeException
      */
     public static function getLogger(): LoggerInterface
     {
@@ -32,14 +31,14 @@ class FileLoggerSmtpFactory implements LoggerFactory
 
         $filesystem = LocalStorage::disk(name: 'logs');
 
-        $storage->attach(
+        $storage->offsetSet(
             object: new FileLogger(filesystem: $filesystem, threshold: LogLevel::INFO)
         );
 
         $mail = PHPMailerSmtpFactory::create();
 
         if (env(key: 'LOGGER_FROM_EMAIL') !== null && env(key: 'LOGGER_TO_EMAIL') !== null) {
-            $storage->attach(object: new PHPMailerLogger(mailer: $mail, threshold: LogLevel::INFO, params: [
+            $storage->offsetSet(object: new PHPMailerLogger(mailer: $mail, threshold: LogLevel::INFO, params: [
                 'from' => env(key: 'LOGGER_FROM_EMAIL'),
                 'to' => env(key: 'LOGGER_TO_EMAIL'),
                 'subject' => env(key: 'LOGGER_EMAIL_SUBJECT'),
