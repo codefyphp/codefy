@@ -33,8 +33,8 @@ class StringParser
             }
 
             $parts = explode('=', $pair, 2);
-            $key = urldecode($parts[0] ?? '');
-            $value = urldecode($parts[1] ?? '');
+            $key = urldecode($parts[0]);
+            $value = urldecode($parts[1]);
 
             if ($strict && $key === '') {
                 continue;

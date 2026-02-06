@@ -70,10 +70,10 @@ abstract class PhpMigCommand extends ConsoleCommand
     }
 
     /**
-     * @param string $filename
+     * @param string|null $filename
      * @return string
      */
-    protected function findBootstrapFile(string $filename): string
+    protected function findBootstrapFile(?string $filename = null): string
     {
         if (null === $filename) {
             $filename = 'phpmig.php';

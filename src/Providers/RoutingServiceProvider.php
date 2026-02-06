@@ -101,25 +101,23 @@ class RoutingServiceProvider extends CodefyServiceProvider
             }
 
             // Handle string (file path)
-            if (is_string($routes)) {
-                $ext = pathinfo($routes, PATHINFO_EXTENSION);
+            $ext = pathinfo($routes, PATHINFO_EXTENSION);
 
-                if ($ext === 'php') {
-                    // PHP route file
-                    if (file_exists($routes)) {
-                        $result = new RouteFileRegistrar()->register($routes);
-                        $result(Codefy::$PHP->router);
-                    }
-                    return;
+            if ($ext === 'php') {
+                // PHP route file
+                if (file_exists($routes)) {
+                    $result = new RouteFileRegistrar()->register($routes);
+                    $result(Codefy::$PHP->router);
                 }
+                return;
+            }
 
-                if ($ext === 'json') {
-                    // JSON routes
-                    if (file_exists($routes)) {
-                        Codefy::$PHP->router->loadRoutesFromJson($routes);
-                    }
-                    return;
+            if ($ext === 'json') {
+                // JSON routes
+                if (file_exists($routes)) {
+                    Codefy::$PHP->router->loadRoutesFromJson($routes);
                 }
+                return;
             }
 
             throw new RuntimeException(sprintf("Unsupported routes definition: %s", get_debug_type($routes)));

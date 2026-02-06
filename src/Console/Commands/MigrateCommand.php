@@ -57,14 +57,14 @@ EOT
         }
 
         if (null !== $version && '' !== $version) {
-            if (0 !== $version && !isset($migrations[$version])) {
-                return ConsoleCommand::SUCCESS;
+            if (!isset($migrations[$version])) {
+                return self::SUCCESS;
             }
         } else {
             $versionNumbers = array_merge($versions, array_keys(array: $migrations));
 
             if (empty($versionNumbers)) {
-                return ConsoleCommand::SUCCESS;
+                return self::SUCCESS;
             }
 
             $version = max(value: $versionNumbers);
@@ -74,7 +74,7 @@ EOT
 
         if ($direction === 'down') {
             /**
-             * Run downs first
+             * Run-downs first
              */
             krsort($migrations);
             foreach ($migrations as $migration) {
@@ -101,6 +101,6 @@ EOT
             }
         }
 
-        return ConsoleCommand::SUCCESS;
+        return self::SUCCESS;
     }
 }

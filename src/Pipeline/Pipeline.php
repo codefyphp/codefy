@@ -10,7 +10,6 @@ use Exception;
 use Qubus\EventDispatcher\ActionFilter\Traits\ActionAware;
 use Qubus\Inheritance\ConditionalAware;
 use Qubus\Injector\ServiceContainer;
-use RuntimeException;
 use Throwable;
 
 final class Pipeline implements Chainable
@@ -240,15 +239,11 @@ final class Pipeline implements Chainable
     /**
      * Get the container instance.
      *
-     * @return ServiceContainer|null
+     * @return ServiceContainer
      *
      */
-    protected function getContainer(): ?ServiceContainer
+    protected function getContainer(): ServiceContainer
     {
-        if (! $this->container) {
-            throw new RuntimeException('A container instance has not been passed to the Pipeline.');
-        }
-
         return $this->container;
     }
 

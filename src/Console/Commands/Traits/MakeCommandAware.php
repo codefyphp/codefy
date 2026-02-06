@@ -20,6 +20,7 @@ use function Qubus\Support\Helpers\camel_case;
 use function Qubus\Support\Helpers\studly_case;
 use function str_replace;
 
+/** @deprecated 3.1 Will be removed in version 4. */
 trait MakeCommandAware
 {
     /**
@@ -31,7 +32,7 @@ trait MakeCommandAware
     {
         if (!empty($resource)) {
             $elements = explode(separator: '_', string: $resource);
-            $classNamePrefix = array_shift($elements) ?? null; // class file
+            $classNamePrefix = array_shift($elements); // class file
             $classNameSuffix = array_pop($elements); // stub file
 
             /* Lets the resolve the suffix of the class aka stub */
@@ -206,7 +207,7 @@ trait MakeCommandAware
     ): array|bool {
         if ($file) {
             $contentStream = file_get_contents(filename: $file);
-            if ($contentStream != '') {
+            if ($contentStream !== '') {
                 $patterns = [
                     '{{ class }}',
                     '{{ namespace }}',
@@ -218,50 +219,47 @@ trait MakeCommandAware
 
                 foreach ($patterns as $pattern) {
                     if (str_contains($contentStream, $pattern)) {
-                        if ($pattern !== '') {
-                            $qualifiedClass = studly_case(string: $classNamePrefix . ucwords(string: $classNameSuffix));
+                        $qualifiedClass = studly_case(string: $classNamePrefix . ucwords(string: $classNameSuffix));
 
-                            $qualifiedNamespace = array_filter(
-                                array: self::STUBS,
-                                callback: fn ($value, $key) => $value,
-                                mode: ARRAY_FILTER_USE_BOTH
-                            );
+                        $qualifiedNamespace = array_filter(
+                            array: self::STUBS,
+                            callback: fn ($value, $key) => $value, // @phpstan-ignore argument.type
+                            mode: ARRAY_FILTER_USE_BOTH
+                        );
 
-                            $_namespace = '';
+                        $_namespace = '';
 
-                            $stubFile = strrchr(haystack: $file, needle: '/');
-                            $stubFile = str_replace(search: ['/Example', '.stub'], replace: '', subject: $stubFile);
-                            $_namespace = '';
-                            foreach ($qualifiedNamespace as $namespace) {
-                                if (str_contains($namespace, $stubFile)) {
-                                    $_namespace = $namespace;
-                                    continue;
-                                }
+                        $stubFile = strrchr(haystack: $file, needle: '/');
+                        $stubFile = str_replace(search: ['/Example', '.stub'], replace: '', subject: $stubFile);
+                        foreach ($qualifiedNamespace as $namespace) {
+                            if (str_contains($namespace, $stubFile)) {
+                                $_namespace = $namespace;
+                                continue;
                             }
-
-                            /* resolve table_name placeholder for model class */
-                            $tableName = Inflector::pluralize(word: $classNamePrefix) ?? '';
-                            /* fill the property placeholder */
-                            $property = camel_case(str: $classNamePrefix . ucwords(string: $classNameSuffix)) ?? '';
-                            /* resolve class which uses a model as a dependency */
-                            [$modelName, $modelVar] = $this->resolveModelDependency(
-                                classNamePrefix: $classNamePrefix,
-                                classNameSuffix: $classNameSuffix
-                            );
-                            $newContentStream = str_replace(
-                                search: $patterns,
-                                replace: [
-                                    $qualifiedClass, $_namespace . ';', $property, $tableName, $modelName, $modelVar
-                                ],
-                                subject: $contentStream
-                            );
-
-                            return [
-                                $newContentStream,
-                                $qualifiedClass,
-                                $_namespace
-                            ];
                         }
+
+                        /* resolve table_name placeholder for model class */
+                        $tableName = Inflector::pluralize(word: $classNamePrefix);
+                        /* fill the property placeholder */
+                        $property = camel_case(str: $classNamePrefix . ucwords(string: $classNameSuffix));
+                        /* resolve class which uses a model as a dependency */
+                        [$modelName, $modelVar] = $this->resolveModelDependency(
+                            classNamePrefix: $classNamePrefix,
+                            classNameSuffix: $classNameSuffix
+                        );
+                        $newContentStream = str_replace(
+                            search: $patterns,
+                            replace: [
+                                $qualifiedClass, $_namespace . ';', $property, $tableName, $modelName, $modelVar
+                            ],
+                            subject: $contentStream
+                        );
+
+                        return [
+                            $newContentStream,
+                            $qualifiedClass,
+                            $_namespace
+                        ];
                     }
                 }
             }
@@ -280,7 +278,7 @@ trait MakeCommandAware
     {
         if ($classNameSuffix === 'fillable' || $classNameSuffix === 'schema' || $classNameSuffix === 'repository') {
             $model = studly_case(string: $classNamePrefix . 'Model');
-            $property = camel_case(str: $classNamePrefix . 'Model') ?? '';
+            $property = camel_case(str: $classNamePrefix . 'Model');
             return [
                 $model,
                 $property

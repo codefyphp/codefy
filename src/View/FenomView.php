@@ -32,7 +32,7 @@ final class FenomView implements Renderer
     /**
      * @throws CompileException
      */
-    public function render(array|string $template, array $data = []): string|array
+    public function render(array|string $template, array $data = []): array
     {
         return $this->fenom->display(template: $template, vars: $data);
     }

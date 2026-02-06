@@ -44,10 +44,12 @@ class Schedule
         &get => $this->processors;
     }
 
+    /** @var Processor[] $executedProcessors */
     public protected(set) array $executedProcessors = [] {
         &get => $this->executedProcessors;
     }
 
+    /** @var FailedProcessor[] $failedProcessors */
     public protected(set) array $failedProcessors = [] {
         &get => $this->failedProcessors;
     }
@@ -90,7 +92,7 @@ class Schedule
     public function php(string $script, ?string $bin = null, array $args = []): Shell
     {
         $bin = ! is_null__($bin) && is_string($bin) && file_exists($bin) ?
-        $bin : (PHP_BINARY === '' ? '/usr/bin/php' : PHP_BINARY);
+        $bin : PHP_BINARY;
 
         $command = $bin . ' ' . $script;
 
@@ -158,7 +160,7 @@ class Schedule
             try {
                 $processor->run();
                 $this->pushExecutedProcessor(processor: $processor);
-            } catch (Exception $ex) {
+            } catch (\Qubus\Exception\Exception $ex) {
                 $this->pushFailedProcessor($processor, $ex);
             }
         }
@@ -191,7 +193,7 @@ class Schedule
     /**
      * Push a failed process.
      */
-    private function pushFailedProcessor(Processor $processor, Exception $ex): Processor
+    private function pushFailedProcessor(Processor $processor, \Qubus\Exception\Exception $ex): Processor
     {
         $this->failedProcessors[] = new FailedProcessor($processor, $ex);
 

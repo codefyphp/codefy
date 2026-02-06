@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Auth;
 
-use Codefy\CommandBus\Exceptions\CommandPropertyNotFoundException;
-use Codefy\Framework\Auth\Rbac\Entity\AssertionRule;
 use Codefy\Framework\Auth\Rbac\Rbac;
 use Codefy\Framework\Auth\Repository\AuthUserRepository;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Http\Middleware\Auth\UserAuthorizationMiddleware;
 use Codefy\Framework\Http\Middleware\Auth\UserCookieDecryptMiddleware;
 use Codefy\Framework\Http\RequestContext;
-use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Data\TypeException;
 use ReflectionException;
@@ -30,7 +27,7 @@ class Gate
      * Authorization check.
      *
      * @param string $permissionName
-     * @param AssertionRule[] $ruleParams
+     * @param array $ruleParams
      * @return bool
      * @throws ReflectionException
      * @throws TypeException
@@ -59,7 +56,6 @@ class Gate
      *
      * @return object|bool|null
      * @throws ReflectionException
-     * @throws TypeException
      */
     public function current(): object|bool|null
     {
@@ -84,7 +80,6 @@ class Gate
 
     /**
      * @throws ReflectionException
-     * @throws TypeException
      */
     private function resolveUserByToken(string $token): object|bool|null
     {
@@ -99,7 +94,6 @@ class Gate
     /**
      * @return array
      * @throws ReflectionException
-     * @throws TypeException
      */
     private function getRoles(): array
     {
@@ -110,6 +104,7 @@ class Gate
         }
 
         $roles = [];
+        // @phpstan-ignore property.nonObject
         foreach ((array)$user->role as $roleName) {
             if ($role = $this->rbac->getRole($roleName)) {
                 $roles[$roleName] = $role;

@@ -10,8 +10,8 @@ use DebugBar\DataCollector\Renderable;
 final class RouteCollector extends DataCollector implements Renderable
 {
     public function __construct(
-        private readonly string $routeName,
-        private readonly string $controller
+        private readonly string|null $routeName,
+        private readonly string|null $controller
     ) {
     }
 

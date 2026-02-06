@@ -92,7 +92,7 @@ EOT
 
         foreach ($registeredProviders as $instance => $value) {
 
-            $paths = $instance->pathsToPublish($tag);
+            $paths = $instance->pathsToPublish($tag); // @phpstan-ignore method.nonObject
 
             foreach ($paths as $from => $type) {
                 $destination = $this->resolveDestination($from, $type);
@@ -105,7 +105,7 @@ EOT
             }
         }
 
-        return ConsoleCommand::SUCCESS;
+        return self::SUCCESS;
     }
 
     private function resolveDestination(string $from, string $type): string
@@ -141,7 +141,7 @@ EOT
 
         // Prefer streaming for large files, fallback to write()
         $stream = fopen($from, 'rb');
-        if ($stream !== false && method_exists($filesystem, 'writeStream')) {
+        if ($stream !== false) {
             $filesystem->writeStream($to, $stream);
             if (is_resource($stream)) {
                 fclose($stream);
@@ -191,7 +191,7 @@ EOT
         foreach ($providers as $instance => $value) {
 
             foreach (['config', 'migrations'] as $tag) {
-                $paths = $instance->pathsToPublish($tag);
+                $paths = $instance->pathsToPublish($tag); // @phpstan-ignore method.nonObject
                 if (!empty($paths)) {
                     $this->output->writeln("    - tag: <info>{$tag}</info>");
                     foreach ($paths as $from => $type) {
@@ -201,7 +201,7 @@ EOT
             }
         }
 
-        return ConsoleCommand::SUCCESS;
+        return self::SUCCESS;
     }
 
     /**
@@ -232,7 +232,7 @@ EOT
             }
         }
 
-        return ConsoleCommand::SUCCESS;
+        return self::SUCCESS;
     }
 
     /**

@@ -18,7 +18,7 @@ use Throwable;
 
 class ConsoleApplication extends SymfonyApplication
 {
-    private OutputInterface|string|null $lastOutput;
+    private OutputInterface|null $lastOutput;
 
     public function __construct(protected Application $codefy)
     {
@@ -49,7 +49,7 @@ class ConsoleApplication extends SymfonyApplication
 
         return $this->run(
             $input,
-            $this->lastOutput = ($outputBuffer instanceof OutputInterface) ? new BufferedOutput() : ''
+            $this->lastOutput = ($outputBuffer instanceof OutputInterface) ? new BufferedOutput() : null
         );
     }
 

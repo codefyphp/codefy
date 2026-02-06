@@ -7,11 +7,44 @@ namespace Codefy\Framework\Queue;
 interface ShouldQueue
 {
     /**
+     * The name of the queue this instance is working with.
+     */
+    public string $name = '' {
+        get;
+        set;
+    }
+
+    /**
+     * How long the processing is expected to take in seconds.
+     */
+    public int $leaseTime = 3600 {
+        get;
+        set;
+    }
+
+    /**
+     * When should the process run.
+     */
+    public string $schedule = '* * * * *' {
+        get;
+        set;
+    }
+
+    /**
+     * How many times should a job execute before
+     * considered dead.
+     */
+    public int $executions = 3 {
+        get;
+        set;
+    }
+
+    /**
      * The code/task that should be executed.
      *
-     * @return void
+     * @return bool
      */
-    public function handle(): void;
+    public function handle(): bool;
 
     public function node(): string;
 }

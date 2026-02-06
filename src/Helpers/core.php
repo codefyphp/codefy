@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Helpers;
 
+use Closure;
 use Codefy\CommandBus\Busses\SynchronousCommandBus;
 use Codefy\CommandBus\Command;
 use Codefy\CommandBus\Containers\ContainerFactory;
@@ -13,6 +14,7 @@ use Codefy\CommandBus\Odin;
 use Codefy\CommandBus\Resolvers\NativeCommandHandlerResolver;
 use Codefy\Framework\Application;
 use Codefy\Framework\Auth\Gate;
+use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Http\RequestContext;
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Factory\FileLoggerFactory;
@@ -28,7 +30,8 @@ use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Gravatar\Image;
 use Gravatar\Profile;
 use Psr\Http\Message\ResponseInterface;
-use Qubus\Exception\Data\TypeException;
+use Psr\Log\LoggerInterface;
+use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
 use Qubus\Exception\Http\HttpExceptionFactory;
 use Qubus\Expressive\Connection;
@@ -38,9 +41,11 @@ use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
 use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
 use Qubus\Routing\Exceptions\TooLateToAddNewRouteException;
 use Qubus\Routing\Route\RouteAttributes;
+use Qubus\Support\HtmlString;
 use Qubus\View\Renderer;
 use ReflectionException;
 use RuntimeException;
+use Stringable;
 use Throwable;
 
 use function dirname;
@@ -75,14 +80,18 @@ use const FILTER_VALIDATE_IP;
 /**
  * Get the available container instance.
  *
- * @param string|null $name
- * @param array $args
+ * @param class-string|string|null $name
+ * @param array<string, class-string> $args
  * @return mixed
  */
 function app(?string $name = null, array $args = []): mixed
 {
-    /** @var Application $app */
-    $app = get_fresh_bootstrap();
+    static $app;
+
+    if (is_null__($app)) {
+        /** @var Application $app */
+        $app = get_fresh_bootstrap();
+    }
 
     if (is_null__(var: $name)) {
         return $app->getContainer();
@@ -93,11 +102,11 @@ function app(?string $name = null, array $args = []): mixed
 /**
  * Get the available config instance.
  *
- * @param array<string, mixed>|string|null  $key
+ * @param array<array-key, array>|string|null  $key
  * @param mixed $default
- * @return mixed
+ * @return ($key is null ? ConfigContainer : mixed)
  */
-function config(string|array|null $key, mixed $default = ''): mixed
+function config(string|array|null $key = null, mixed $default = ''): mixed
 {
     if (is_null__($key)) {
         return app(name: 'codefy.config');
@@ -151,9 +160,9 @@ function dbal(): Connection
 /**
  * QueryBuilder singleton function.
  *
- * @return QueryBuilder|null
+ * @return QueryBuilder
  */
-function queryBuilder(): ?QueryBuilder
+function queryBuilder(): QueryBuilder
 {
     return dbal()->queryBuilder();
 }
@@ -164,11 +173,11 @@ function queryBuilder(): ?QueryBuilder
  * This is a simple mail function to see for testing or for
  * sending simple email messages.
  *
- * @param string|array $to Recipient(s)
+ * @param string|array<string> $to Recipient(s)
  * @param string $subject Subject of the email.
  * @param string $message The email body.
- * @param array $headers An array of headers.
- * @param array $attachments An array of attachments.
+ * @param array<string|int, string|array<string>> $headers An array of headers.
+ * @param array<string> $attachments An array of attachments.
  * @return bool
  * @throws Exception|ReflectionException|\PHPMailer\PHPMailer\Exception
  */
@@ -469,13 +478,17 @@ function gravatar_profile(?string $email = null): Profile
  * Throw the given exception if the given condition is true.
  *
  * @param mixed $condition
- * @param string $exception
+ * @param class-string|object|Closure $exception
  * @param ...$parameters
  * @return mixed
  */
-function throw_if(mixed $condition, string $exception = RuntimeException::class, ...$parameters): mixed
+function throw_if(mixed $condition, mixed $exception = RuntimeException::class, ...$parameters): mixed
 {
     if ($condition) {
+        if ($exception instanceof Closure) {
+            $exception = $exception(...$parameters);
+        }
+
         if (is_string($exception) && class_exists($exception)) {
             $exception = new $exception(...$parameters);
         }
@@ -489,6 +502,7 @@ function throw_if(mixed $condition, string $exception = RuntimeException::class,
 /**
  * Throw an HttpException with the given data.
  *
+ * @since 3.1
  * @param int $code
  * @param string|null $uri
  * @param string $message
@@ -512,6 +526,7 @@ function abort(
 /**
  * Abort (throw an HttpException) if the given condition is true.
  *
+ * @since 3.1
  * @param bool $condition
  * @param int $code
  * @param string $message
@@ -533,6 +548,7 @@ function abort_if(
 /**
  * Abort (throw an HttpException) unless the given condition is true.
  *
+ * @since 3.1
  * @param bool $condition
  * @param int $code
  * @param string $message
@@ -562,17 +578,20 @@ function view(array|string $template, array $data = []): ResponseInterface
     /** @var Renderer $view */
     $view = Codefy::$PHP->make(name: Renderer::class);
 
+    // @phpstan-ignore method.notFound
     return HtmlResponseFactory::create($view->render($template, $data));
 }
 
 /**
- * Returns the gate instance.
+ * Returns a `Gate` instance or true if user has specified permission.
  *
+ * @since 3.1
  * @param string|null $permission
- * @param array $rules
+ * @param array $ruleParams
  * @return Gate|bool|null
+ * @return ($permission is null ? Gate : bool|null)
  */
-function gate(?string $permission = null, array $rules = []): Gate|null|bool
+function gate(?string $permission = null, array $ruleParams = []): Gate|null|bool
 {
     $request = RequestContext::get();
 
@@ -586,36 +605,38 @@ function gate(?string $permission = null, array $rules = []): Gate|null|bool
         return $auth;
     }
 
-    return $auth->can($permission, $rules);
+    return $auth->can($permission, $ruleParams);
 }
 
 /**
  * The authenticated user details.
  *
+ * @since 3.1
  * @throws ReflectionException
- * @throws TypeException
+ * @return object|bool|null
  */
 function user(): object|bool|null
 {
-    return gate()?->current();
+    return gate()->current();
 }
 
 /**
  * Generate url's from named routes.
  *
+ * @since 3.1
  * @param string $name Name of the route.
  * @param array $params Data parameters.
- * @return string|null The url.
+ * @return string The url.
  * @throws NamedRouteNotFoundException
  * @throws RouteParamFailedConstraintException
  * @throws TooLateToAddNewRouteException
  */
-function route(string $name, array $params = []): ?string
+function route(string $name, array $params = []): string
 {
     $request = RequestContext::get();
     $routable = $request->getAttribute(RouteAttributes::ROUTE);
-    if (null === $routable) {
-        return null;
+    if (null === $routable || '' === $routable) {
+        return '';
     }
 
     $router = Codefy::$PHP->router;
@@ -627,17 +648,19 @@ function route(string $name, array $params = []): ?string
 /**
  * Return a form field to spoof the HTTP verb used by forms.
  *
+ * @since 3.1
  * @param string $method
- * @return string
+ * @return HtmlString
  */
-function method_field(string $method): string
+function method_field(string $method): HtmlString
 {
-    return sprintf('<input type="hidden" name="_method" value="%s" />', strtoupper($method)) . "\n";
+    return new HtmlString(sprintf('<input type="hidden" name="_method" value="%s" />', strtoupper($method)));
 }
 
 /**
  * Return an array of system user roles.
  *
+ * @since 3.1
  * @throws Exception
  */
 function get_system_roles(): array
@@ -649,4 +672,22 @@ function get_system_roles(): array
     }
 
     return $userRoles;
+}
+
+function logger(string|Stringable $level, string $message, array $context = []): void
+{
+    try {
+        FileLoggerFactory::getLogger()->{$level}($message, $context);
+    } catch (ReflectionException $e) {
+        error_log($e->getMessage());
+    }
+}
+
+function smtp_logger(string|Stringable $level, string $message, array $context = []): void
+{
+    try {
+        FileLoggerSmtpFactory::getLogger()->{$level}($message, $context);
+    } catch (ReflectionException $e) {
+        error_log($e->getMessage());
+    }
 }

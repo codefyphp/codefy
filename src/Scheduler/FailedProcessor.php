@@ -14,9 +14,11 @@ final class FailedProcessor
      * @param Exception $exception
      */
     public function __construct(
+        // @phpstan-ignore property.onlyWritten
         private Processor $processor {
             get => $this->processor;
         },
+        // @phpstan-ignore property.onlyWritten
         private Exception $exception {
             get => $this->exception;
         }

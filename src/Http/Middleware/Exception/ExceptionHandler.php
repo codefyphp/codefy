@@ -20,7 +20,7 @@ class ExceptionHandler
     use HttpExceptionUtilityAware;
 
     /**
-     * @param HttpResponseStrategy[] $strategies
+     * @param array<class-string<HttpResponseStrategy>>|HttpResponseStrategy[] $strategies
      */
     public function __construct(protected array $strategies, protected Application $app)
     {

@@ -8,6 +8,7 @@ use Codefy\Framework\Proxy\Codefy;
 
 final class PipelineBuilder
 {
+    // @phpstan-ignore property.onlyWritten
     private array $pipes = [];
 
     /**

@@ -27,7 +27,7 @@ trait HttpExceptionRenderAware
      */
     protected function renderErrorView(Throwable $t): ResponseInterface
     {
-        $statusCode = $this->normalizeStatusCode($t->getCode());
+        $statusCode = $this->normalizeStatusCode((int) $t->getCode());
         $html = $this->errorView->render($statusCode);
 
         return $this->errorView->toResponse($html);

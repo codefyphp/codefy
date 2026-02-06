@@ -71,6 +71,9 @@ final readonly class RbacLoader
     {
         foreach ($permissionsConfig as $name => $config) {
             $permission = $this->rbac->addPermission(name: $name, description: $config['description'] ?? '');
+            foreach ((array) ($config['ruleClass'] ?? []) as $ruleClass) {
+                $permission->setRuleClass(ruleClass: $ruleClass);
+            }
 
             $parent?->addChild($permission);
 

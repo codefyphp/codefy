@@ -77,7 +77,7 @@ final class ApplicationBuilder
      * Register an array of singletons that are resource intensive
      * or are not called often.
      *
-     * @param array<string, callable> $singletons
+     * @param array<class-string|string, callable> $singletons
      * @return $this
      */
     public function withSingletons(array $singletons = []): self

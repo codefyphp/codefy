@@ -12,7 +12,7 @@ final class DefaultCommands
     use CollectionStackAware;
 
     /**
-     * @param array<SignalableCommandInterface> $collection
+     * @param array<class-string<SignalableCommandInterface>|callable> $collection
      */
     public function __construct(array $collection = [])
     {

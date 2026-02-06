@@ -15,7 +15,7 @@ trait LoggerAware
     /**
      * FileLogger
      *
-     * @throws ReflectionException|TypeException
+     * @throws ReflectionException
      */
     public static function getLogger(): LoggerInterface
     {
@@ -26,7 +26,6 @@ trait LoggerAware
      * FileLogger with SMTP support.
      *
      * @throws ReflectionException
-     * @throws TypeException
      */
     public static function getSmtpLogger(): LoggerInterface
     {

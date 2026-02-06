@@ -8,6 +8,7 @@ use function get_class;
 use function property_exists;
 use function sprintf;
 
+// @phpstan-ignore trait.unused
 trait ImmutableAware
 {
     /**

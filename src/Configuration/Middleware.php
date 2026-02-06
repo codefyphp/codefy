@@ -14,7 +14,7 @@ class Middleware
     /**
      * Register additional middleware aliases.
      *
-     * @param array<string, MiddlewareInterface> $aliases
+     * @param array<string, class-string<MiddlewareInterface>> $aliases
      * @return $this
      */
     public function alias(array $aliases): static

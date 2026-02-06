@@ -62,7 +62,6 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     /**
      * @inheritDoc
-     * @throws TypeException
      * @throws ReflectionException
      */
     public function createItem(): string
@@ -88,7 +87,6 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
      *                added to the queue, otherwise false. We don't guarantee the item was
      *                committed to disk etc., but as far as we know, the item is now in the
      *                queue.
-     * @throws TypeException
      * @throws ReflectionException
      */
     protected function doCreateItem(): string
@@ -332,7 +330,6 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
      *
      * @param Exception $e The exception.
      * @throws ReflectionException
-     * @throws TypeException
      */
     protected function catchException(Exception $e): void
     {
@@ -371,7 +368,6 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
                     return false;
                 };
 
-                // @phpstan-ignore function.void
                 if (false !== call_user_func([$object, 'handle'])) {
                     $this->deleteItem($item);
                 } else {

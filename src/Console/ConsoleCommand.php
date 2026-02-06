@@ -79,7 +79,7 @@ abstract class ConsoleCommand extends SymfonyCommand
         $parameters = new ReflectionMethod(objectOrMethod: $this, method: $method);
 
         foreach ($parameters->getParameters() as $arg) {
-            $classParameters[] = $this->codefy->make(name: $arg->getType()->getName());
+            $classParameters[] = $this->codefy->make(name: $arg->getName());
         }
 
         if ($parameters->getNumberOfParameters() > 0) {
@@ -104,7 +104,7 @@ abstract class ConsoleCommand extends SymfonyCommand
      * Returns the option value for the given option name.
      *
      * @param string|null $key
-     * @return bool|string|string[]
+     * @return bool|string|string[]|null
      */
     protected function getOptions(?string $key = null): mixed
     {
@@ -174,13 +174,13 @@ abstract class ConsoleCommand extends SymfonyCommand
     /**
      * $arg[0] = argument name, $arg[1] = argument type and $arg[2] = argument description.
      *
-     * @return ConsoleCommand|bool
+     * @return void
      * @throws TypeException
      */
-    private function setArguments(): ConsoleCommand|bool
+    private function setArguments(): void
     {
         if (count($this->args) <= 0) {
-            return false;
+            return;
         }
 
         foreach ($this->args as $arg) {
@@ -192,7 +192,7 @@ abstract class ConsoleCommand extends SymfonyCommand
             };
         }
 
-        return true;
+        return;
     }
 
     /**
@@ -268,13 +268,13 @@ abstract class ConsoleCommand extends SymfonyCommand
     }
 
     /**
-     * @return bool|ConsoleCommand
+     * @return void
      * @throws TypeException
      */
-    private function setOptions(): bool|ConsoleCommand
+    private function setOptions(): void
     {
         if (count($this->options) <= 0) {
-            return false;
+            return;
         }
 
         foreach ($this->options as $option) {
@@ -313,7 +313,7 @@ abstract class ConsoleCommand extends SymfonyCommand
             };
         }
 
-        return true;
+        return;
     }
 
     /**

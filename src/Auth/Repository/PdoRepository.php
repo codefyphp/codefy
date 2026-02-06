@@ -26,7 +26,7 @@ class PdoRepository implements AuthUserRepository
      */
     public function authenticate(string $credential, #[SensitiveParameter] ?string $password = null): ?SessionEntity
     {
-        /** @var array<string, int> $fields */
+        /** @var array<string> $fields */
         $fields = $this->config->getConfigKey(key: 'auth.pdo.fields');
         /** @var string $table */
         $table = $this->config->getConfigKey(key: 'auth.pdo.table');

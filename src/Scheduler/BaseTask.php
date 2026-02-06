@@ -29,7 +29,7 @@ abstract class BaseTask extends BaseProcessor implements Task
     protected ?TaskId $pid = null;
 
     /**
-     * @var array<array, int, string, bool, CronExpression, null>
+     * @var array<array|int|string|bool|CronExpression|null>
      */
     protected array $options = [];
 
@@ -49,7 +49,7 @@ abstract class BaseTask extends BaseProcessor implements Task
      * @inheritDoc
      * @throws TypeException
      */
-    public function withOptions(array $options): self
+    public function withOptions(array $options): static
     {
         $new  = clone $this;
         $new->options = $options + [
@@ -75,7 +75,7 @@ abstract class BaseTask extends BaseProcessor implements Task
     /**
      * @inheritDoc
      */
-    public function withScheduler(Schedule $schedule): self
+    public function withScheduler(Schedule $schedule): static
     {
         $new = clone $this;
         $new->schedule = $schedule;
@@ -86,7 +86,7 @@ abstract class BaseTask extends BaseProcessor implements Task
     /**
      * @inheritDoc
      */
-    public function withDispatcher(EventDispatcherInterface $dispatcher): self
+    public function withDispatcher(EventDispatcherInterface $dispatcher): static
     {
         $new = clone $this;
         $new->dispatcher = $dispatcher;
@@ -158,9 +158,9 @@ abstract class BaseTask extends BaseProcessor implements Task
      * Check if event should be run.
      *
      * @param string $datetime
-     * @return self
+     * @return static
      */
-    public function from(string $datetime): self
+    public function from(string $datetime): static
     {
         return $this->skip(function () use ($datetime) {
             return $this->notYet($datetime);
@@ -171,9 +171,9 @@ abstract class BaseTask extends BaseProcessor implements Task
      * Check if event should not run.
      *
      * @param string $datetime
-     * @return self
+     * @return static
      */
-    public function to(string $datetime): self
+    public function to(string $datetime): static
     {
         return $this->skip(function () use ($datetime) {
             return $this->past($datetime);

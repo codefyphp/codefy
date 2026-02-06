@@ -155,7 +155,7 @@ final class Application extends Container
         get => $this->hasBeenBootstrapped;
     }
 
-    /** @var array $bootingCallbacks */
+    /** @var array<callable> $bootingCallbacks */
     private array $bootingCallbacks = [] {
         &get => $this->bootingCallbacks;
     }
@@ -170,7 +170,7 @@ final class Application extends Container
         &get => $this->registeredCallbacks;
     }
 
-    /** @var array $param */
+    /** @var array<mixed> $param */
     private array $param = [] {
         &get => $this->param;
     }
@@ -297,7 +297,7 @@ final class Application extends Container
     }
 
     /**
-     * @param array<string> $bootstrappers
+     * @param array<class-string|string> $bootstrappers
      * @return void
      */
     public function bootstrapWith(array $bootstrappers): void
@@ -358,10 +358,10 @@ final class Application extends Container
      * Force register a service provider with the application.
      *
      * @param string|Serviceable|Bootable $provider
-     * @return Serviceable|Bootable|string
+     * @return Serviceable|Bootable
      * @throws TypeException
      */
-    public function forceRegisterServiceProvider(string|Serviceable|Bootable $provider): Serviceable|Bootable|string
+    public function forceRegisterServiceProvider(string|Serviceable|Bootable $provider): Serviceable|Bootable
     {
         return $this->registerServiceProvider(serviceProvider: $provider, force: true);
     }
@@ -393,13 +393,13 @@ final class Application extends Container
      *
      * @param string|Serviceable|Bootable $serviceProvider
      * @param bool $force
-     * @return Serviceable|Bootable|string
+     * @return Serviceable|Bootable
      * @throws TypeException
      */
     public function registerServiceProvider(
         string|Serviceable|Bootable $serviceProvider,
         bool $force = false
-    ): Serviceable|Bootable|string {
+    ): Serviceable|Bootable {
         // If the Service Provider had already been registered, then return it.
         if (($registered = $this->getRegisteredServiceProvider(provider: $serviceProvider)) && !$force) {
             return $registered;
@@ -818,7 +818,7 @@ final class Application extends Container
     }
 
     /**
-     * @return array[]
+     * @return array
      */
     protected function coreAliases(): array
     {
@@ -895,7 +895,6 @@ final class Application extends Container
      *
      * @param string $basePath
      * @return void
-     * @throws TypeException
      * @throws ReflectionException
      */
     private static function loadEnvironment(string $basePath): void

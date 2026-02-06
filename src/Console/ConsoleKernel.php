@@ -15,6 +15,7 @@ use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Support\DateTime\QubusDateTimeZone;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,6 +28,7 @@ class ConsoleKernel implements Kernel
 {
     protected ?Codex $codex = null;
 
+    /** @var array<class-string<SignalableCommandInterface>|callable> */
     protected array $commands = [];
 
     protected bool $commandsLoaded = false;
@@ -104,13 +106,13 @@ class ConsoleKernel implements Kernel
      */
     public function registerCommand(callable|Command $command): void
     {
-        $this->getCodex()->add(command: $command);
+        $this->getCodex()->addCommand(command: $command);
     }
 
     /**
      * Add an array of commands to the console.
      *
-     * @param array $commands
+     * @param array<class-string<SignalableCommandInterface>|callable> $commands
      * @return void
      */
     public function addCommands(array $commands): void
@@ -176,7 +178,7 @@ class ConsoleKernel implements Kernel
     }
 
     /**
-     * @param array $commands
+     * @param array<class-string<SignalableCommandInterface>|callable> $commands
      * @return void
      */
     protected function load(array $commands = []): void
@@ -209,7 +211,7 @@ class ConsoleKernel implements Kernel
     /**
      * Get the bootstrappers.
      *
-     * @return string[]
+     * @return array<class-string>
      */
     protected function bootstrappers(): array
     {

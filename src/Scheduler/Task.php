@@ -13,7 +13,7 @@ interface Task extends Processor
     /**
      * Return an instance with configured options.
      *
-     * @param array<array, int, string, bool, CronExpression, null> $options
+     * @param array<array|int|string|bool|CronExpression|null> $options
      * @return self
      */
     public function withOptions(array $options): self;

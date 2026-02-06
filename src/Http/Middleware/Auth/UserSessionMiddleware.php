@@ -167,7 +167,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
     private function tokensMatch(ServerRequestInterface $request): bool
     {
         $expected = $this->fetchToken($request);
-        $provided = $this->getTokenFromCookie($request->getCookieParams() ?? []);
+        $provided = $this->getTokenFromCookie($request->getCookieParams());
 
         return $this->compareTokens($expected, $provided);
     }

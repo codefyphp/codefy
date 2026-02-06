@@ -64,9 +64,9 @@ final readonly class ErrorViewRenderer
 
     private function replaceTags(string $template, int $code, string $message): string
     {
-        return str_replace(
+        return str_ireplace(
             search: ['{{ code }}', '{{ message }}'],
-            replace: [$code, $message],
+            replace: [(string) $code, $message],
             subject: $template,
         );
     }

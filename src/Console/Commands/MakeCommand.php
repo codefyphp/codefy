@@ -11,16 +11,25 @@ use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;
 use RuntimeException;
 
+/**
+ * @deprecated since 3.1, will be removed in version 4.
+ * @see \Codefy\Framework\Console\Commands\Domain\MakeDomainCommand
+ * @see \Codefy\Framework\Console\Commands\Domain\MakeCommand
+ * @see https://codefyphp.com/docs/getting-started/codex/
+ */
 class MakeCommand extends ConsoleCommand
 {
     use MakeCommandAware;
 
     protected const string FILE_EXTENSION = '.php';
 
+    // @phpstan-ignore property.onlyWritten
     private array $errors = [];
 
+    // @phpstan-ignore property.onlyWritten
     private array $comments = [];
 
+    // @phpstan-ignore property.onlyWritten
     private array $info = [];
 
     protected string $name = 'stub:make';
@@ -66,10 +75,10 @@ class MakeCommand extends ConsoleCommand
         try {
             $this->resolveResource(resource: $stub, options: $option);
             $this->terminalQuestion(string: 'Your file was created successfully.');
-            return ConsoleCommand::SUCCESS;
+            return self::SUCCESS;
         } catch (MakeCommandFileAlreadyExistsException | TypeException | RuntimeException | FilesystemException $e) {
             $this->terminalError(string: sprintf('%s', $e->getMessage()));
-            return ConsoleCommand::FAILURE;
+            return self::FAILURE;
         }
     }
 }

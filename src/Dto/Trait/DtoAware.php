@@ -11,6 +11,7 @@ use RuntimeException;
 use function get_object_vars;
 use function sprintf;
 
+// @phpstan-ignore trait.unused
 trait DtoAware
 {
     /**

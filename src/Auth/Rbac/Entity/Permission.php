@@ -28,7 +28,7 @@ interface Permission
     public function getChildren(): array;
 
     /**
-     * @param string $ruleClass
+     * @param class-string|string $ruleClass
      */
     public function setRuleClass(string $ruleClass): void;
 

@@ -25,6 +25,7 @@ class RedirectHttpResponseStrategy implements HttpResponseStrategy
     {
         $this->app->flash->error($e->getMessage());
 
+        // @phpstan-ignore method.notFound
         $uri = $e->getUri()
         ?: $request->getHeaderLine('Referer')
         ?: '/';

@@ -9,7 +9,6 @@ use Codefy\Framework\Auth\Rbac\Entity\Role;
 use Codefy\Framework\Auth\Rbac\Exception\SentinelException;
 use Codefy\Framework\Support\LocalStorage;
 use League\Flysystem\FilesystemException;
-use Qubus\Exception\Data\TypeException;
 
 class FileResource extends BaseStorageResource
 {
@@ -28,23 +27,25 @@ class FileResource extends BaseStorageResource
 
     /**
      * @throws SentinelException
-     * @throws FilesystemException|TypeException
+     * @throws FilesystemException
      */
     public function load(): void
     {
         $this->clear();
 
         if (!file_exists($this->file) || (!$data = LocalStorage::disk()->read(json_decode($this->file, true)))) {
-            $data = [];
+            $data = [
+                'permissions' => [],
+                'roles' => [],
+            ];
         }
 
-        $this->restorePermissions($data['permissions'] ?? []);
-        $this->restoreRoles($data['roles'] ?? []);
+        $this->restorePermissions($data['permissions']);
+        $this->restoreRoles($data['roles']);
     }
 
     /**
      * @throws FilesystemException
-     * @throws TypeException|FilesystemException
      */
     public function save(): void
     {

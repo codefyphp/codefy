@@ -81,9 +81,9 @@ abstract class BaseProcessor implements Processor
      * Set arguments for the command.
      *
      * @param array|null $args
-     * @return BaseProcessor
+     * @return static
      */
-    public function withArgs(?array $args = null): self
+    public function withArgs(?array $args = null): static
     {
         $this->args = $args ?? [];
         return $this;
@@ -92,7 +92,7 @@ abstract class BaseProcessor implements Processor
     /**
      * @inheritDoc
      */
-    public function description(string $description): self
+    public function description(string $description): static
     {
         $this->description = $description;
 
@@ -122,7 +122,7 @@ abstract class BaseProcessor implements Processor
     /**
      * Force the command to run in foreground.
      */
-    public function runInForeground(): self
+    public function runInForeground(): static
     {
         $this->runInBackground = false;
 
@@ -164,7 +164,7 @@ abstract class BaseProcessor implements Processor
     /**
      * Truth test to determine if a command should run when it is due.
      */
-    public function when(callable|bool $callback): self
+    public function when(callable|bool $callback): static
     {
         $this->filters[] = is_callable($callback) ? $callback : fn () => $callback;
 
@@ -174,7 +174,7 @@ abstract class BaseProcessor implements Processor
     /**
      * Truth test to determine if a command should run when it is due.
      */
-    public function skip(callable|bool $callback): self
+    public function skip(callable|bool $callback): static
     {
         $this->rejects[] = is_callable($callback) ? $callback : fn () => $callback;
 
@@ -184,7 +184,7 @@ abstract class BaseProcessor implements Processor
     /**
      * Set a function to be called before a command is executed.
      */
-    public function before(callable $fn): self
+    public function before(callable $fn): static
     {
         $this->beforeCallbacks[] = $fn;
 
@@ -194,7 +194,7 @@ abstract class BaseProcessor implements Processor
     /**
      * Set a function to be called after a command is executed.
      */
-    public function after(callable $fn): self
+    public function after(callable $fn): static
     {
         return $this->then($fn);
     }
@@ -202,7 +202,7 @@ abstract class BaseProcessor implements Processor
     /**
      * Set a function to be called after a command is executed.
      */
-    public function then(callable $fn, bool $runInBackground = false): self
+    public function then(callable $fn, bool $runInBackground = false): static
     {
         $this->afterCallbacks[] = $fn;
 
@@ -218,7 +218,7 @@ abstract class BaseProcessor implements Processor
      *
      * @param int $expiresAfter The amount of time in seconds the mutex lock should live.
      */
-    public function onlyOneInstance(int $expiresAfter = 120): self
+    public function onlyOneInstance(int $expiresAfter = 120): static
     {
         $this->preventOverlapping = true;
 
