@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Contracts\Console;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -21,7 +22,7 @@ interface Kernel
     /**
      * Gets all the commands registered.
      *
-     * @return array
+     * @return Command[]
      */
     public function all(): array;
 
@@ -43,7 +44,7 @@ interface Kernel
      * Run a Codex console command by name.
      *
      * @param string $command
-     * @param array $parameters
+     * @param array<mixed> $parameters
      * @param bool|OutputInterface|null $outputBuffer
      * @return int
      */

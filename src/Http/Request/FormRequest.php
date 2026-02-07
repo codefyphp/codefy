@@ -24,6 +24,8 @@ abstract class FormRequest extends ServerRequest implements DataValidator
 
     /**
      * The filtered input data.
+     *
+     * @param array<mixed> $data
      */
     protected array $data = [];
 
@@ -102,7 +104,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
     /**
      * Get custom messages for validator errors.
      *
-     * @return array
+     * @return array<string|null>
      */
     protected function messages(): array
     {
@@ -114,7 +116,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
      *
      * @throws Exception
      */
-    protected function makeValidator(): Validation
+    protected function makeValidator(): ?Validation
     {
         if ($this->validator) {
             return $this->validator;
@@ -152,7 +154,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
      * Set the Validator instance.
      *
      * @param Validation $validator
-     * @return $this
+     * @return static
      */
     public function setValidator(Validation $validator): static
     {
@@ -165,7 +167,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
      * Set the container implementation.
      *
      * @param ServiceContainer $container
-     * @return $this
+     * @return static
      */
     public function setContainer(ServiceContainer $container): static
     {
@@ -185,7 +187,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
     /**
      * Get the validation rules for this form request.
      *
-     * @return array
+     * @return array<string|null>
      */
     protected function validationRules(): array
     {

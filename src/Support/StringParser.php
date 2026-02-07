@@ -15,10 +15,10 @@ class StringParser
     /**
      * Parse a query string into an associative array, and merge with defaults.
      *
-     * @param string $query    The query string to parse.
-     * @param array  $defaults An array of default values.
-     * @param bool   $strict   If true, skip malformed entries.
-     * @return array
+     * @param string        $query    The query string to parse.
+     * @param array<mixed>  $defaults An array of default values.
+     * @param bool          $strict   If true, skip malformed entries.
+     * @return array<mixed>
      */
     public static function parse(string $query, array $defaults = [], bool $strict = false): array
     {
@@ -49,7 +49,7 @@ class StringParser
     /**
      * Assign a value to an array, handling PHP-style array keys (e.g., foo[]=bar).
      *
-     * @param array  &$target
+     * @param array<mixed>  &$target
      * @param string $key
      * @param mixed  $value
      * @return void

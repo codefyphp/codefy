@@ -30,6 +30,9 @@ final class FenomView implements Renderer
     }
 
     /**
+     * @param array<mixed>|string $template
+     * @param array<mixed> $data
+     * @return array<mixed>
      * @throws CompileException
      */
     public function render(array|string $template, array $data = []): array

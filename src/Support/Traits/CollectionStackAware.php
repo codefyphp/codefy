@@ -12,12 +12,13 @@ use function is_int;
 
 trait CollectionStackAware
 {
+    /** @var array<mixed> $collection */
     protected array $collection = [];
 
     /**
      * Merge the given collection into another collection.
      *
-     * @param array $collection
+     * @param array<mixed> $collection
      * @return static
      */
     public function merge(array $collection): static
@@ -30,7 +31,7 @@ trait CollectionStackAware
     /**
      * Replace the given collection with other collections.
      *
-     * @param  array  $replacements
+     * @param array<mixed> $replacements
      * @return static
      */
     public function replace(array $replacements): static
@@ -49,7 +50,7 @@ trait CollectionStackAware
     /**
      * Disable the given collection.
      *
-     * @param array $collection
+     * @param array<mixed> $collection
      * @return static
      */
     public function except(array $collection): static
@@ -65,7 +66,7 @@ trait CollectionStackAware
     /**
      * Convert the collection to an array.
      *
-     * @return array
+     * @return array<mixed>
      */
     public function toArray(): array
     {

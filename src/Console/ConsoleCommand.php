@@ -8,6 +8,7 @@ use Codefy\Framework\Application;
 use Qubus\Exception\Data\TypeException;
 use ReflectionException;
 use ReflectionMethod;
+use Stringable;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Exception\ExceptionInterface;
@@ -35,9 +36,17 @@ abstract class ConsoleCommand extends SymfonyCommand
     protected string $name = '';
     protected string $description = '';
     protected string $help = '';
-    /* Refers to name, type, description argument. */
+    /**
+     * Refers to name, type, description argument.
+     *
+     * @var array<mixed> $args
+     */
     protected array $args = [];
-    /* Refers to name, shortcut, type, description and default. */
+    /**
+     * Refers to name, shortcut, type, description and default.
+     *
+     * @var array<mixed> $options
+     */
     protected array $options = [];
     protected InputInterface $input;
     protected OutputInterface $output;
@@ -224,7 +233,7 @@ abstract class ConsoleCommand extends SymfonyCommand
 
     /**
      * @param string $question
-     * @param array $choices
+     * @param array<string|bool|int|float|Stringable> $choices
      * @param bool|float|int|string|null $default
      * @param string|null $message
      * @return mixed
@@ -246,7 +255,7 @@ abstract class ConsoleCommand extends SymfonyCommand
 
     /**
      * @param string $question
-     * @param array $choices
+     * @param array<string|bool|int|float|Stringable> $choices
      * @param bool|float|int|string|null $default
      * @param string|null $message
      * @return mixed
@@ -343,7 +352,7 @@ abstract class ConsoleCommand extends SymfonyCommand
      * Call another console command.
      *
      * @param Command|string $command
-     * @param array $arguments
+     * @param array<mixed> $arguments
      * @return int
      * @throws ExceptionInterface
      */
@@ -356,7 +365,7 @@ abstract class ConsoleCommand extends SymfonyCommand
      * Get the value of a command option.
      *
      * @param string|null $key
-     * @return string|array|bool|null
+     * @return string|array<mixed>|bool|null
      */
     public function option(?string $key = null): bool|array|string|null
     {
@@ -370,7 +379,7 @@ abstract class ConsoleCommand extends SymfonyCommand
     /**
      * Get all the options passed to the command.
      *
-     * @return bool|array|string|null
+     * @return bool|array<mixed>|string|null
      */
     public function options(): bool|array|string|null
     {
@@ -381,7 +390,7 @@ abstract class ConsoleCommand extends SymfonyCommand
      * Run the given console command.
      *
      * @param Command|string $command
-     * @param array $arguments
+     * @param array<mixed> $arguments
      * @param OutputInterface $output
      * @return int
      * @throws ExceptionInterface
@@ -399,7 +408,7 @@ abstract class ConsoleCommand extends SymfonyCommand
     /**
      * Create an input instance from the given arguments.
      *
-     * @param array $arguments
+     * @param array<mixed> $arguments
      * @return ArrayInput
      */
     protected function createInputFromArguments(array $arguments): ArrayInput
@@ -413,7 +422,7 @@ abstract class ConsoleCommand extends SymfonyCommand
     /**
      * Get all the context passed to the command.
      *
-     * @return array
+     * @return array<mixed>
      */
     protected function context(): array
     {

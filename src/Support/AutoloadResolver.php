@@ -10,6 +10,9 @@ use function Codefy\Framework\Helpers\base_path;
 
 class AutoloadResolver
 {
+    /**
+     * @return array<mixed>
+     */
     public static function getPsr4Mappings(): array
     {
         $composer = json_decode(

@@ -31,6 +31,7 @@ final class Kernel implements HttpKernel
 {
     public readonly Application $codefy;
     public readonly Router $router;
+    /** @var array<class-string>|string[] */
     protected array $bootstrappers = [
         \Codefy\Framework\Bootstrap\RegisterProviders::class,
         \Codefy\Framework\Bootstrap\BootProviders::class,
@@ -121,7 +122,7 @@ final class Kernel implements HttpKernel
     /**
      * Get the bootstrappers.
      *
-     * @return string[]
+     * @return array<class-string>|string[]
      */
     protected function bootstrappers(): array
     {

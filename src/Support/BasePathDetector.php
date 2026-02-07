@@ -6,6 +6,7 @@ namespace Codefy\Framework\Support;
 
 final class BasePathDetector
 {
+    /** @var array<mixed> $server */
     private array $server;
 
     private string $phpSapi;
@@ -13,8 +14,8 @@ final class BasePathDetector
     /**
      * The constructor.
      *
-     * @param array|null $server The SERVER data to use.
-     * @param string|null $phpSapi The PHP_SAPI value.
+     * @param array<mixed>|null $server  The SERVER data to use.
+     * @param string|null       $phpSapi The PHP_SAPI value.
      */
     public function __construct(?array $server = null, ?string $phpSapi = null)
     {
@@ -40,7 +41,7 @@ final class BasePathDetector
     /**
      * Return basePath for built-in server.
      *
-     * @param array $server The SERVER data to use.
+     * @param array<mixed> $server The SERVER data to use.
      * @return string The base path.
      */
     private function getBasePathByScriptName(array $server): string
@@ -58,7 +59,7 @@ final class BasePathDetector
     /**
      * Return basePath for apache server.
      *
-     * @param array $server The SERVER data to use.
+     * @param array<mixed> $server The SERVER data to use.
      * @return string The base path.
      */
     private function getBasePathByRequestUri(array $server): string

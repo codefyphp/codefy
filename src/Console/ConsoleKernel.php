@@ -35,6 +35,7 @@ class ConsoleKernel implements Kernel
 
     protected ?Schedule $schedule = null;
 
+    /** @var array<class-string> $bootstrappers */
     protected array $bootstrappers = [
         \Codefy\Framework\Bootstrap\RegisterProviders::class,
         \Codefy\Framework\Bootstrap\BootProviders::class,

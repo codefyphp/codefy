@@ -25,6 +25,11 @@ final class FoilView implements Renderer
         $this->engine = engine($this->configContainer->getConfigKey(key: 'view.options'));
     }
 
+    /**
+     * @param array<mixed>|string $template
+     * @param array<mixed> $data
+     * @return string
+     */
     public function render(array|string $template, array $data = []): string
     {
         return $this->engine->render(template: $template, data: $data);

@@ -44,7 +44,7 @@ final class Password
     /**
      * An associative array containing options.
      *
-     * @return array Array of options.
+     * @return array<string, mixed> Array of options.
      * @throws Exception
      */
     private static function options(): array
@@ -58,7 +58,7 @@ final class Password
         /**
          * Filters the password_hash() options parameter.
          *
-         * @param array $options Options to pass to password_hash() function.
+         * @param array<string, mixed> $options Options to pass to password_hash() function.
          */
         return __observer()->filter->applyFilter(
             'password.hash.options',
@@ -106,7 +106,7 @@ final class Password
     /**
      * Get available password hashing algorithm IDs.
      *
-     * @return array
+     * @return array<string>
      */
     public static function algos(): array
     {
@@ -117,7 +117,7 @@ final class Password
      * Returns information about the given hash.
      *
      * @param string $password
-     * @return array
+     * @return array<string, int|string|array>
      */
     public static function getInfo(string $password): array
     {

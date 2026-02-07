@@ -30,7 +30,6 @@ use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Gravatar\Image;
 use Gravatar\Profile;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
 use Qubus\Exception\Http\HttpExceptionFactory;
@@ -266,7 +265,6 @@ function mail(string|array $to, string $subject, string $message, array $headers
  *
  * @param Command $command
  * @throws ReflectionException
- * @throws CommandCouldNotBeHandledException
  * @throws UnresolvableCommandHandlerException
  */
 function command(Command $command): void
@@ -568,8 +566,8 @@ function abort_unless(
 }
 
 /**
- * @param array|string $template
- * @param array $data
+ * @param array<mixed>|string $template
+ * @param array<mixed> $data
  * @return ResponseInterface
  * @throws \Exception
  */
@@ -587,7 +585,7 @@ function view(array|string $template, array $data = []): ResponseInterface
  *
  * @since 3.1
  * @param string|null $permission
- * @param array $ruleParams
+ * @param array<mixed> $ruleParams
  * @return Gate|bool|null
  * @return ($permission is null ? Gate : bool|null)
  */
@@ -625,7 +623,7 @@ function user(): object|bool|null
  *
  * @since 3.1
  * @param string $name Name of the route.
- * @param array $params Data parameters.
+ * @param array<mixed> $params Data parameters.
  * @return string The url.
  * @throws NamedRouteNotFoundException
  * @throws RouteParamFailedConstraintException
@@ -674,6 +672,12 @@ function get_system_roles(): array
     return $userRoles;
 }
 
+/**
+ * @param string|Stringable $level
+ * @param string $message
+ * @param array<mixed> $context
+ * @return void
+ */
 function logger(string|Stringable $level, string $message, array $context = []): void
 {
     try {
@@ -683,6 +687,12 @@ function logger(string|Stringable $level, string $message, array $context = []):
     }
 }
 
+/**
+ * @param string|Stringable $level
+ * @param string $message
+ * @param array<mixed> $context
+ * @return void
+ */
 function smtp_logger(string|Stringable $level, string $message, array $context = []): void
 {
     try {

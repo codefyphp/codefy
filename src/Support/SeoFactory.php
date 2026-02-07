@@ -17,7 +17,7 @@ final class SeoFactory
 {
     /**
      * @param string $type
-     * @param array $data
+     * @param array<mixed> $data
      * @return Thing
      */
     public static function thing(string $type, array $data = []): Thing
@@ -48,7 +48,7 @@ final class SeoFactory
      * Initialize new sitemap builder.
      *
      * @param string $domain
-     * @param array $options
+     * @param array<mixed> $options
      * @return Sitemap
      */
     public static function sitemap(string $domain, array $options = []): Sitemap
@@ -81,7 +81,7 @@ final class SeoFactory
      * Initialize indexer.
      *
      * @param string $host
-     * @param array $keys
+     * @param array<mixed> $keys
      * @return Indexing
      */
     public static function indexing(string $host, array $keys): Indexing

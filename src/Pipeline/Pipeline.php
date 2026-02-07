@@ -35,7 +35,7 @@ final class Pipeline implements Chainable
     /**
      * The array of class pipes.
      *
-     * @var array
+     * @var array<mixed>
      */
     protected array $pipes = [];
 
@@ -166,7 +166,7 @@ final class Pipeline implements Chainable
     /**
      * Set a final callback to be executed after the pipeline ends regardless of the outcome.
      *
-     * @param  Closure  $callback
+     * @param Closure $callback
      * @return self
      */
     public function finally(Closure $callback): self
@@ -274,8 +274,8 @@ final class Pipeline implements Chainable
     /**
      * Parse full pipe string to get name and parameters.
      *
-     * @param  string  $pipe
-     * @return array
+     * @param string $pipe
+     * @return array<mixed>
      */
     protected function parsePipeString(string $pipe): array
     {
@@ -291,7 +291,7 @@ final class Pipeline implements Chainable
     /**
      * Get the array of configured pipes.
      *
-     * @return array
+     * @return array<mixed>
      */
     protected function pipes(): array
     {
@@ -301,7 +301,7 @@ final class Pipeline implements Chainable
     /**
      * Handle the value returned from each pipe before passing it to the next.
      *
-     * @param  mixed  $carry
+     * @param mixed $carry
      * @return mixed
      */
     protected function handleCarry(mixed $carry): mixed

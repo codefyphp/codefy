@@ -22,6 +22,7 @@ use Qubus\Exception\Data\TypeException;
 final class Paths
 {
     //phpcs:disable
+    /** @var array<string, string> $paths */
     private array $paths = [] {
         &get => $this->paths;
     }

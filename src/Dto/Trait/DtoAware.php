@@ -63,7 +63,7 @@ trait DtoAware
     /**
      * Convert DTO object data to array.
      *
-     * @return array
+     * @return array<mixed>
      */
     public function toDtoArray(): array
     {

@@ -36,10 +36,11 @@ class ConsoleApplication extends SymfonyApplication
     }
 
     /**
+     * @param class-string|string $command
      * @throws Exception
      * @throws Throwable
      */
-    public function call($command, array $parameters = [], bool|OutputInterface|null $outputBuffer = null): int
+    public function call(string $command, array $parameters = [], bool|OutputInterface|null $outputBuffer = null): int
     {
         [$command, $input] = $this->parseCommand(command: $command, parameters: $parameters);
 
@@ -57,8 +58,8 @@ class ConsoleApplication extends SymfonyApplication
      * Parse the incoming Codex command and its input.
      *
      * @param string $command
-     * @param array $parameters
-     * @return array
+     * @param array<mixed> $parameters
+     * @return array<mixed>
      */
     protected function parseCommand(string $command, array $parameters): array
     {

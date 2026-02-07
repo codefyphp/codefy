@@ -29,20 +29,25 @@ final class LocalStorage
         return config(key: "filesystem.disks.{$name}") ?? [];
     }
 
+    /**
+     * @param string $name
+     * @param array<string|int|null|array<mixed>> $configArray
+     * @return FileSystem
+     */
     public static function createInstanceOfLocalDriver(string $name, array $configArray): FileSystem
     {
         $visibility = PortableVisibilityConverter::fromArray(
             self::setVisibilityConverterByDiskName(name: $name)
         );
 
-        $links = ($configArray['links'] ?? null) === 'skip'
+        $links = ($configArray['links'] ?: null) === 'skip'
         ? LocalFilesystemAdapter::SKIP_LINKS
         : LocalFilesystemAdapter::DISALLOW_LINKS;
 
         $adapter = new LocalFilesystemAdapter(
             location: $configArray['root'],
             visibility: $visibility,
-            writeFlags: $configArray['lock'] ?? LOCK_EX,
+            writeFlags: $configArray['lock'] ?: LOCK_EX,
             linkHandling: $links
         );
 

@@ -14,6 +14,7 @@ final class PresetRegistry
     }
 
     /**
+     * @return array<array-key, array>
      * @throws Exception
      */
     public function all(): array
@@ -22,6 +23,7 @@ final class PresetRegistry
     }
 
     /**
+     * @return array<array-key, array>
      * @throws Exception
      */
     public function get(string $key): array

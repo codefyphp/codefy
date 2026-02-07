@@ -11,7 +11,7 @@ interface Chainable
     /**
      * Set the object being sent through the pipeline.
      *
-     * @param  mixed  $passable
+     * @param mixed $passable
      * @return self
      */
     public function send(mixed $passable): self;
@@ -19,7 +19,7 @@ interface Chainable
     /**
      * Set the array of pipes.
      *
-     * @param  array|mixed  $pipes
+     * @param mixed $pipes
      * @return self
      */
     public function through(mixed $pipes): self;
@@ -27,7 +27,7 @@ interface Chainable
     /**
      * Set the method to call on the pipes.
      *
-     * @param  string  $method
+     * @param string $method
      * @return self
      */
     public function via(string $method): self;

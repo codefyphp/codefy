@@ -23,6 +23,8 @@ abstract class HttpInputValidator implements DataValidator
 
     /**
      * The filtered input data.
+     *
+     * @var array<mixed> $data
      */
     protected array $data = [];
 
@@ -116,7 +118,7 @@ abstract class HttpInputValidator implements DataValidator
     /**
      * Get custom messages for validator errors.
      *
-     * @return array
+     * @return array<string|null>
      */
     protected function messages(): array
     {
@@ -199,7 +201,7 @@ abstract class HttpInputValidator implements DataValidator
     /**
      * Get the validation rules for this form request.
      *
-     * @return array
+     * @return array<string|null>
      */
     protected function validationRules(): array
     {

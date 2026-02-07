@@ -16,10 +16,10 @@ class ArgsParser
     /**
      * Parse and merge user arguments with defaults.
      *
-     * @param array|object|string $args     Arguments passed in (array, object, or string).
-     * @param array               $defaults Default values to merge.
-     * @param bool                $deep     Whether to deep merge nested arrays.
-     * @return array
+     * @param array<mixed>|object|string $args     Arguments passed in (array, object, or string).
+     * @param array<mixed>               $defaults Default values to merge.
+     * @param bool                       $deep     Whether to deep merge nested arrays.
+     * @return array<mixed>
      */
     public static function parse(array|object|string $args, array $defaults = [], bool $deep = false): array
     {
@@ -35,8 +35,8 @@ class ArgsParser
     /**
      * Convert object or iterable to array.
      *
-     * @param array|object|string $input
-     * @return array
+     * @param array<mixed>|object|string $input
+     * @return array<mixed>
      */
     protected static function toArray(array|object|string $input): array
     {
@@ -54,9 +54,9 @@ class ArgsParser
     /**
      * Deep merge two arrays (preserving numeric keys from args).
      *
-     * @param array $defaults
-     * @param array $args
-     * @return array
+     * @param array<mixed> $defaults
+     * @param array<mixed> $args
+     * @return array<mixed>
      */
     protected static function deepMerge(array $defaults, array $args): array
     {

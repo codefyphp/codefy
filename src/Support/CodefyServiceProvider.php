@@ -15,11 +15,15 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
 
     /**
      * All the registered booting callbacks.
+     *
+     * @var array<Closure>
      */
     protected array $bootingCallbacks = [];
 
     /**
      * All the registered booted callbacks.
+     *
+     * @var array<Closure>
      */
     protected array $bootedCallbacks = [];
 
