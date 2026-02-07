@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Spam;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -50,7 +49,7 @@ class HoneyPotMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Providers;
 
-use Closure;
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Support\CodefyServiceProvider;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Routing\Psr7Router;
 use Qubus\Routing\Route\RouteFileRegistrar;
 use Qubus\Routing\Router;
-use RuntimeException;
 
 use function file_exists;
 use function is_array;
 use function is_callable;
-use function is_string;
 use function pathinfo;
 use function sprintf;
 
@@ -27,12 +24,12 @@ class RoutingServiceProvider extends CodefyServiceProvider
     /**
      * The callback that should be used to load the application's routes.
      */
-    protected ?Closure $loadRoutesUsing = null;
+    protected ?\Closure $loadRoutesUsing = null;
 
     /**
      * The global callback that should be used to load the application's routes.
      */
-    protected static ?Closure $alwaysLoadRoutesUsing = null;
+    protected static ?\Closure $alwaysLoadRoutesUsing = null;
 
     public function register(): void
     {
@@ -42,10 +39,10 @@ class RoutingServiceProvider extends CodefyServiceProvider
     /**
      * Register the callback that will be used to load the application's routes.
      *
-     * @param Closure|callable|string|array|null $routes
+     * @param \Closure|callable|string|array|null $routes
      * @return $this
      */
-    protected function routes(Closure|callable|string|array|null $routes): static
+    protected function routes(\Closure|callable|string|array|null $routes): static
     {
         $this->loadRoutesUsing = $this->normalizeRoutes($routes);
 
@@ -55,10 +52,10 @@ class RoutingServiceProvider extends CodefyServiceProvider
     /**
      * Register the callback that will be used to load the application's routes.
      *
-     * @param Closure|callable|string|array|null $routes
+     * @param \Closure|callable|string|array|null $routes
      * @return void
      */
-    public static function loadRoutesUsing(Closure|callable|string|array|null $routes): void
+    public static function loadRoutesUsing(\Closure|callable|string|array|null $routes): void
     {
         static::$alwaysLoadRoutesUsing = $routes !== null
         ? static::normalizeRoutes($routes)
@@ -82,7 +79,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
         }
     }
 
-    protected static function normalizeRoutes(Closure|callable|string|array $routes): Closure
+    protected static function normalizeRoutes(\Closure|callable|string|array $routes): \Closure
     {
         return function (Router $router) use ($routes): void {
             // Handle arrays recursively
@@ -95,7 +92,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
             }
 
             // Handle closures and callables
-            if ($routes instanceof Closure || is_callable($routes)) {
+            if ($routes instanceof \Closure || is_callable($routes)) {
                 $routes($router);
                 return;
             }
@@ -120,7 +117,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
                 return;
             }
 
-            throw new RuntimeException(sprintf("Unsupported routes definition: %s", get_debug_type($routes)));
+            throw new \RuntimeException(sprintf("Unsupported routes definition: %s", get_debug_type($routes)));
         };
     }
 

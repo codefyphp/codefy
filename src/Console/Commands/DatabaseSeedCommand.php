@@ -8,7 +8,6 @@ use Codefy\Framework\Console\ConsoleCommand;
 use Qubus\Expressive\Migration\Seeder\SeederContext;
 use Qubus\Expressive\Migration\Seeder\SeederTransaction;
 use Symfony\Component\Console\Input\InputOption;
-use Throwable;
 
 final class DatabaseSeedCommand extends ConsoleCommand
 {
@@ -101,7 +100,7 @@ EOT
             $this->terminalInfo(string: 'Database seeding completed successfully.');
             return self::SUCCESS;
 
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->terminalError(string: 'Database seeding failed.');
             $this->terminalError($e->getMessage());
 

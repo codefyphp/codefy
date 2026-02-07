@@ -8,7 +8,6 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
-use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 
 use function getcwd;
@@ -103,7 +102,7 @@ EOT
             }
 
             if (false === file_exists(filename: $migrationsTemplatePath)) {
-                throw new RuntimeException(
+                throw new \RuntimeException(
                     message: sprintf(
                         'The template file "%s" not found',
                         $migrationsTemplatePath

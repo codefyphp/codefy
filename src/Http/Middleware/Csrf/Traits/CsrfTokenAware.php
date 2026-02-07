@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Csrf\Traits;
 
-use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
-use Defuse\Crypto\Key;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Data\TypeException;
@@ -40,7 +37,7 @@ trait CsrfTokenAware
      * @return string
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
-     * @throws Exception
+     * @throws \Exception
      * @throws WrongKeyOrModifiedCiphertextException
      */
     protected function prepareToken(ServerRequestInterface $request): string
@@ -67,7 +64,7 @@ trait CsrfTokenAware
      * @return string|null
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
-     * @throws Exception
+     * @throws \Exception
      * @throws WrongKeyOrModifiedCiphertextException
      */
     private function getTokenFromCookie(array $cookies): ?string
@@ -88,7 +85,7 @@ trait CsrfTokenAware
      * @return ResponseInterface
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
-     * @throws Exception
+     * @throws \Exception
      * @throws TypeException
      */
     private function createCookie(ResponseInterface $response, string $token): ResponseInterface

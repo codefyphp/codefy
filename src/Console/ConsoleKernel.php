@@ -11,7 +11,6 @@ use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Scheduler\Mutex\Locker;
 use Codefy\Framework\Scheduler\Schedule;
 use Codefy\Framework\Support\DefaultCommands;
-use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Support\DateTime\QubusDateTimeZone;
 use Symfony\Component\Console\Command\Command;
@@ -19,7 +18,6 @@ use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
 
 use function array_unique;
 use function Qubus\Inheritance\Helpers\tap;
@@ -75,7 +73,7 @@ class ConsoleKernel implements Kernel
 
     /**
      * {@inheritDoc}
-     * @throws Exception
+     * @throws \Exception
      */
     public function handle(InputInterface $input, ?OutputInterface $output = null): int
     {
@@ -83,7 +81,7 @@ class ConsoleKernel implements Kernel
             $this->bootstrap();
 
             return $this->getCodex()->run(input: $input, output: $output);
-        } catch (Throwable $ex) {
+        } catch (\Throwable $ex) {
             FileLoggerSmtpFactory::critical(message: $ex->getMessage(), context: [self::class => 'handle()']);
             return 1;
         }
@@ -199,8 +197,8 @@ class ConsoleKernel implements Kernel
      * {@inheritDoc}
      *
      * @throws CommandNotFoundException
-     * @throws Exception
-     * @throws Throwable
+     * @throws \Exception
+     * @throws \Throwable
      */
     public function call(string $command, array $parameters = [], bool|OutputInterface|null $outputBuffer = null): int
     {

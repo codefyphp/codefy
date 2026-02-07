@@ -10,7 +10,6 @@ use Codefy\Framework\Scheduler\Processor\Callback;
 use Codefy\Framework\Scheduler\Processor\Processor;
 use Codefy\Framework\Scheduler\Schedule;
 use Cron\CronExpression;
-use Exception;
 use Symfony\Component\Console\Helper\Table;
 
 class ScheduleListCommand extends ConsoleCommand
@@ -30,7 +29,7 @@ EOT;
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function handle(): int
     {

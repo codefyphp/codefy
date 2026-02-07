@@ -9,7 +9,6 @@ use Codefy\Framework\Traits\TokenEncryptionAware;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -36,7 +35,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
 
     /**
      * @throws TypeException
-     * @throws Exception
+     * @throws \Exception
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
      */
@@ -51,7 +50,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
     /**
      * The cookie expiry.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     protected function cookieTtl(ServerRequestInterface $request): int
     {
@@ -67,7 +66,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
      * The cookie name.
      *
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     protected function cookieName(): string
     {
@@ -92,7 +91,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
      * @param ResponseInterface $response
      * @param string $token
      * @return ResponseInterface
-     * @throws Exception
+     * @throws \Exception
      * @throws TypeException
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
@@ -127,7 +126,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function isNew(ServerRequestInterface $request): bool
     {
@@ -150,7 +149,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
      * @return string|null
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
-     * @throws Exception
+     * @throws \Exception
      * @throws WrongKeyOrModifiedCiphertextException
      */
     private function getTokenFromCookie(array $cookies): ?string
@@ -162,7 +161,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function tokensMatch(ServerRequestInterface $request): bool
     {
@@ -174,7 +173,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
 
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function fetchToken(ServerRequestInterface $request): string
     {

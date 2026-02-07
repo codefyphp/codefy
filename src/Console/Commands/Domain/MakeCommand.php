@@ -9,10 +9,6 @@ use Codefy\Framework\Console\ClassGenerator;
 use Codefy\Framework\Console\ConsoleCommand;
 use Codefy\Framework\Console\PresetRegistry;
 use Codefy\Framework\Support\AutoloadResolver;
-use Exception;
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 class MakeCommand extends ConsoleCommand
 {
@@ -28,7 +24,7 @@ class MakeCommand extends ConsoleCommand
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function handle(): int
     {
@@ -110,9 +106,9 @@ class MakeCommand extends ConsoleCommand
     {
         $dirs = [];
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
         );
 
         foreach ($iterator as $item) {
@@ -159,5 +155,4 @@ class MakeCommand extends ConsoleCommand
 
         return $base . '\\' . $dir;
     }
-
 }

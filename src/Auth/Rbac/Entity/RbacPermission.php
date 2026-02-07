@@ -6,8 +6,6 @@ namespace Codefy\Framework\Auth\Rbac\Entity;
 
 use Codefy\Framework\Auth\Rbac\Exception\SentinelException;
 use Codefy\Framework\Auth\Rbac\Resource\StorageResource;
-use Override;
-use Throwable;
 
 use function array_keys;
 use function sprintf;
@@ -38,7 +36,7 @@ class RbacPermission implements Permission
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function addChild(Permission $permission): void
     {
         $this->childrenNames[$permission->name] = true;
@@ -47,7 +45,7 @@ class RbacPermission implements Permission
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function removeChild(string $permissionName): void
     {
         unset($this->childrenNames[$permissionName]);
@@ -56,7 +54,7 @@ class RbacPermission implements Permission
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function getChildren(): array
     {
         $result = [];
@@ -70,7 +68,7 @@ class RbacPermission implements Permission
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function setRuleClass(string $ruleClass): void
     {
         $this->ruleClass = $ruleClass;
@@ -79,7 +77,7 @@ class RbacPermission implements Permission
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function getRuleClass(): ?string
     {
         return $this->ruleClass;
@@ -89,7 +87,7 @@ class RbacPermission implements Permission
      * @inheritDoc
      * @throws SentinelException
      */
-    #[Override]
+    #[\Override]
     public function checkAccess(?array $params = null): bool
     {
         $result = true;
@@ -107,7 +105,7 @@ class RbacPermission implements Permission
                 }
 
                 $result = $rule->execute(params: $params);
-            } catch (Throwable $e) {
+            } catch (\Throwable $e) {
                 throw new SentinelException(sprintf('Cannot instantiate rule class: %s.', $ruleClass));
             }
         }

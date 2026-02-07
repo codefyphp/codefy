@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Dto\Attribute;
 
-use Attribute;
-
-#[Attribute(Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_CLASS)]
 final readonly class UseDto
 {
     /**

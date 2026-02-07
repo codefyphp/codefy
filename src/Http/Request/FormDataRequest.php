@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Request;
 
-use Exception;
-
 abstract class FormDataRequest extends FormRequest
 {
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function passedValidation(): void
     {

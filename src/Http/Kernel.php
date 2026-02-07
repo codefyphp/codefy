@@ -6,19 +6,17 @@ namespace Codefy\Framework\Http;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Contracts\Http\Kernel as HttpKernel;
-use Exception;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Error\Handlers\DebugErrorHandler;
 use Qubus\Error\Handlers\ErrorHandler;
 use Qubus\Error\Handlers\ProductionErrorHandler;
+use Qubus\Exception\Exception;
 use Qubus\Http\Emitter\SapiEmitter;
 use Qubus\Http\ServerRequestFactory;
 use Qubus\Routing\Router;
 
-use function Codefy\Framework\Helpers\public_path;
-use function Codefy\Framework\Helpers\router_basepath;
 use function Qubus\Config\Helpers\env;
 use function Qubus\Security\Helpers\__observer;
 use function Qubus\Support\Helpers\is_null__;
@@ -38,7 +36,7 @@ final class Kernel implements HttpKernel
     ];
 
     /**
-     * @throws \Qubus\Exception\Exception
+     * @throws Exception
      */
     public function __construct(Application $codefy, Router $router)
     {
@@ -54,7 +52,7 @@ final class Kernel implements HttpKernel
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function dispatchRouter(?ServerRequestInterface $request = null): void
     {
@@ -74,7 +72,7 @@ final class Kernel implements HttpKernel
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -90,7 +88,7 @@ final class Kernel implements HttpKernel
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function boot(?ServerRequestInterface $request = null): void
     {
@@ -130,7 +128,7 @@ final class Kernel implements HttpKernel
     }
 
     /**
-     * @throws \Qubus\Exception\Exception
+     * @throws Exception
      */
     protected function registerErrorHandler(): ErrorHandler
     {

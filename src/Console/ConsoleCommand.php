@@ -6,9 +6,6 @@ namespace Codefy\Framework\Console;
 
 use Codefy\Framework\Application;
 use Qubus\Exception\Data\TypeException;
-use ReflectionException;
-use ReflectionMethod;
-use Stringable;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Exception\ExceptionInterface;
@@ -74,7 +71,8 @@ abstract class ConsoleCommand extends SymfonyCommand
     }
 
     /**
-     * @throws ReflectionException|TypeException
+     * @throws \ReflectionException
+     * @throws TypeException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -85,7 +83,7 @@ abstract class ConsoleCommand extends SymfonyCommand
 
         $classParameters = [];
 
-        $parameters = new ReflectionMethod(objectOrMethod: $this, method: $method);
+        $parameters = new \ReflectionMethod(objectOrMethod: $this, method: $method);
 
         foreach ($parameters->getParameters() as $arg) {
             $classParameters[] = $this->codefy->make(name: $arg->getName());
@@ -233,7 +231,7 @@ abstract class ConsoleCommand extends SymfonyCommand
 
     /**
      * @param string $question
-     * @param array<string|bool|int|float|Stringable> $choices
+     * @param array<string|bool|int|float|\Stringable> $choices
      * @param bool|float|int|string|null $default
      * @param string|null $message
      * @return mixed
@@ -255,7 +253,7 @@ abstract class ConsoleCommand extends SymfonyCommand
 
     /**
      * @param string $question
-     * @param array<string|bool|int|float|Stringable> $choices
+     * @param array<string|bool|int|float|\Stringable> $choices
      * @param bool|float|int|string|null $default
      * @param string|null $message
      * @return mixed

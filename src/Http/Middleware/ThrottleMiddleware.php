@@ -7,7 +7,6 @@ namespace Codefy\Framework\Http\Middleware;
 use Codefy\Framework\Http\Throttle\Condition;
 use Codefy\Framework\Http\Throttle\RateException;
 use Codefy\Framework\Http\Throttle\RateLimiter;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -25,7 +24,7 @@ class ThrottleMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

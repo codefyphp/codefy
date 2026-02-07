@@ -6,7 +6,6 @@ namespace Codefy\Framework\Http\Middleware\Auth;
 
 use Codefy\Framework\Auth\Gate;
 use Codefy\Framework\Proxy\Codefy;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -42,7 +41,7 @@ final class GateMiddleware implements MiddlewareInterface
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

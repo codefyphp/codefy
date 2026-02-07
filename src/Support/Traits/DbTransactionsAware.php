@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Support\Traits;
 
 use Codefy\Framework\Proxy\Codefy;
-use Qubus\Exception\Exception;
 
 trait DbTransactionsAware
 {

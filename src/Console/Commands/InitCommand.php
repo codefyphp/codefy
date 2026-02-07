@@ -6,7 +6,6 @@ namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
-use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InitCommand extends PhpMigCommand
@@ -55,7 +54,7 @@ EOT
         }
 
         if (false === mkdir($migrations)) {
-            throw new RuntimeException(message: sprintf('Could not create directory "%s".', $migrations));
+            throw new \RuntimeException(message: sprintf('Could not create directory "%s".', $migrations));
         }
 
         $output->writeln(
@@ -85,7 +84,7 @@ EOT
         }
 
         if (!is_writable(filename: dirname(path: $bootstrap))) {
-            throw new RuntimeException(message: sprintf('The file "%s" is not writeable.', $bootstrap));
+            throw new \RuntimeException(message: sprintf('The file "%s" is not writeable.', $bootstrap));
         }
 
         $contents = <<<PHP
@@ -105,7 +104,7 @@ return \$objectmap;
 PHP;
 
         if (false === file_put_contents(filename: $bootstrap, data: $contents)) {
-            throw new RuntimeException(message: sprintf('The file "%s" could not be written to.', $bootstrap));
+            throw new \RuntimeException(message: sprintf('The file "%s" could not be written to.', $bootstrap));
         }
 
         $output->writeln(

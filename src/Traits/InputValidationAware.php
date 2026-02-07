@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Traits;
 
 use Codefy\Framework\Auth\Rbac\Exception\UnauthorizedException;
-use Exception;
-use JsonException;
 use Qubus\Validation\Validation;
 use Qubus\Validation\ValidationException;
 
@@ -22,7 +20,7 @@ trait InputValidationAware
      *
      * @return void
      * @throws UnauthorizedException
-     * @throws Exception
+     * @throws \Exception
      */
     public function validateResolved(): void
     {
@@ -56,7 +54,7 @@ trait InputValidationAware
      * Get the validator instance for the request.
      *
      * @return Validation
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getValidatorInstance(): Validation
     {
@@ -91,7 +89,7 @@ trait InputValidationAware
      * Handle a failed validation attempt.
      *
      * @throws ValidationException
-     * @throws JsonException
+     * @throws \JsonException
      */
     protected function failedValidation(?string $message = null, int $code = 422): void
     {

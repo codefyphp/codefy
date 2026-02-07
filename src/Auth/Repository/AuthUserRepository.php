@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Auth\Repository;
 
 use Qubus\Http\Session\SessionEntity;
-use SensitiveParameter;
-use stdClass;
 
 interface AuthUserRepository
 {
@@ -19,7 +17,7 @@ interface AuthUserRepository
      * @param string|null $password
      * @return SessionEntity|null
      */
-    public function authenticate(string $credential, #[SensitiveParameter] ?string $password = null): ?SessionEntity;
+    public function authenticate(string $credential, #[\SensitiveParameter] ?string $password = null): ?SessionEntity;
 
     /**
      * Find a user by their token.

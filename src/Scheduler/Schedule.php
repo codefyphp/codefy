@@ -9,12 +9,9 @@ use Codefy\Framework\Scheduler\Processor\Callback;
 use Codefy\Framework\Scheduler\Processor\Processor;
 use Codefy\Framework\Scheduler\Processor\Shell;
 use Codefy\Framework\Scheduler\Traits\LiteralAware;
-use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Support\DateTime\QubusDateTimeZone;
-use ReflectionClass;
-use ReflectionException;
 
 use function array_filter;
 use function count;
@@ -116,12 +113,12 @@ class Schedule
 
     /**
      * @param class-string $task
-     * @throws ReflectionException
-     * @throws Exception
+     * @throws \ReflectionException
+     * @throws \Exception
      */
     public function task(string $task, array $options = []): Task
     {
-        $instance = new ReflectionClass($task);
+        $instance = new \ReflectionClass($task);
         /** @var Task $task */
         $task = $instance->newInstanceArgs([$this->mutex, '', [], $this->timeZone]);
         $task

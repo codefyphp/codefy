@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Pipeline;
 
-use Closure;
-
 interface Chainable
 {
     /**
@@ -35,10 +33,10 @@ interface Chainable
     /**
      * Run the pipeline with a final destination callback.
      *
-     * @param Closure $destination
+     * @param \Closure $destination
      * @return mixed
      */
-    public function then(Closure $destination): mixed;
+    public function then(\Closure $destination): mixed;
 
     /**
      * Run the pipeline and return the result.

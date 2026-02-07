@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Console\ConsoleCommand;
-use Exception;
 use Symfony\Component\Console\Helper\Table;
 
 use function implode;
@@ -19,7 +18,7 @@ class RouteListCommand extends ConsoleCommand
     protected string $help = 'This command displays the list of registered routes.';
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function handle(): int
     {

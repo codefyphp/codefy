@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Exception\Trait;
 
 use Codefy\Framework\View\ErrorViewRenderer;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Http\Client\NotFoundException;
@@ -13,7 +12,6 @@ use Qubus\Exception\Http\HttpException;
 use Qubus\Exception\Http\Psr7Exception;
 use Qubus\Http\Factories\JsonResponseFactory;
 use Qubus\Http\Factories\RedirectResponseFactory;
-use Throwable;
 
 use function Qubus\Security\Helpers\esc_html;
 
@@ -23,9 +21,9 @@ trait HttpExceptionRenderAware
 
     /**
      * @throws NotFoundException
-     * @throws Exception
+     * @throws \Exception
      */
-    protected function renderErrorView(Throwable $t): ResponseInterface
+    protected function renderErrorView(\Throwable $t): ResponseInterface
     {
         $statusCode = $this->normalizeStatusCode((int) $t->getCode());
         $html = $this->errorView->render($statusCode);
@@ -34,7 +32,7 @@ trait HttpExceptionRenderAware
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function redirectWithHttpError(
         ServerRequestInterface $request,
@@ -48,7 +46,7 @@ trait HttpExceptionRenderAware
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function jsonHttpErrorResponse(Psr7Exception $e): ResponseInterface
     {
@@ -70,9 +68,9 @@ trait HttpExceptionRenderAware
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
-    protected function jsonInternalErrorResponse(Throwable $t): ResponseInterface
+    protected function jsonInternalErrorResponse(\Throwable $t): ResponseInterface
     {
         $status = $this->normalizeStatusCode($t->getCode());
 

@@ -9,7 +9,6 @@ use Codefy\Framework\Console\ConsoleCommand;
 use Codefy\Framework\Console\Exceptions\MakeCommandFileAlreadyExistsException;
 use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;
-use RuntimeException;
 
 /**
  * @deprecated since 3.1, will be removed in version 4.
@@ -38,7 +37,7 @@ class MakeCommand extends ConsoleCommand
 
     protected string $help = 'Command which can generate a class file from a set of predefined stub files';
 
-    /* @var array Stubs */
+    /* @var array<string> Stubs */
     private const array STUBS = [
         'controller'    => 'App\Infrastructure\Http\Controllers',
         'repository'    => 'App\Infrastructure\Persistence\Repository',
@@ -76,7 +75,7 @@ class MakeCommand extends ConsoleCommand
             $this->resolveResource(resource: $stub, options: $option);
             $this->terminalQuestion(string: 'Your file was created successfully.');
             return self::SUCCESS;
-        } catch (MakeCommandFileAlreadyExistsException | TypeException | RuntimeException | FilesystemException $e) {
+        } catch (MakeCommandFileAlreadyExistsException | TypeException | \RuntimeException | FilesystemException $e) {
             $this->terminalError(string: sprintf('%s', $e->getMessage()));
             return self::FAILURE;
         }

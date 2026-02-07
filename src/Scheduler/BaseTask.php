@@ -7,13 +7,10 @@ namespace Codefy\Framework\Scheduler;
 use Codefy\Framework\Scheduler\Event\TaskCompleted;
 use Codefy\Framework\Scheduler\Event\TaskFailed;
 use Codefy\Framework\Scheduler\Event\TaskStarted;
-use Codefy\Framework\Scheduler\Expressions\Expressional;
 use Codefy\Framework\Scheduler\Processor\BaseProcessor;
 use Codefy\Framework\Scheduler\Traits\MailerAware;
 use Codefy\Framework\Scheduler\ValueObject\TaskId;
-use Closure;
 use Cron\CronExpression;
-use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Exception\Data\TypeException;
 
@@ -35,10 +32,10 @@ abstract class BaseTask extends BaseProcessor implements Task
 
     protected string|null $timeZone = null;
 
-    /** @var callable[]|Closure[] $filters */
+    /** @var callable[]|\Closure[] $filters */
     protected array $filters = [];
 
-    /** @var callable[]|Closure[] $rejects */
+    /** @var callable[]|\Closure[] $rejects */
     protected array $rejects = [];
 
     protected ?Schedule $schedule = null;
@@ -215,7 +212,7 @@ abstract class BaseTask extends BaseProcessor implements Task
             $this->execute($this->schedule);
             // Run code after executing task.
             $this->tearDown();
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $this->dispatcher->dispatch(event: new TaskFailed($this));
             $this->sendEmail($ex);
         }

@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Scheduler\Processor;
 
-use Stringable;
-
 use function is_string;
 
-class Callback extends BaseProcessor implements Stringable, Processor
+class Callback extends BaseProcessor implements \Stringable, Processor
 {
     public function run(): string|false
     {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Console\Commands;
 
-use Codefy\Framework\Console\ConsoleCommand;
 use Qubus\Exception\Exception;
 use Symfony\Component\Console\Input\InputArgument;
 

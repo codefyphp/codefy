@@ -6,7 +6,6 @@ namespace Codefy\Framework\Validation;
 
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Traits\InputValidationAware;
-use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Injector\ServiceContainer;
 use Qubus\Support\DataType;
@@ -128,7 +127,7 @@ abstract class HttpInputValidator implements DataValidator
     /**
      * Get the validator instance for the request.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     protected function makeValidator(): Validation
     {
@@ -151,7 +150,7 @@ abstract class HttpInputValidator implements DataValidator
      *
      * @param ValidationFactory $factory
      * @return Validation
-     * @throws Exception
+     * @throws \Exception
      */
     protected function createDefaultValidator(ValidationFactory $factory): Validation
     {

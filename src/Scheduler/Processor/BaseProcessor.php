@@ -7,8 +7,6 @@ namespace Codefy\Framework\Scheduler\Processor;
 use Codefy\Framework\Scheduler\Mutex\Locker;
 use Codefy\Framework\Scheduler\Traits\ExpressionAware;
 use Cron\CronExpression;
-use DateTimeZone;
-use Exception;
 
 use function escapeshellarg;
 use function is_callable;
@@ -34,7 +32,7 @@ abstract class BaseProcessor implements Processor
 
     protected string $description;
 
-    protected DateTimeZone|string $timezone;
+    protected \DateTimeZone|string $timezone;
 
     /** @var array $args */
     protected array $args = [];
@@ -61,7 +59,7 @@ abstract class BaseProcessor implements Processor
         Locker $mutex,
         callable|string $command,
         ?array $args = null,
-        DateTimeZone|string|null $timezone = null
+        \DateTimeZone|string|null $timezone = null
     ) {
         $this->mutex = $mutex;
         $this->command = $command;
@@ -261,9 +259,9 @@ abstract class BaseProcessor implements Processor
 
     /**
      * @inheritDoc
-     * @throws Exception
+     * @throws \Exception
      */
-    public function isDue(string|DateTimeZone|null $timeZone = null): bool
+    public function isDue(string|\DateTimeZone|null $timeZone = null): bool
     {
         return $this->expressionPasses($timeZone) && $this->filtersPass();
     }

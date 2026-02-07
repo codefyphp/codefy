@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Request;
 
-use Exception;
-use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -27,7 +25,7 @@ abstract class FormRequest implements FormRequestMiddleware
 
     /**
      * @inheritDoc
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -45,7 +43,7 @@ abstract class FormRequest implements FormRequestMiddleware
 
     /**
      * @inheritdoc
-     * @throws Exception
+     * @throws \Exception
      */
     public function fails(ServerRequestInterface $request): bool
     {
@@ -59,7 +57,7 @@ abstract class FormRequest implements FormRequestMiddleware
     public function errors(): array
     {
         if ($this->validator === null) {
-            throw new LogicException(
+            throw new \LogicException(
                 'Execute \Codefy\Framework\Http\Middleware\Request\FormRequest::fails() method before getting errors.'
             );
         }
@@ -76,8 +74,9 @@ abstract class FormRequest implements FormRequestMiddleware
     }
 
     /**
-     * validation rules
-     * @return array
+     * Validation rules.
+     *
+     * @return array<string>
      */
     protected function rules(): array
     {
@@ -85,8 +84,9 @@ abstract class FormRequest implements FormRequestMiddleware
     }
 
     /**
-     * validation messages
-     * @return array
+     * Validation messages.
+     *
+     * @return array<string>
      */
     protected function messages(): array
     {
@@ -96,7 +96,7 @@ abstract class FormRequest implements FormRequestMiddleware
     /**
      * @param ServerRequestInterface $request
      * @return Validation
-     * @throws Exception
+     * @throws \Exception
      */
     private function makeValidator(ServerRequestInterface $request): Validation
     {

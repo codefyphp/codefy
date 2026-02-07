@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Scheduler\Processor;
 
-use DateTimeZone;
-
 interface Processor
 {
     /**
@@ -40,7 +38,7 @@ interface Processor
     /**
      * Determine if the given command should run based on the Cron expression.
      */
-    public function isDue(string|DateTimeZone|null $timeZone = null): bool;
+    public function isDue(string|\DateTimeZone|null $timeZone = null): bool;
 
     public function run(): mixed;
 

@@ -9,7 +9,6 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\NoSql\Exceptions\InvalidJsonException;
 use Qubus\NoSql\Node;
 use Qubus\Support\Serializer\JsonSerializer;
-use ReflectionException;
 use Symfony\Component\Console\Input\InputOption;
 
 use function Codefy\Framework\Helpers\database_path;
@@ -51,7 +50,7 @@ EOT;
                 $object = new JsonSerializer()->unserialize($queue['object']);
                 queue($object)->dispatch();
             }
-        } catch (InvalidJsonException | ReflectionException | TypeException $e) {
+        } catch (InvalidJsonException | \ReflectionException | TypeException $e) {
             return ConsoleCommand::FAILURE;
         }
 

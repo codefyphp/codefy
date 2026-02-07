@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Pipeline;
 
-use Closure;
 use Codefy\Framework\Support\Traits\DbTransactionsAware;
-use Exception;
 use Qubus\EventDispatcher\ActionFilter\Traits\ActionAware;
 use Qubus\Inheritance\ConditionalAware;
 use Qubus\Injector\ServiceContainer;
-use Throwable;
 
 final class Pipeline implements Chainable
 {
@@ -28,9 +25,9 @@ final class Pipeline implements Chainable
     /**
      * The callback to be executed on failure pipeline.
      *
-     * @var Closure|null
+     * @var \Closure|null
      */
-    protected ?Closure $onFailure = null;
+    protected ?\Closure $onFailure = null;
 
     /**
      * The array of class pipes.
@@ -49,9 +46,9 @@ final class Pipeline implements Chainable
     /**
      * The final callback to be executed after the pipeline ends regardless of the outcome.
      *
-     * @var Closure|null
+     * @var \Closure|null
      */
-    protected ?Closure $finally = null;
+    protected ?\Closure $finally = null;
 
     public function __construct(protected ServiceContainer $container)
     {
@@ -103,10 +100,10 @@ final class Pipeline implements Chainable
 
     /**
      * @inheritDoc
-     * @throws Exception
-     * @throws Throwable
+     * @throws \Exception
+     * @throws \Throwable
      */
-    public function then(Closure $destination): mixed
+    public function then(\Closure $destination): mixed
     {
         try {
             $this->doAction(
@@ -139,7 +136,7 @@ final class Pipeline implements Chainable
             );
 
             return $result;
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->rollbackTransaction();
 
             if ($this->onFailure) {
@@ -156,7 +153,7 @@ final class Pipeline implements Chainable
 
     /**
      * @inheritDoc
-     * @throws Throwable
+     * @throws \Throwable
      */
     public function thenReturn(): mixed
     {
@@ -166,10 +163,10 @@ final class Pipeline implements Chainable
     /**
      * Set a final callback to be executed after the pipeline ends regardless of the outcome.
      *
-     * @param Closure $callback
+     * @param \Closure $callback
      * @return self
      */
-    public function finally(Closure $callback): self
+    public function finally(\Closure $callback): self
     {
         $this->finally = $callback;
 
@@ -179,10 +176,10 @@ final class Pipeline implements Chainable
     /**
      * Get the final piece of the Closure onion.
      *
-     * @param Closure $destination
-     * @return Closure
+     * @param \Closure $destination
+     * @return \Closure
      */
-    protected function prepareDestination(Closure $destination): Closure
+    protected function prepareDestination(\Closure $destination): \Closure
     {
         return function ($passable) use ($destination) {
             return $destination($passable);
@@ -192,9 +189,9 @@ final class Pipeline implements Chainable
     /**
      * Get a Closure that represents a slice of the application onion.
      *
-     * @return Closure
+     * @return \Closure
      */
-    protected function carry(): Closure
+    protected function carry(): \Closure
     {
         return function ($stack, $pipe) {
             return function ($passable) use ($stack, $pipe) {
@@ -250,10 +247,10 @@ final class Pipeline implements Chainable
     /**
      * Set callback to be executed on failure pipeline.
      *
-     * @param Closure $callback
+     * @param \Closure $callback
      * @return self
      */
-    public function onFailure(Closure $callback): self
+    public function onFailure(\Closure $callback): self
     {
         $this->onFailure = $callback;
 
@@ -313,12 +310,11 @@ final class Pipeline implements Chainable
      * Handle the given exception.
      *
      * @param mixed $passable
-     * @param Throwable $e
+     * @param \Throwable $e
      * @return mixed
-     *
-     * @throws Throwable
+     * @throws \Throwable
      */
-    protected function handleException(mixed $passable, Throwable $e): mixed
+    protected function handleException(mixed $passable, \Throwable $e): mixed
     {
         throw $e;
     }

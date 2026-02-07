@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Auth;
 
-use Exception;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,7 +28,7 @@ class UserAuthorizationMiddleware implements MiddlewareInterface
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -43,7 +42,7 @@ class UserAuthorizationMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function isLoggedIn(ServerRequestInterface $request): bool
     {

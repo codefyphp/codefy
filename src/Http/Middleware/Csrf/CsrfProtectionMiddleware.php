@@ -7,7 +7,6 @@ namespace Codefy\Framework\Http\Middleware\Csrf;
 use Codefy\Framework\Http\Middleware\Csrf\Traits\CsrfTokenAware;
 use Codefy\Framework\Support\RequestMethod;
 use Codefy\Framework\Traits\TokenEncryptionAware;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -31,7 +30,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
     /**
      * @inheritDoc
      * @throws TokenMismatchException
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -58,7 +57,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function tokensMatch(ServerRequestInterface $request): bool
     {
@@ -70,7 +69,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
 
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function fetchToken(ServerRequestInterface $request): string
     {
@@ -89,7 +88,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function getTokenFromRequest(ServerRequestInterface $request): string
     {

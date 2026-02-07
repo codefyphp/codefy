@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Support;
 
-use Closure;
 use Codefy\Framework\Application;
 use Qubus\Inheritance\ForwardCallAware;
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
@@ -16,14 +15,14 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     /**
      * All the registered booting callbacks.
      *
-     * @var array<Closure>
+     * @var array<\Closure>
      */
     protected array $bootingCallbacks = [];
 
     /**
      * All the registered booted callbacks.
      *
-     * @var array<Closure>
+     * @var array<\Closure>
      */
     protected array $bootedCallbacks = [];
 
@@ -41,10 +40,10 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     /**
      * Register a booting callback to be run before the "boot" method is called.
      *
-     * @param Closure $callback
+     * @param \Closure $callback
      * @return void
      */
-    public function booting(Closure $callback): void
+    public function booting(\Closure $callback): void
     {
         $this->bootingCallbacks[] = $callback;
     }
@@ -52,10 +51,10 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     /**
      * Register a booted callback to be run after the "boot" method is called.
      *
-     * @param Closure $callback
+     * @param \Closure $callback
      * @return void
      */
-    public function booted(Closure $callback): void
+    public function booted(\Closure $callback): void
     {
         $this->bootedCallbacks[] = $callback;
     }

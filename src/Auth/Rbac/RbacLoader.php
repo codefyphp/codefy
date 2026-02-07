@@ -9,7 +9,6 @@ use Codefy\Framework\Auth\Rbac\Entity\Role;
 use Codefy\Framework\Auth\Rbac\Exception\SentinelException;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
-use RuntimeException;
 
 use function Qubus\Support\Helpers\is_null__;
 use function sprintf;
@@ -51,7 +50,7 @@ final readonly class RbacLoader
                     if ($permission = $this->rbac->getPermission(name: $permissionName)) {
                         $role->addPermission($permission);
                     } else {
-                        throw new RuntimeException(message: sprintf('Permission not found: %s', $permissionName));
+                        throw new \RuntimeException(message: sprintf('Permission not found: %s', $permissionName));
                     }
                 }
             }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Auth;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -25,7 +24,7 @@ class ExpireUserSessionMiddleware implements MiddlewareInterface
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

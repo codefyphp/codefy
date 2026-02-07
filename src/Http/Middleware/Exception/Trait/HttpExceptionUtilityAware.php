@@ -6,11 +6,8 @@ namespace Codefy\Framework\Http\Middleware\Exception\Trait;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Error\Handlers\Psr3ErrorHandler;
-use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Http\Status;
-use ReflectionException;
-use Throwable;
 
 trait HttpExceptionUtilityAware
 {
@@ -50,10 +47,9 @@ trait HttpExceptionUtilityAware
     }
 
     /**
-     * @throws ReflectionException
-     * @throws TypeException
+     * @throws \ReflectionException
      */
-    protected function logException(Throwable $t): void
+    protected function logException(\Throwable $t): void
     {
         new Psr3ErrorHandler($this->app->getLogger())
             ->handle($t);

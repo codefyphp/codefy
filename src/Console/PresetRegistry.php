@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Console;
 
-use Exception;
 use Qubus\Config\ConfigContainer;
 
 final class PresetRegistry
@@ -15,7 +14,7 @@ final class PresetRegistry
 
     /**
      * @return array<array-key, array>
-     * @throws Exception
+     * @throws \Exception
      */
     public function all(): array
     {
@@ -24,7 +23,7 @@ final class PresetRegistry
 
     /**
      * @return array<array-key, array>
-     * @throws Exception
+     * @throws \Exception
      */
     public function get(string $key): array
     {
@@ -33,7 +32,7 @@ final class PresetRegistry
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function stubsPath(): string
     {

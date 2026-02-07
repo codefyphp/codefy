@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Dto\Trait;
 
 use Codefy\Framework\Dto\Attribute\UseDto;
-use ReflectionClass;
-use RuntimeException;
 
 use function get_object_vars;
 use function sprintf;
@@ -20,20 +18,20 @@ trait DtoAware
      * This method creates a DTO instance using only validated data from Input Validator or Form Request.
      *
      * @return object The corresponding DTO instance.
-     * @throws RuntimeException If DTO class is not found or doesn't have fromData method.
+     * @throws \RuntimeException If DTO class is not found or doesn't have fromData method.
      */
     public function toDto(): object
     {
         $dtoClass = $this->getDtoClass();
 
         if (! class_exists(class: $dtoClass)) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 message: sprintf("DTO class [%s] not found.", $dtoClass)
             );
         }
 
         if (! method_exists(object_or_class: $dtoClass, method: 'fromValidatedData')) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 message: sprintf("DTO class [%s] must have a 'fromValidatedData' method.", $dtoClass)
             );
         }
@@ -48,7 +46,7 @@ trait DtoAware
      */
     public function getDtoClass(): string
     {
-        $reflection = new ReflectionClass(objectOrClass: static::class);
+        $reflection = new \ReflectionClass(objectOrClass: static::class);
         $attributes = $reflection->getAttributes(name: UseDto::class);
 
         if ($attributes !== []) {

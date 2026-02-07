@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Auth\Rbac\Entity;
 
 use Codefy\Framework\Auth\Rbac\Resource\StorageResource;
-use Override;
 
 use function array_keys;
 use function array_merge;
@@ -36,7 +35,7 @@ class RbacRole implements Role
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function addChild(Role $role): void
     {
         $this->childrenNames[$role->name] = true;
@@ -45,7 +44,7 @@ class RbacRole implements Role
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function removeChild(string $roleName): void
     {
         unset($this->childrenNames[$roleName]);
@@ -54,7 +53,7 @@ class RbacRole implements Role
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function getChildren(): array
     {
         $result = [];
@@ -68,7 +67,7 @@ class RbacRole implements Role
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function addPermission(Permission $permission): void
     {
         $this->permissionNames[$permission->name] = true;
@@ -77,7 +76,7 @@ class RbacRole implements Role
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function removePermission(string $permissionName): void
     {
         unset($this->permissionNames[$permissionName]);
@@ -86,7 +85,7 @@ class RbacRole implements Role
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function getPermissions(bool $withChildren = false): array
     {
         $result = [];
@@ -112,7 +111,7 @@ class RbacRole implements Role
     /**
      * @inheritDoc
      */
-    #[Override]
+    #[\Override]
     public function checkAccess(string $permissionName, ?array $params = null): bool
     {
         $permissions = $this->getPermissions(withChildren: true);

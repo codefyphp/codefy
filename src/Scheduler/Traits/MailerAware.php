@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Scheduler\Traits;
 
-use Exception;
-
 use function Codefy\Framework\Helpers\app;
 use function explode;
 use function php_uname;
@@ -17,7 +15,7 @@ trait MailerAware
     /**
      * Send email on Exception.
      */
-    public function sendEmail(Exception $ex): bool
+    public function sendEmail(\Exception $ex): bool
     {
         $mailer = app(name: 'mailer');
 

@@ -8,7 +8,6 @@ use Codefy\Framework\Application;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Http\Factories\RedirectResponseFactory;
-use Throwable;
 
 class RedirectHttpResponseStrategy implements HttpResponseStrategy
 {
@@ -16,12 +15,12 @@ class RedirectHttpResponseStrategy implements HttpResponseStrategy
     {
     }
 
-    public function supports(Throwable $e, ServerRequestInterface $request): bool
+    public function supports(\Throwable $e, ServerRequestInterface $request): bool
     {
         return str_contains($request->getHeaderLine('Accept'), 'Referer');
     }
 
-    public function createResponse(Throwable $e, ServerRequestInterface $request): ResponseInterface
+    public function createResponse(\Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
         $this->app->flash->error($e->getMessage());
 

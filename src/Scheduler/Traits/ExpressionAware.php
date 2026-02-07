@@ -6,10 +6,7 @@ namespace Codefy\Framework\Scheduler\Traits;
 
 use Codefy\Framework\Scheduler\Schedule;
 use Carbon\Carbon;
-use Closure;
 use Cron\CronExpression;
-use DateTimeZone;
-use Exception;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Inheritance\InvokerAware;
 use Qubus\Support\DateTime\QubusDateTime;
@@ -91,7 +88,7 @@ trait ExpressionAware
     /**
      * Schedule task to run between start and end time.
      */
-    private function inTimeInterval(string $startTime, string $endTime): Closure
+    private function inTimeInterval(string $startTime, string $endTime): \Closure
     {
         [$now, $startTime, $endTime] = [
             QubusDateTime::now($this->timezone),
@@ -502,7 +499,7 @@ trait ExpressionAware
      *
      * @return $this
      */
-    public function timezone(DateTimeZone|string $timezone): static
+    public function timezone(\DateTimeZone|string $timezone): static
     {
         $this->timezone = $timezone;
 
@@ -553,21 +550,21 @@ trait ExpressionAware
 
     /**
      * Determine if the Cron expression passes.
-     * @throws Exception
+     * @throws \Exception
      */
-    protected function expressionPasses(string|DateTimeZone|null $timezone = null): bool
+    protected function expressionPasses(string|\DateTimeZone|null $timezone = null): bool
     {
         $now = Carbon::now();
         $now = $now->setTimezone($timezone);
 
         if ($this->timezone) {
-            $taskTimeZone = $this->timezone instanceof DateTimeZone
+            $taskTimeZone = $this->timezone instanceof \DateTimeZone
             ? $this->timezone
                 ->getName()
             : $this->timezone;
 
             $now = $now->setTimezone(
-                new DateTimeZone(
+                new \DateTimeZone(
                     $taskTimeZone
                 )
             );

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Support;
 
 use Codefy\Framework\Application;
-use RuntimeException;
 
 use function sprintf;
 
@@ -29,7 +28,7 @@ final class Assets extends \Qubus\Support\Assets
         $assets = $this->codefy->make($binding);
 
         if (!$assets instanceof Assets) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 message: sprintf("Assets group '%s' not found in the config file", $group)
             );
         }

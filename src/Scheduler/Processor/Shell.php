@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Scheduler\Processor;
 
-use Stringable;
-
 use function exec;
 
-class Shell extends BaseProcessor implements Stringable, Processor
+class Shell extends BaseProcessor implements \Stringable, Processor
 {
     /**
      * Returns the command.

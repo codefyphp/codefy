@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Console\ConsoleCommand;
-use FilesystemIterator;
 use League\Flysystem\FilesystemException;
 use Qubus\FileSystem\FileSystem;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use SplFileInfo;
 use Symfony\Component\Console\Input\InputOption;
 
 use function basename;
@@ -19,7 +15,6 @@ use function file_get_contents;
 use function fopen;
 use function is_dir;
 use function is_resource;
-use function method_exists;
 use function pathinfo;
 use function rtrim;
 use function str_replace;
@@ -162,11 +157,11 @@ EOT
         $from = rtrim($from, $this->codefy::DS);
         $to   = rtrim($to, $this->codefy::DS);
 
-        $dirIterator = new RecursiveDirectoryIterator($from, FilesystemIterator::SKIP_DOTS);
-        $iterator    = new RecursiveIteratorIterator($dirIterator, RecursiveIteratorIterator::LEAVES_ONLY);
+        $dirIterator = new \RecursiveDirectoryIterator($from, \FilesystemIterator::SKIP_DOTS);
+        $iterator    = new \RecursiveIteratorIterator($dirIterator, \RecursiveIteratorIterator::LEAVES_ONLY);
 
         foreach ($iterator as $fileInfo) {
-            /** @var SplFileInfo $fileInfo */
+            /** @var \SplFileInfo $fileInfo */
             if ($fileInfo->isDir()) {
                 continue;
             }

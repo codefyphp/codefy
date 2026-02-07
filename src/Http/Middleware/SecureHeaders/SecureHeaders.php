@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\SecureHeaders;
 
 use Codefy\Framework\Application;
-use Exception;
 use ParagonIE\CSPBuilder\CSPBuilder;
 
 use function array_filter;
@@ -199,7 +198,7 @@ final class SecureHeaders
     /**
      * Get Miscellaneous headers.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     protected function miscellaneous(): array
     {
@@ -294,7 +293,7 @@ final class SecureHeaders
     /**
      * Generate random nonce value for the current request.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public static function nonce(string $target = 'script'): string
     {

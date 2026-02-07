@@ -12,8 +12,6 @@ use Codefy\Framework\Http\Middleware\Auth\UserCookieDecryptMiddleware;
 use Codefy\Framework\Http\RequestContext;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Data\TypeException;
-use ReflectionException;
-use Throwable;
 
 use function array_any;
 
@@ -29,7 +27,7 @@ class Gate
      * @param string $permissionName
      * @param array $ruleParams
      * @return bool
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
      */
     public function can(string $permissionName, array $ruleParams = []): bool
@@ -55,7 +53,7 @@ class Gate
      * Get the current authenticated user model.
      *
      * @return object|bool|null
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function current(): object|bool|null
     {
@@ -79,13 +77,13 @@ class Gate
     }
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     private function resolveUserByToken(string $token): object|bool|null
     {
         try {
             return $this->user->find($token);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             FileLoggerFactory::getLogger()->error($e->getMessage());
             return false;
         }
@@ -93,7 +91,7 @@ class Gate
 
     /**
      * @return array
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     private function getRoles(): array
     {

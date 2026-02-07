@@ -22,7 +22,7 @@ interface FormRequestMiddleware extends MiddlewareInterface
     public function fails(ServerRequestInterface $request): bool;
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function errors(): array;
 }

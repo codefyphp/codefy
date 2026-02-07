@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Console\Commands;
 
-use PDO;
-use RuntimeException;
 use Symfony\Component\Console\Input\InputOption;
-use Throwable;
 
 use function sprintf;
 
@@ -87,7 +84,7 @@ EOT
             $this->terminalInfo(string: 'Database refreshed successfully.');
             return self::SUCCESS;
 
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->terminalError(string: 'Migration failed.');
             $this->terminalError($e->getMessage());
 
@@ -102,25 +99,25 @@ EOT
     /**
      * Drop all tables using PDO (driver-aware)
      */
-    private function dropAllTables(PDO $pdo): void
+    private function dropAllTables(\PDO $pdo): void
     {
-        $driver = $pdo->getAttribute(attribute: PDO::ATTR_DRIVER_NAME);
+        $driver = $pdo->getAttribute(attribute: \PDO::ATTR_DRIVER_NAME);
 
         match ($driver) {
             'mysql' => $this->dropMySqlTables($pdo),
             'pgsql' => $this->dropPostgresTables($pdo),
             'sqlite' => $this->dropSqliteTables($pdo),
-            default => throw new RuntimeException(
+            default => throw new \RuntimeException(
                 message: sprintf("Unsupported database driver: %s", $driver)
             ),
         };
     }
 
-    private function dropMySqlTables(PDO $pdo): void
+    private function dropMySqlTables(\PDO $pdo): void
     {
         $tables = $pdo
             ->query(query: 'SHOW TABLES')
-            ->fetchAll(mode: PDO::FETCH_COLUMN);
+            ->fetchAll(mode: \PDO::FETCH_COLUMN);
 
         if (empty($tables)) {
             return;
@@ -135,26 +132,26 @@ EOT
         $pdo->exec(statement: 'SET FOREIGN_KEY_CHECKS=1');
     }
 
-    private function dropPostgresTables(PDO $pdo): void
+    private function dropPostgresTables(\PDO $pdo): void
     {
         $tables = $pdo
             ->query(
                 query: "SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
             )
-            ->fetchAll(mode: PDO::FETCH_COLUMN);
+            ->fetchAll(mode: \PDO::FETCH_COLUMN);
 
         foreach ($tables as $table) {
             $pdo->exec(statement: "DROP TABLE IF EXISTS \"{$table}\" CASCADE");
         }
     }
 
-    private function dropSqliteTables(PDO $pdo): void
+    private function dropSqliteTables(\PDO $pdo): void
     {
         $tables = $pdo
             ->query(
                 query: "SELECT name FROM sqlite_master WHERE type='table'"
             )
-            ->fetchAll(mode: PDO::FETCH_COLUMN);
+            ->fetchAll(mode: \PDO::FETCH_COLUMN);
 
         foreach ($tables as $table) {
             if ($table !== 'sqlite_sequence') {

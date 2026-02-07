@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Throttle;
 
-use LogicException;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
@@ -40,11 +39,11 @@ class RateLimiter
     {
         foreach ($this->conditions as $existing) {
             if ($condition->ttl === $existing->ttl) {
-                throw new LogicException(
+                throw new \LogicException(
                     sprintf('This instance already has a condition with a ttl of %d', $existing->ttl)
                 );
             } elseif ($condition->ttl > $existing->ttl && $condition->limit <= $existing->limit) {
-                throw new LogicException(
+                throw new \LogicException(
                     sprintf(
                         'Adding a condition of ttl %d, limit %d will never be 
                         reached due to existing condition of ttl %d, limit %d',
@@ -55,7 +54,7 @@ class RateLimiter
                     )
                 );
             } elseif ($condition->ttl < $existing->ttl && $condition->limit >= $existing->limit) {
-                throw new LogicException(
+                throw new \LogicException(
                     sprintf(
                         'Adding a condition of ttl %d, limit %d will prevent existing 
                         condition of ttl %d, limit %d from being reached',

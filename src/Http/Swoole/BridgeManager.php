@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Swoole;
 
 use Codefy\Framework\Application;
-use Exception;
 use Qubus\Http\Swoole\Factory\RequestFactory;
 use Qubus\Http\Swoole\ResponseMerger;
 use Swoole\Http\Request;
@@ -37,9 +36,8 @@ final class BridgeManager
     /**
      * @param Request $swooleRequest
      * @param Response $swooleResponse
-     *
      * @return Response
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(
         Request $swooleRequest,
@@ -57,7 +55,7 @@ final class BridgeManager
             $response = $this->app->handle($psrRequest);
 
             return $this->responseMerger->toSwoole($response, $swooleResponse);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $swooleResponse->status(500);
             $swooleResponse->end("BridgeManager error: {$e->getMessage()}");
             return $swooleResponse;

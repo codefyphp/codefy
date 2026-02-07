@@ -8,11 +8,9 @@ use Codefy\Framework\Application;
 use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionRenderAware;
 use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionUtilityAware;
 use Codefy\Framework\View\ErrorViewRenderer;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Http\Client\NotFoundException;
-use Throwable;
 
 class HtmlHttpResponseStrategy implements HttpResponseStrategy
 {
@@ -23,7 +21,7 @@ class HtmlHttpResponseStrategy implements HttpResponseStrategy
     {
     }
 
-    public function supports(Throwable $e, ServerRequestInterface $request): bool
+    public function supports(\Throwable $e, ServerRequestInterface $request): bool
     {
         $accept = $request->getHeaderLine('Accept');
 
@@ -34,9 +32,9 @@ class HtmlHttpResponseStrategy implements HttpResponseStrategy
 
     /**
      * @throws NotFoundException
-     * @throws Exception
+     * @throws \Exception
      */
-    public function createResponse(Throwable $e, ServerRequestInterface $request): ResponseInterface
+    public function createResponse(\Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
         return $this->renderErrorView($e);
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Configuration;
 
-use Closure;
 use Codefy\Framework\Application;
 use Codefy\Framework\Bootstrap\RegisterProviders;
 use Codefy\Framework\Providers\RoutingServiceProvider;
@@ -122,7 +121,7 @@ final class ApplicationBuilder
     /**
      * Register the routing services for the application.
      *
-     * @param callable|Closure|null    $using
+     * @param callable|\Closure|null    $using
      * @param array|string|null        $web
      * @param array<class-string>|null $class
      * @param array|string|null        $api
@@ -132,7 +131,7 @@ final class ApplicationBuilder
      * @throws TypeException
      */
     public function withRouting(
-        callable|Closure|null $using = null,
+        callable|\Closure|null $using = null,
         array|string|null $web = null,
         ?array $class = null,
         array|string|null $api = null,
@@ -184,14 +183,14 @@ final class ApplicationBuilder
      * @param array|string|null $api
      * @param string            $apiPrefix
      * @param callable|null     $then
-     * @return Closure
+     * @return \Closure
      */
     protected function buildRoutingCallback(
         array|string|null $web = null,
         array|string|null $api = null,
         string $apiPrefix = 'api',
         ?callable $then = null
-    ): Closure {
+    ): \Closure {
         return function (Router $router) use ($web, $api, $apiPrefix, $then) {
             $registrar = new RoutingRegistrar($router);
 

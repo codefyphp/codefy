@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Throttle;
 
-use RuntimeException;
-
-class RateException extends RuntimeException
+class RateException extends \RuntimeException
 {
     /**
      * @var Condition

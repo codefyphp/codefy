@@ -6,7 +6,6 @@ namespace Codefy\Framework\Auth;
 
 use Codefy\Framework\Auth\Rbac\Rbac;
 use Codefy\Framework\Auth\Repository\AuthUserRepository;
-use Exception;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,7 +26,7 @@ class Auth implements Sentinel
 
     /**
      * @inheritDoc
-     * @throws Exception
+     * @throws \Exception
      */
     public function authenticate(ServerRequestInterface $request): ?SessionEntity
     {
@@ -53,7 +52,7 @@ class Auth implements Sentinel
 
     /**
      * @inheritDoc
-     * @throws Exception
+     * @throws \Exception
      */
     public function unauthorized(ServerRequestInterface $request): ResponseInterface
     {

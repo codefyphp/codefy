@@ -8,14 +8,10 @@ use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Scheduler\Traits\ExpressionAware;
 use Cron\CronExpression;
-use DateTime;
-use DateTimeZone;
-use Exception;
 use Qubus\Exception\Data\TypeException;
 use Qubus\NoSql\Collection;
 use Qubus\NoSql\Node;
 use Qubus\Support\Serializer\JsonSerializer;
-use ReflectionException;
 
 use function call_user_func;
 use function is_callable;
@@ -33,9 +29,9 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     /** @var array $rejects */
     protected array $rejects = [];
 
-    protected DateTimeZone|string $timezone;
+    protected \DateTimeZone|string $timezone;
 
-    public function __construct(ShouldQueue $queue, ?string $node = null, DateTimeZone|string|null $timezone = null)
+    public function __construct(ShouldQueue $queue, ?string $node = null, \DateTimeZone|string|null $timezone = null)
     {
         $this->queue = $queue;
         $this->db = Node::open(file: $node ?? $this->queue->node());
@@ -52,7 +48,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             return call_user_func($schedule);
         }
 
-        $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $schedule);
+        $dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $schedule);
         if ($dateTime !== false) {
             return $dateTime->format('Y-m-d H:i') == (date('Y-m-d H:i'));
         }
@@ -62,7 +58,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
     /**
      * @inheritDoc
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function createItem(): string
     {
@@ -70,7 +66,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
 
         try {
             $id = $this->doCreateItem();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             FileLoggerFactory::getLogger()->error(
                 sprintf('NODEQSTATE: %s', $e->getMessage()),
                 ['Queue' => 'NodeQueue::createItem']
@@ -87,7 +83,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
      *                added to the queue, otherwise false. We don't guarantee the item was
      *                committed to disk etc., but as far as we know, the item is now in the
      *                queue.
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     protected function doCreateItem(): string
     {
@@ -105,7 +101,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             ]);
             $query->commit();
             $lastId = $query->lastInsertId();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $query->rollback();
             FileLoggerFactory::getLogger()->error(
                 sprintf('NODEQSTATE: %s', $e->getMessage()),
@@ -121,13 +117,13 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function numberOfItems(): int
     {
         try {
             return count($this->db->where('name', $this->queue->name)->get());
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->catchException($e);
             /**
              * If there is no node there cannot be any items.
@@ -139,7 +135,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function claimItem(int $leaseTime = 3600): array|object|bool
     {
@@ -156,7 +152,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
                 ->sortBy('created')
                 ->sortBy('_id')
                 ->first();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->catchException($e);
             /**
              * If the node does not exist there are no items currently
@@ -187,7 +183,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
                 ]);
                 $update->commit();
                 return $item;
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $update->rollback();
                 $this->catchException($e);
                 /**
@@ -207,7 +203,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function deleteItem(mixed $item): void
     {
@@ -217,7 +213,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             $delete->where('_id', $item['_id'])
                 ->delete();
             $delete->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $delete->rollback();
             $this->catchException($e);
         }
@@ -226,7 +222,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function releaseItem(mixed $item): bool
     {
@@ -241,7 +237,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             $update->commit();
 
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $update->rollback();
             $this->catchException($e);
         }
@@ -263,7 +259,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function deleteQueue(): void
     {
@@ -273,14 +269,14 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             $delete->where('name', $this->queue->name)
                 ->delete();
             $delete->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $delete->rollback();
             $this->catchException($e);
         }
     }
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
      */
     public function garbageCollection(): void
@@ -296,7 +292,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
                 ->where('name', $this->queue->name)
                 ->delete();
             $delete->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $delete->rollback();
             $this->catchException($e);
         }
@@ -315,7 +311,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
                         'expire' => (int) 0
                     ]);
             $update->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $update->rollback();
             $this->catchException($e);
         }
@@ -328,10 +324,10 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
      * yet the query failed, then the queue is stale and the exception needs to
      * propagate.
      *
-     * @param Exception $e The exception.
-     * @throws ReflectionException
+     * @param \Exception $e The exception.
+     * @throws \ReflectionException
      */
-    protected function catchException(Exception $e): void
+    protected function catchException(\Exception $e): void
     {
         FileLoggerSmtpFactory::getLogger()->error(
             sprintf('QUEUESTATE: %s', $e->getMessage()),
@@ -340,7 +336,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     }
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
      */
     public function dispatch(): bool
@@ -377,7 +373,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             }
 
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->catchException($e);
         }
 

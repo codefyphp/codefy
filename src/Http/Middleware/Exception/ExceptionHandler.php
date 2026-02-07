@@ -7,11 +7,9 @@ namespace Codefy\Framework\Http\Middleware\Exception;
 use Codefy\Framework\Application;
 use Codefy\Framework\Http\Middleware\Exception\Strategy\HttpResponseStrategy;
 use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionUtilityAware;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Http\Factories\JsonResponseFactory;
-use Throwable;
 
 use function is_string;
 
@@ -27,9 +25,9 @@ class ExceptionHandler
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
-    public function handle(Throwable $e, ServerRequestInterface $request): ResponseInterface
+    public function handle(\Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
         foreach ($this->strategies as $strategy) {
             if (is_string($strategy)) {

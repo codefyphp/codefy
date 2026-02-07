@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Validation;
 
-use Exception;
 use Qubus\Validation\ErrorBag;
 
 interface DataValidator
@@ -34,7 +33,7 @@ interface DataValidator
      * Validate the request data and return validated data.
      *
      * @return array<mixed>
-     * @throws Exception
+     * @throws \Exception
      */
     public function validated(): array;
 
@@ -44,7 +43,7 @@ interface DataValidator
      * @param mixed $value
      * @param mixed|null $default
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     public function value(mixed $value, mixed $default = null): mixed;
 

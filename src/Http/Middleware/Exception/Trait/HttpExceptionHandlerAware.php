@@ -5,24 +5,21 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Exception\Trait;
 
 use Codefy\Framework\Traits\ThrowableTransformAware;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Http\Client\NotFoundException;
 use Qubus\Exception\Http\HttpException;
 use Qubus\Exception\Http\Psr7Exception;
-use ReflectionException;
-use Throwable;
 
 trait HttpExceptionHandlerAware
 {
     use ThrowableTransformAware;
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
-     * @throws Exception
+     * @throws \Exception
      */
     protected function handleHttpException(
         HttpException|Psr7Exception $e,
@@ -41,11 +38,11 @@ trait HttpExceptionHandlerAware
 
     /**
      * @throws NotFoundException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
-     * @throws Exception
+     * @throws \Exception
      */
-    protected function handleUnknownException(Throwable $t, ServerRequestInterface $request): ResponseInterface
+    protected function handleUnknownException(\Throwable $t, ServerRequestInterface $request): ResponseInterface
     {
         $this->logException($t);
 

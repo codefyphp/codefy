@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Codefy\Framework\Scheduler\Processor;
 
 use Qubus\EventDispatcher\Legacy\EventDispatcher;
-use Stringable;
 
-class Dispatcher extends BaseProcessor implements Stringable, Processor
+class Dispatcher extends BaseProcessor implements \Stringable, Processor
 {
     protected EventDispatcher $dispatcher;
 

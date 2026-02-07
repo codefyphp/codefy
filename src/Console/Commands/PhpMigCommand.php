@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Console\Commands;
 
-use ArrayAccess;
 use Codefy\Framework\Application;
 use Codefy\Framework\Console\ConsoleCommand;
 use Qubus\Exception\Data\TypeException;
@@ -12,14 +11,13 @@ use Qubus\Exception\Exception;
 use Qubus\Expressive\Migration\Adapter\MigrationAdapter;
 use Qubus\Expressive\Migration\Migration;
 use Qubus\Expressive\Migration\Migrator;
-use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class PhpMigCommand extends ConsoleCommand
 {
-    protected ?ArrayAccess $objectmap = null;
+    protected ?\ArrayAccess $objectmap = null;
 
     protected ?MigrationAdapter $adapter = null;
 
@@ -83,9 +81,9 @@ abstract class PhpMigCommand extends ConsoleCommand
     }
 
     /**
-     * @return ArrayAccess
+     * @return \ArrayAccess
      */
-    protected function bootstrapObjectMap(): ArrayAccess
+    protected function bootstrapObjectMap(): \ArrayAccess
     {
         $bootstrapFile = $this->getBootstrap();
 
@@ -95,8 +93,8 @@ abstract class PhpMigCommand extends ConsoleCommand
 
         $objectmap = $func();
 
-        if (!($objectmap instanceof ArrayAccess)) {
-            throw new RuntimeException(
+        if (!($objectmap instanceof \ArrayAccess)) {
+            throw new \RuntimeException(
                 message: sprintf(
                     '%s must return object of type ArrayAccess.',
                     $bootstrapFile
@@ -110,7 +108,7 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * @param InputInterface $input
      * @return MigrationAdapter
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     protected function bootstrapAdapter(InputInterface $input): MigrationAdapter
     {
@@ -120,7 +118,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         $validSets = !isset($objectmap['phpmig.sets']) || is_array($objectmap['phpmig.sets']);
 
         if (!$validAdapter && !$validSets) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 message: sprintf(
                     '%s must return data with phpmig.adapter or phpmig.sets',
                     $this->getBootstrap()
@@ -131,7 +129,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         if (isset($objectmap['phpmig.sets'])) {
             $set = $input->getOption(name: 'set');
             if (!isset($objectmap['phpmig.sets'][$set]['adapter'])) {
-                throw new RuntimeException(
+                throw new \RuntimeException(
                     message: $set . ' has undefined keys or adapter at phpmig.sets'
                 );
             }
@@ -144,7 +142,7 @@ abstract class PhpMigCommand extends ConsoleCommand
 
         // @phpstan-ignore variable.undefined
         if (!($adapter instanceof MigrationAdapter)) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 message: "phpmig.adapter or phpmig.sets must be an 
                 instance of \Qubus\Expressive\Migration\Adapter\MigrationAdapter"
             );
@@ -174,7 +172,7 @@ abstract class PhpMigCommand extends ConsoleCommand
             && (isset($objectmap['phpmig.sets'])
                 && !isset($objectmap['phpmig.sets'][$set]['migrations_path']))
         ) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 message: $this->getBootstrap() . ' must return phpmig.migrations array 
                 or migrations default path at phpmig.migrations_path 
                 or migrations default path at phpmig.sets'
@@ -185,7 +183,7 @@ abstract class PhpMigCommand extends ConsoleCommand
 
         if (isset($objectmap['phpmig.migrations'])) {
             if (!is_array(value: $objectmap['phpmig.migrations'])) {
-                throw new RuntimeException(
+                throw new \RuntimeException(
                     message: $this->getBootstrap() . ' phpmig.migrations must be an array.'
                 );
             }
@@ -194,7 +192,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         }
         if (isset($objectmap['phpmig.migrations_path'])) {
             if (!is_dir(filename: $objectmap['phpmig.migrations_path'])) {
-                throw new RuntimeException(
+                throw new \RuntimeException(
                     message: $this->getBootstrap() . ' phpmig.migrations_path must be a directory.'
                 );
             }
@@ -204,7 +202,7 @@ abstract class PhpMigCommand extends ConsoleCommand
         }
         if (isset($objectmap['phpmig.sets']) && isset($objectmap['phpmig.sets'][$set]['migrations_path'])) {
             if (!is_dir(filename: $objectmap['phpmig.sets'][$set]['migrations_path'])) {
-                throw new RuntimeException(
+                throw new \RuntimeException(
                     message: $this->getBootstrap() . " ['phpmig.sets']['" . $set . "']['migrations_path'] 
                     must be a directory."
                 );
@@ -364,10 +362,10 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Set objectmap.
      *
-     * @param ArrayAccess $objectmap
+     * @param \ArrayAccess $objectmap
      * @return static
      */
-    public function setObjectMap(ArrayAccess $objectmap): static
+    public function setObjectMap(\ArrayAccess $objectmap): static
     {
         $this->objectmap = $objectmap;
         return $this;
@@ -376,9 +374,9 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Get objectmap.
      *
-     * @return ArrayAccess|null
+     * @return \ArrayAccess|null
      */
-    public function getObjectMap(): ?ArrayAccess
+    public function getObjectMap(): ?\ArrayAccess
     {
         return $this->objectmap;
     }

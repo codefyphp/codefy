@@ -7,12 +7,9 @@ namespace Codefy\Framework\Console\Commands\Traits;
 use Codefy\Framework\Console\Exceptions\MakeCommandFileAlreadyExistsException;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Support\LocalStorage;
-use Exception;
 use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Support\Inflector;
-use ReflectionException;
-use RuntimeException;
 
 use function str_contains;
 use function glob;
@@ -26,7 +23,7 @@ trait MakeCommandAware
     /**
      * @throws TypeException
      * @throws MakeCommandFileAlreadyExistsException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     private function resolveResource(string $resource, mixed $options): void
     {
@@ -49,9 +46,9 @@ trait MakeCommandAware
      * @param string $classNamePrefix
      * @param mixed|null $options
      * @throws MakeCommandFileAlreadyExistsException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
-     * @throws Exception
+     * @throws \Exception
      */
     private function resolveClassNameSuffix(
         string $classNameSuffix,
@@ -108,8 +105,8 @@ trait MakeCommandAware
      * @param string|null $qualifiedNamespaces - will return the namespace for the stub command
      * @return void
      * @throws MakeCommandFileAlreadyExistsException
-     * @throws Exception
-     * @throws ReflectionException
+     * @throws \Exception
+     * @throws \ReflectionException
      */
     public function createClassFromStub(
         string $qualifiedClass,
@@ -119,7 +116,7 @@ trait MakeCommandAware
         ?string $qualifiedNamespaces = null
     ): void {
         if ($classNameSuffix === null || $contentStream === null) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 message: 'Directory could not be created because the 3rd argument returned null.'
             );
         }
@@ -134,7 +131,7 @@ trait MakeCommandAware
                 LocalStorage::disk()->createDirectory(location: $normalizePath);
             } catch (FilesystemException $ex) {
                 FileLoggerFactory::error(message: $ex->getMessage());
-            } catch (Exception $ex) {
+            } catch (\Exception $ex) {
                 FileLoggerFactory::error(message: $ex->getMessage());
             }
         }

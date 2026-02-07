@@ -47,8 +47,6 @@ use Qubus\Routing\Router;
 use Qubus\Support\ArrayHelper;
 use Qubus\Support\DataType;
 use Qubus\Support\StringHelper;
-use ReflectionException;
-use Throwable;
 
 use function array_merge;
 use function array_unique;
@@ -118,7 +116,7 @@ final class Application extends Container
     public static bool $encryptedEnv = false;
 
     /**
-     * @var array<class-string<Throwable>, callable> $exceptionMaps
+     * @var array<class-string<\Throwable>, callable> $exceptionMaps
      */
     public array $exceptionMaps = [];
 
@@ -185,7 +183,7 @@ final class Application extends Container
 
     /**
      * @param array<string> $params
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
      */
     public function __construct(array $params = [])
@@ -895,7 +893,7 @@ final class Application extends Container
      *
      * @param string $basePath
      * @return void
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     private static function loadEnvironment(string $basePath): void
     {
@@ -996,7 +994,7 @@ final class Application extends Container
      *
      * @param string[] $config
      * @return ApplicationBuilder
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
      */
     public static function create(array $config): ApplicationBuilder
@@ -1011,7 +1009,7 @@ final class Application extends Container
      *
      * @param string|null $path
      * @return null|self
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws TypeException
      */
     public static function getInstance(?string $path = null): self|null

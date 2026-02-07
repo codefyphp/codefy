@@ -13,7 +13,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
-use Throwable;
 
 class UserCookieDecryptMiddleware implements MiddlewareInterface
 {
@@ -49,6 +48,8 @@ class UserCookieDecryptMiddleware implements MiddlewareInterface
 
     /**
      * Decrypt the cookie safely. Return null on any failure.
+     *
+     * @throws \ReflectionException
      */
     private function decryptCookie(string $encrypted): ?string
     {
@@ -57,7 +58,7 @@ class UserCookieDecryptMiddleware implements MiddlewareInterface
             $key = Key::loadFromAsciiSafeString($keyString);
 
             return Crypto::decrypt($encrypted, $key);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             FileLoggerFactory::getLogger()->error($e->getMessage());
             return null;
         }

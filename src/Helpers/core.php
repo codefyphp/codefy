@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Helpers;
 
-use Closure;
 use Codefy\CommandBus\Busses\SynchronousCommandBus;
 use Codefy\CommandBus\Command;
 use Codefy\CommandBus\Containers\ContainerFactory;
-use Codefy\CommandBus\Exceptions\CommandCouldNotBeHandledException;
 use Codefy\CommandBus\Exceptions\UnresolvableCommandHandlerException;
 use Codefy\CommandBus\Odin;
 use Codefy\CommandBus\Resolvers\NativeCommandHandlerResolver;
@@ -42,10 +40,6 @@ use Qubus\Routing\Exceptions\TooLateToAddNewRouteException;
 use Qubus\Routing\Route\RouteAttributes;
 use Qubus\Support\HtmlString;
 use Qubus\View\Renderer;
-use ReflectionException;
-use RuntimeException;
-use Stringable;
-use Throwable;
 
 use function dirname;
 use function error_log;
@@ -178,7 +172,9 @@ function queryBuilder(): QueryBuilder
  * @param array<string|int, string|array<string>> $headers An array of headers.
  * @param array<string> $attachments An array of attachments.
  * @return bool
- * @throws Exception|ReflectionException|\PHPMailer\PHPMailer\Exception
+ * @throws Exception
+ * @throws \ReflectionException
+ * @throws \PHPMailer\PHPMailer\Exception
  */
 function mail(string|array $to, string $subject, string $message, array $headers = [], array $attachments = []): bool
 {
@@ -264,7 +260,7 @@ function mail(string|array $to, string $subject, string $message, array $headers
  * the CommandBus.
  *
  * @param Command $command
- * @throws ReflectionException
+ * @throws \ReflectionException
  * @throws UnresolvableCommandHandlerException
  */
 function command(Command $command): void
@@ -281,7 +277,7 @@ function command(Command $command): void
  * Queries the given query and returns
  * a result if any.
  *
- * @throws ReflectionException
+ * @throws \ReflectionException
  * @throws UnresolvableQueryHandlerException
  */
 function ask(Query $query): mixed
@@ -476,14 +472,14 @@ function gravatar_profile(?string $email = null): Profile
  * Throw the given exception if the given condition is true.
  *
  * @param mixed $condition
- * @param class-string|object|Closure $exception
+ * @param class-string|object|\Closure $exception
  * @param ...$parameters
  * @return mixed
  */
-function throw_if(mixed $condition, mixed $exception = RuntimeException::class, ...$parameters): mixed
+function throw_if(mixed $condition, mixed $exception = \RuntimeException::class, ...$parameters): mixed
 {
     if ($condition) {
-        if ($exception instanceof Closure) {
+        if ($exception instanceof \Closure) {
             $exception = $exception(...$parameters);
         }
 
@@ -491,7 +487,7 @@ function throw_if(mixed $condition, mixed $exception = RuntimeException::class, 
             $exception = new $exception(...$parameters);
         }
 
-        throw is_string($exception) ? new RuntimeException($exception) : $exception;
+        throw is_string($exception) ? new \RuntimeException($exception) : $exception;
     }
 
     return $condition;
@@ -504,14 +500,14 @@ function throw_if(mixed $condition, mixed $exception = RuntimeException::class, 
  * @param int $code
  * @param string|null $uri
  * @param string $message
- * @param Throwable|null $previous
+ * @param \Throwable|null $previous
  * @return never
  */
 function abort(
     int $code = 500,
     ?string $uri = null,
     string $message = '',
-    ?Throwable $previous = null
+    ?\Throwable $previous = null
 ): never {
     throw HttpExceptionFactory::make(
         status: $code,
@@ -610,7 +606,7 @@ function gate(?string $permission = null, array $ruleParams = []): Gate|null|boo
  * The authenticated user details.
  *
  * @since 3.1
- * @throws ReflectionException
+ * @throws \ReflectionException
  * @return object|bool|null
  */
 function user(): object|bool|null
@@ -673,31 +669,31 @@ function get_system_roles(): array
 }
 
 /**
- * @param string|Stringable $level
+ * @param string|\Stringable $level
  * @param string $message
  * @param array<mixed> $context
  * @return void
  */
-function logger(string|Stringable $level, string $message, array $context = []): void
+function logger(string|\Stringable $level, string $message, array $context = []): void
 {
     try {
         FileLoggerFactory::getLogger()->{$level}($message, $context);
-    } catch (ReflectionException $e) {
+    } catch (\ReflectionException $e) {
         error_log($e->getMessage());
     }
 }
 
 /**
- * @param string|Stringable $level
+ * @param string|\Stringable $level
  * @param string $message
  * @param array<mixed> $context
  * @return void
  */
-function smtp_logger(string|Stringable $level, string $message, array $context = []): void
+function smtp_logger(string|\Stringable $level, string $message, array $context = []): void
 {
     try {
         FileLoggerSmtpFactory::getLogger()->{$level}($message, $context);
-    } catch (ReflectionException $e) {
+    } catch (\ReflectionException $e) {
         error_log($e->getMessage());
     }
 }

@@ -6,11 +6,9 @@ namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Console\ConsoleCommand;
 use Cron\CronExpression;
-use Exception;
 use Qubus\NoSql\Exceptions\InvalidJsonException;
 use Qubus\NoSql\Node;
 use Qubus\Support\Serializer\JsonSerializer;
-use ReflectionException;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -71,7 +69,7 @@ EOT;
             }
 
             $table->render();
-        } catch (InvalidJsonException | ReflectionException | Exception $e) {
+        } catch (InvalidJsonException | \ReflectionException | \Exception $e) {
             return ConsoleCommand::FAILURE;
         }
 

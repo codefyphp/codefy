@@ -9,7 +9,6 @@ use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionHandlerAware;
 use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionRenderAware;
 use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionUtilityAware;
 use Codefy\Framework\View\ErrorViewRenderer;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -18,8 +17,6 @@ use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Http\HttpException;
 use Qubus\Exception\Http\Psr7Exception;
 use Qubus\FileSystem\FileSystem;
-use ReflectionException;
-use Throwable;
 
 class HttpExceptionMiddleware implements MiddlewareInterface
 {
@@ -37,8 +34,8 @@ class HttpExceptionMiddleware implements MiddlewareInterface
     /**
      * @inheritDoc
      * @throws TypeException
-     * @throws ReflectionException
-     * @throws Exception
+     * @throws \ReflectionException
+     * @throws \Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -46,7 +43,7 @@ class HttpExceptionMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         } catch (HttpException | Psr7Exception $e) {
             return $this->handleHttpException($e, $request);
-        } catch (Throwable $t) {
+        } catch (\Throwable $t) {
             return $this->handleUnknownException($t, $request);
         }
     }

@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Codefy\Framework\View;
 
 use Codefy\Framework\Application;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Qubus\Exception\Http\Client\NotFoundException;
 use Qubus\FileSystem\FileSystem;
 use Qubus\Http\Factories\HtmlResponseFactory;
 use Qubus\Http\Status;
-use RuntimeException;
 
 use function sprintf;
 
@@ -25,7 +23,7 @@ final readonly class ErrorViewRenderer
 
     /**
      * @throws NotFoundException
-     * @throws Exception
+     * @throws \Exception
      */
     public function render(int $code): string
     {
@@ -37,7 +35,7 @@ final readonly class ErrorViewRenderer
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function toResponse(string $html): ResponseInterface
     {
@@ -46,7 +44,7 @@ final readonly class ErrorViewRenderer
 
     /**
      * @throws NotFoundException
-     * @throws Exception
+     * @throws \Exception
      */
     private function loadTemplate(): string
     {
@@ -56,7 +54,7 @@ final readonly class ErrorViewRenderer
         );
 
         if (!$this->fileSystem->exists(filename: $path, throw: false)) {
-            throw new RuntimeException(sprintf("Error view template not found: %s", $path));
+            throw new \RuntimeException(sprintf("Error view template not found: %s", $path));
         }
 
         return $this->fileSystem->getContents($path);
