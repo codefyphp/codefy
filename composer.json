@@ -55,7 +55,6 @@
         "fenom/fenom": "^3.0",
         "fenom/providers-collection": "^1.0",
         "foil/foil": "^0.6.7",
-        "phpstan/phpstan": "^2.1",
         "qubus/qubus-coding-standard": "^2"
     },
     "autoload-dev": {
@@ -67,7 +66,7 @@
         "test": "vendor/bin/pest",
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
-        "codestan": "vendor/bin/phpstan analyse -l 1"
+        "codestan": "phpstan analyse -l 5"
     },
     "config": {
         "optimize-autoloader": true,
