@@ -40,14 +40,14 @@ final class LocalStorage
             self::setVisibilityConverterByDiskName(name: $name)
         );
 
-        $links = ($configArray['links'] ?: null) === 'skip'
+        $links = ($configArray['links'] ?? null) === 'skip'
         ? LocalFilesystemAdapter::SKIP_LINKS
         : LocalFilesystemAdapter::DISALLOW_LINKS;
 
         $adapter = new LocalFilesystemAdapter(
             location: $configArray['root'],
             visibility: $visibility,
-            writeFlags: $configArray['lock'] ?: LOCK_EX,
+            writeFlags: $configArray['lock'] ?? LOCK_EX,
             linkHandling: $links
         );
 
