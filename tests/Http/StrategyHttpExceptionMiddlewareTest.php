@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Codefy\Framework\Http\Middleware\Exception\ExceptionHandler;
-use Codefy\Framework\Http\Middleware\Exception\Strategy\JsonHttpResponseStrategy;
 use Codefy\Framework\Http\Middleware\Exception\StrategyHttpExceptionMiddleware;
 use Codefy\Framework\Tests\Http\FakeHandler;
 use Qubus\Http\Response;
