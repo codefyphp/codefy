@@ -45,9 +45,9 @@ class BaseController extends Controller implements RoutingController
      *
      * @param string $url A string.
      * @param int $status HTTP status code. Defaults to `302`.
-     * @return ResponseInterface|null
+     * @return ResponseInterface
      */
-    public function redirect(string $url, int $status = 302): ?ResponseInterface
+    public function redirect(string $url, int $status = 302): ResponseInterface
     {
         return RedirectResponseFactory::create(uri: $url, status: $status);
     }

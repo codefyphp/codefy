@@ -137,15 +137,15 @@ class Gate
     {
         $request = $this->getRequest();
 
-        return $request?->getAttribute(UserCookieDecryptMiddleware::USER_COOKIE);
+        return $request->getAttribute(UserCookieDecryptMiddleware::USER_COOKIE);
     }
 
     /**
      * Return request object.
      *
-     * @return ServerRequestInterface|null
+     * @return ServerRequestInterface
      */
-    private function getRequest(): ?ServerRequestInterface
+    private function getRequest(): ServerRequestInterface
     {
         return RequestContext::get();
     }

@@ -582,17 +582,11 @@ function view(array|string $template, array $data = []): ResponseInterface
  * @since 3.1
  * @param string|null $permission
  * @param array<mixed> $ruleParams
- * @return Gate|bool|null
- * @return ($permission is null ? Gate : bool|null)
+ * @return Gate|bool
+ * @return ($permission is null ? Gate : bool)
  */
-function gate(?string $permission = null, array $ruleParams = []): Gate|null|bool
+function gate(?string $permission = null, array $ruleParams = []): Gate|bool
 {
-    $request = RequestContext::get();
-
-    if (! $request) {
-        return null;
-    }
-
     $auth = Codefy::$PHP->make(name: Gate::class);
 
     if (is_null__($permission)) {

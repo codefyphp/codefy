@@ -13,6 +13,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
+use ReflectionException;
 
 class UserCookieDecryptMiddleware implements MiddlewareInterface
 {
@@ -25,6 +26,7 @@ class UserCookieDecryptMiddleware implements MiddlewareInterface
 
     /**
      * @throws Exception
+     * @throws \ReflectionException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
