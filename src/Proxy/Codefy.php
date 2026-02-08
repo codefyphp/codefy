@@ -11,7 +11,7 @@ class Codefy extends \stdClass
     /**
      * Application instance.
      *
-     * @var ?Application $php
+     * @var Application $php
      */
-    public static ?Application $PHP = null;
+    public static Application $PHP;
 }
