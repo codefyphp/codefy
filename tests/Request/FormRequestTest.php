@@ -85,6 +85,15 @@ it('returns a validated id.', function () use ($requestFactory) {
     Assert::assertEquals(['id' => '01K9T2ZFJBE3PAPDB0V0K9M6WF'], $formRequest->validated());
 });
 
+it('returns a validated id string.', function () use ($requestFactory) {
+    $request = $requestFactory
+        ->createServerRequest('GET', 'http://example.com/example')
+        ->withParsedBody(['id' => '01K9T2ZFJBE3PAPDB0V0K9M6WF']);
+    $formRequest = new ExampleFormRequest(queryParams: $request->getParsedBody());
+
+    Assert::assertEquals('01K9T2ZFJBE3PAPDB0V0K9M6WF', $formRequest->string('id'));
+});
+
 it('throws a ValidationException when the id is null.', function () use ($requestFactory) {
     $request = $requestFactory
         ->createServerRequest('GET', 'http://example.com/example');
