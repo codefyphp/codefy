@@ -6,7 +6,9 @@ namespace Codefy\Framework\Validation;
 
 use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Traits\InputValidationAware;
+use Exception;
 use Psr\Http\Message\ServerRequestInterface;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Injector\ServiceContainer;
 use Qubus\Support\DataType;
 use Qubus\Validation\ErrorBag;
@@ -14,7 +16,13 @@ use Qubus\Validation\Factories\ValidationFactory;
 use Qubus\Validation\Validation;
 
 use function array_merge;
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_string;
 use function method_exists;
+use function sprintf;
 
 abstract class HttpInputValidator implements DataValidator
 {
@@ -195,6 +203,111 @@ abstract class HttpInputValidator implements DataValidator
     public function errors(): ErrorBag
     {
         return $this->validator->errors();
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function string(string $key, mixed $default = null): string
+    {
+        $value = $this->value($key, $default);
+
+        if (!is_string($value)) {
+            throw new TypeException(
+                sprintf(
+                    'Value for key [%s] must be a string, %s given.',
+                    $key,
+                    gettype($value)
+                )
+            );
+        }
+
+        return $value;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function integer(string $key, mixed $default = null): int
+    {
+        $value = $this->value($key, $default);
+
+        if (!is_int($value)) {
+            throw new TypeException(
+                sprintf(
+                    'Value for key [%s] must be an integer, %s given.',
+                    $key,
+                    gettype($value)
+                )
+            );
+        }
+
+        return $value;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function float(string $key, mixed $default = null): float
+    {
+        $value = $this->value($key, $default);
+
+        if (!is_float($value)) {
+            throw new TypeException(
+                sprintf(
+                    'Value for key [%s] must be a float, %s given.',
+                    $key,
+                    gettype($value)
+                )
+            );
+        }
+
+        return $value;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function boolean(string $key, mixed $default = null): bool
+    {
+        $value = $this->value($key, $default);
+
+        if (!is_bool($value)) {
+            throw new TypeException(
+                sprintf(
+                    'Value for key [%s] must be a boolean, %s given.',
+                    $key,
+                    gettype($value)
+                )
+            );
+        }
+
+        return $value;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function array(string $key, mixed $default = null): array
+    {
+        $value = $this->value($key, $default);
+
+        if (!is_array($value)) {
+            throw new TypeException(
+                sprintf(
+                    'Value for key [%s] must be an array, %s given.',
+                    $key,
+                    gettype($value)
+                )
+            );
+        }
+
+        return $value;
     }
 
     /**

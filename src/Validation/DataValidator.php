@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Validation;
 
+use Qubus\Inheritance\Contract\ValueType;
 use Qubus\Validation\ErrorBag;
 
-interface DataValidator
+interface DataValidator extends ValueType
 {
     /**
      * Return all input data as an array.
