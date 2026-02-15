@@ -89,7 +89,7 @@ EOT
     /**
      * Get the pipeline directories of the groups.
      *
-     * @return array
+     * @return array<string>
      * @throws Exception
      */
     protected function getPipelineDirectories(): array

@@ -63,6 +63,10 @@ class FileResource extends BaseStorageResource
         LocalStorage::disk()->write($this->file, json_encode(value: $data, flags: JSON_PRETTY_PRINT));
     }
 
+    /**
+     * @param Role $role
+     * @return array<array-key, mixed>
+     */
     protected function roleToRow(Role $role): array
     {
         $result = [];
@@ -81,6 +85,10 @@ class FileResource extends BaseStorageResource
         return $result;
     }
 
+    /**
+     * @param Permission $permission
+     * @return array<array-key, mixed>
+     */
     protected function permissionToRow(Permission $permission): array
     {
         $result = [];
@@ -96,6 +104,7 @@ class FileResource extends BaseStorageResource
     }
 
     /**
+     * @param array<array-key, mixed> $permissionsData
      * @throws SentinelException
      */
     protected function restorePermissions(array $permissionsData): void
@@ -121,6 +130,7 @@ class FileResource extends BaseStorageResource
     }
 
     /**
+     * @param array<array-key, mixed> $rolesData
      * @throws SentinelException
      */
     protected function restoreRoles(array $rolesData): void

@@ -34,13 +34,13 @@ abstract class BaseProcessor implements Processor
 
     protected \DateTimeZone|string $timezone;
 
-    /** @var array $args */
+    /** @var array<string, string> $args */
     protected array $args = [];
 
-    /** @var array $filters */
+    /** @var array<callable|bool> $filters */
     protected array $filters = [];
 
-    /** @var array $rejects */
+    /** @var array<callable|bool> $rejects */
     protected array $rejects = [];
 
     /** @var callable[] $beforeCallbacks */
@@ -55,6 +55,12 @@ abstract class BaseProcessor implements Processor
 
     protected int $expiresAfter = 120;
 
+    /**
+     * @param Locker $mutex
+     * @param callable|string $command
+     * @param array<string, string>|null $args
+     * @param \DateTimeZone|string|null $timezone
+     */
     public function __construct(
         Locker $mutex,
         callable|string $command,
@@ -78,7 +84,7 @@ abstract class BaseProcessor implements Processor
     /**
      * Set arguments for the command.
      *
-     * @param array|null $args
+     * @param array<string, string>|null $args
      * @return static
      */
     public function withArgs(?array $args = null): static
@@ -109,7 +115,7 @@ abstract class BaseProcessor implements Processor
         $command = $this->compile();
 
         if (windows_os()) {
-            $command = pclose(popen("start /B " . $command, "r"));
+            $command = (string) pclose(popen("start /B " . $command, "r"));
         } else {
             $command = '(' . $command . ') > /dev/null 2>&1 &';
         }
@@ -274,7 +280,7 @@ abstract class BaseProcessor implements Processor
         $compiled = $this->command;
 
         if (is_callable($compiled)) {
-            return $compiled;
+            return $compiled();
         }
 
         // Sanitize command arguments.

@@ -25,7 +25,7 @@ interface Role
     public function removeChild(string $roleName): void;
 
     /**
-     * @return Role[]
+     * @return array<Role>
      */
     public function getChildren(): array;
 
@@ -41,13 +41,13 @@ interface Role
 
     /**
      * @param bool $withChildren
-     * @return Permission[]
+     * @return array<Permission>
      */
     public function getPermissions(bool $withChildren = false): array;
 
     /**
      * @param string $permissionName
-     * @param array|null $params
+     * @param array<array-key, mixed>|null $params
      * @return bool
      * @throws SentinelException
      */

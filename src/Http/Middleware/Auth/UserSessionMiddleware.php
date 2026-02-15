@@ -145,7 +145,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
      *
      * Return null if the cookie is missing or if the decryption fails.
      *
-     * @param array $cookies
+     * @param array<array-key, mixed> $cookies
      * @return string|null
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException

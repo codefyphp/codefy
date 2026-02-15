@@ -15,6 +15,9 @@ final class RouteCollector extends DataCollector implements Renderable
     ) {
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     public function collect(): array
     {
         return [
@@ -28,6 +31,9 @@ final class RouteCollector extends DataCollector implements Renderable
         return 'route';
     }
 
+    /**
+     * @return array<array-key, array<array-key, mixed>>
+     */
     public function getWidgets(): array
     {
         $widget = $this->isHtmlVarDumperUsed()

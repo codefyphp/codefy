@@ -25,7 +25,7 @@ use function Qubus\Support\Helpers\is_null__;
 class HttpClient extends GuzzleClient
 {
     /**
-     * @param array<array|int|string|callable|bool|UriInterface> $config
+     * @param array<array-key, mixed> $config
      */
     public function __construct(array $config = [])
     {
@@ -40,9 +40,9 @@ class HttpClient extends GuzzleClient
     /**
      * {@inheritDoc}
      *
-     * @param string              $method  HTTP method.
-     * @param string|UriInterface $uri     URL, URI object or string.
-     * @param array               $options {
+     * @param string                    $method  HTTP method.
+     * @param string|UriInterface       $uri     URL, URI object or string.
+     * @param array<array-key, mixed>   $options {
      *                                     Optional. Array of Request options to apply.
      *                                     See \GuzzleHttp\RequestOptions.
      *

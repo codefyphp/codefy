@@ -50,13 +50,27 @@ interface Queue
      *                       a larger lease time will make it more rare for a given
      *                       task to run multiple times in cases of failure, at the
      *                       cost of higher latency.
-     * @return array|object|bool On success, we return an item object|array. If the queue is
+     * @return array{
+     *     '_id':string|int,
+     *     'name':string,
+     *     'object':object,
+     *     'created':int,
+     *     'expire':int,
+     *     'executions':int
+     * }|object{
+     *     '_id':string|int,
+     *      'name':string,
+     *      'object':object,
+     *      'created':int,
+     *      'expire':int,
+     *      'executions':int
+     * }|bool               On success, we return an item object|array. If the queue is
      *                     unable to claim an item it returns false. This implies
      *                     a best effort to retrieve an item and either the queue
      *                     is empty or there is some other non-recoverable problem.
      *
      *   If returned, the object|array will have at least the following properties:
-     *   - data: the same as what was passed into createItem().
+     *   - object: the same as what was passed into createItem().
      *   - _id: the unique ID returned from createItem().
      *   - created: timestamp when the item was put into the queue.
      */
@@ -78,19 +92,6 @@ interface Queue
      * @return bool TRUE if the item has been released, FALSE otherwise.
      */
     public function releaseItem(mixed $item): bool;
-
-    /**
-     * Creates a queue.
-     *
-     * Called during installation and should be used to perform any necessary
-     * initialization operations. This should not be confused with the
-     * constructor for these objects, which is called every time an object is
-     * instantiated to operate on a queue. This operation is only needed the
-     * first time a given queue is going to be initialized (for example, to make
-     * a new database table or directory to hold tasks for the queue -- it
-     * depends on the queue implementation if this is necessary at all).
-     */
-    public function createQueue();
 
     /**
      * Deletes a queue and every item in the queue.

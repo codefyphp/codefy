@@ -13,7 +13,7 @@ final class PresetRegistry
     }
 
     /**
-     * @return array<array-key, array>
+     * @return array<array-key, mixed>
      * @throws \Exception
      */
     public function all(): array
@@ -22,7 +22,7 @@ final class PresetRegistry
     }
 
     /**
-     * @return array<array-key, array>
+     * @return array<array-key, mixed>
      * @throws \Exception
      */
     public function get(string $key): array

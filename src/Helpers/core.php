@@ -27,6 +27,8 @@ use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
 use Codefy\QueryBus\UnresolvableQueryHandlerException;
 use Gravatar\Image;
 use Gravatar\Profile;
+use PHPUnit\Event\Code\Throwable;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Exception;
@@ -34,6 +36,7 @@ use Qubus\Exception\Http\HttpExceptionFactory;
 use Qubus\Expressive\Connection;
 use Qubus\Expressive\QueryBuilder;
 use Qubus\Http\Factories\HtmlResponseFactory;
+use Qubus\Injector\ServiceContainer;
 use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
 use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
 use Qubus\Routing\Exceptions\TooLateToAddNewRouteException;
@@ -75,7 +78,7 @@ use const FILTER_VALIDATE_IP;
  *
  * @param class-string|string|null $name
  * @param array<string, class-string> $args
- * @return mixed
+ * @return ($name is null ? Application : mixed)
  */
 function app(?string $name = null, array $args = []): mixed
 {
@@ -95,7 +98,7 @@ function app(?string $name = null, array $args = []): mixed
 /**
  * Get the available config instance.
  *
- * @param array<array-key, array>|string|null  $key
+ * @param array<array-key, mixed>|string|null  $key
  * @param mixed $default
  * @return ($key is null ? ConfigContainer : mixed)
  */
@@ -473,7 +476,7 @@ function gravatar_profile(?string $email = null): Profile
  *
  * @param mixed $condition
  * @param class-string|object|\Closure $exception
- * @param ...$parameters
+ * @param string|int|Throwable|null ...$parameters
  * @return mixed
  */
 function throw_if(mixed $condition, mixed $exception = \RuntimeException::class, ...$parameters): mixed
@@ -649,6 +652,7 @@ function method_field(string $method): HtmlString
  * Return an array of system user roles.
  *
  * @since 3.1
+ * @return array<array-key, mixed>
  * @throws Exception
  */
 function get_system_roles(): array

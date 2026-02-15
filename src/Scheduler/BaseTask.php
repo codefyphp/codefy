@@ -26,7 +26,7 @@ abstract class BaseTask extends BaseProcessor implements Task
     protected ?TaskId $pid = null;
 
     /**
-     * @var array<array|int|string|bool|CronExpression|null>
+     * @var array<array-key, mixed>
      */
     protected array $options = [];
 

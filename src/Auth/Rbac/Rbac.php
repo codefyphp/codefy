@@ -36,7 +36,7 @@ class Rbac implements Guard
 
     //phpcs:disable
     /**
-     * @return Role[]
+     * @var array<Role> $roles
      */
     public array $roles = [] {
         &get => $this->roles;
@@ -62,7 +62,7 @@ class Rbac implements Guard
 
     //phpcs:disable
     /**
-     * @return Permission[]
+     * @var array<Permission> $permissions
      */
     public array $permissions = [] {
         &get => $this->permissions;

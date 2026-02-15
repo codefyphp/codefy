@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codefy\Framework\Pipeline;
 
 use Codefy\Framework\Support\Traits\DbTransactionsAware;
+use Psr\Container\ContainerInterface;
 use Qubus\EventDispatcher\ActionFilter\Traits\ActionAware;
 use Qubus\Inheritance\ConditionalAware;
 use Qubus\Injector\ServiceContainer;

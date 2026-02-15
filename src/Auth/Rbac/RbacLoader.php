@@ -41,6 +41,11 @@ final readonly class RbacLoader
         }
     }
 
+    /**
+     * @param array<array-key, mixed> $rolesConfig
+     * @param Role|null $parent
+     * @return void
+     */
     private function addRoles(array $rolesConfig, ?Role $parent = null): void
     {
         foreach ($rolesConfig as $name => $config) {
@@ -64,6 +69,8 @@ final readonly class RbacLoader
     }
 
     /**
+     * @param array<array-key, mixed> $permissionsConfig
+     * @param Permission|null $parent
      * @throws SentinelException
      */
     private function addPermissions(array $permissionsConfig, ?Permission $parent = null): void

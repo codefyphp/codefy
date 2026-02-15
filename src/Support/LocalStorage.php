@@ -6,7 +6,6 @@ namespace Codefy\Framework\Support;
 
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
-use Qubus\Config\ConfigContainer;
 use Qubus\FileSystem\FileSystem;
 
 use function Codefy\Framework\Helpers\config;
@@ -24,14 +23,18 @@ final class LocalStorage
         return self::createInstanceOfLocalDriver($name, $config);
     }
 
-    private static function getConfigForDriverName(string $name): array|ConfigContainer
+    /**
+     * @param string $name
+     * @return array<array-key, mixed>
+     */
+    private static function getConfigForDriverName(string $name): array
     {
         return config(key: "filesystem.disks.{$name}") ?? [];
     }
 
     /**
      * @param string $name
-     * @param array<string|int|null|array<mixed>> $configArray
+     * @param array<array-key, mixed> $configArray
      * @return FileSystem
      */
     public static function createInstanceOfLocalDriver(string $name, array $configArray): FileSystem
@@ -54,6 +57,10 @@ final class LocalStorage
         return new FileSystem(adapter: $adapter, configArray: $configArray);
     }
 
+    /**
+     * @param string $name
+     * @return array<array-key, mixed>
+     */
     private static function setVisibilityConverterByDiskName(string $name): array
     {
         return [

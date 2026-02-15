@@ -38,10 +38,7 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     }
 
     /**
-     * Register a booting callback to be run before the "boot" method is called.
-     *
-     * @param \Closure $callback
-     * @return void
+     * @inheritDoc
      */
     public function booting(\Closure $callback): void
     {
@@ -49,10 +46,7 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     }
 
     /**
-     * Register a booted callback to be run after the "boot" method is called.
-     *
-     * @param \Closure $callback
-     * @return void
+     * @inheritDoc
      */
     public function booted(\Closure $callback): void
     {
@@ -60,9 +54,7 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     }
 
     /**
-     * Call the registered booting callbacks.
-     *
-     * @return void
+     * @inheritDoc
      */
     public function callBootingCallbacks(): void
     {
@@ -76,9 +68,7 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     }
 
     /**
-     * Call the registered booted callbacks.
-     *
-     * @return void
+     * @inheritDoc
      */
     public function callBootedCallbacks(): void
     {
@@ -102,10 +92,7 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     }
 
     /**
-     * Register publishable paths for this provider.
-     *
-     * @param array<string,string> $paths [from => tag]
-     * @param string|null $group Optional tag/group name ("config", "migrations", etc.)
+     * @inheritDoc
      */
     public function publishes(array $paths, ?string $group = null): void
     {
@@ -116,10 +103,7 @@ abstract class CodefyServiceProvider extends BaseServiceProvider
     }
 
     /**
-     * Get all publishable paths for this provider.
-     *
-     * @param string|null $tag Restrict to a tag (e.g. "config", "migrations")
-     * @return array<string,string> [from => tag]
+     * @inheritDoc
      */
     public function pathsToPublish(?string $tag = null): array
     {

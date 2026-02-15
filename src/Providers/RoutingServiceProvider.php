@@ -39,7 +39,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
     /**
      * Register the callback that will be used to load the application's routes.
      *
-     * @param \Closure|callable|string|array|null $routes
+     * @param \Closure|callable|string|array<mixed>|null $routes
      * @return $this
      */
     protected function routes(\Closure|callable|string|array|null $routes): static
@@ -52,7 +52,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
     /**
      * Register the callback that will be used to load the application's routes.
      *
-     * @param \Closure|callable|string|array|null $routes
+     * @param \Closure|callable|string|array<mixed>|null $routes
      * @return void
      */
     public static function loadRoutesUsing(\Closure|callable|string|array|null $routes): void
@@ -79,6 +79,10 @@ class RoutingServiceProvider extends CodefyServiceProvider
         }
     }
 
+    /**
+     * @param \Closure|callable|string|array<array<mixed>|callable|\Closure|string> $routes
+     * @return \Closure
+     */
     protected static function normalizeRoutes(\Closure|callable|string|array $routes): \Closure
     {
         return function (Router $router) use ($routes): void {
@@ -125,7 +129,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
      * Pass dynamic methods onto the router instance.
      *
      * @param string $method
-     * @param array  $parameters
+     * @param array<mixed>  $parameters
      * @return mixed
      */
     public function __call(string $method, array $parameters)

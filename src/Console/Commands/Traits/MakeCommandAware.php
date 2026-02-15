@@ -195,7 +195,7 @@ trait MakeCommandAware
      * @param string $file
      * @param string $classNameSuffix
      * @param string $classNamePrefix
-     * @return array|bool
+     * @return array<string>|bool
      */
     private function resolveStubContentPlaceholders(
         string $file,
@@ -269,7 +269,7 @@ trait MakeCommandAware
      *
      * @param string $classNamePrefix
      * @param string $classNameSuffix
-     * @return array|bool
+     * @return array<string>|bool
      */
     private function resolveModelDependency(string $classNamePrefix, string $classNameSuffix): array|bool
     {

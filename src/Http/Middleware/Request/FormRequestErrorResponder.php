@@ -36,7 +36,7 @@ final readonly class FormRequestErrorResponder
     }
 
     /**
-     * @param array $errors
+     * @param array<string> $errors
      * @return ResponseInterface
      */
     public function validationFailed(array $errors): ResponseInterface

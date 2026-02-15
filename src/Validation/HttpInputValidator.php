@@ -291,6 +291,7 @@ abstract class HttpInputValidator implements DataValidator
 
     /**
      * @inheritDoc
+     * @return array<array-key, mixed>
      * @throws Exception
      */
     public function array(string $key, mixed $default = null): array

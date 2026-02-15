@@ -17,6 +17,7 @@ use function array_values;
 
 final class RegisterProviders
 {
+    /** @var array<class-string> $merge */
     protected static array $merge = [];
 
     /**
@@ -26,6 +27,7 @@ final class RegisterProviders
      */
     protected static ?string $bootstrapProviderPath = null;
 
+    /** @var array<class-string> $providers */
     public static array $providers = [];
 
     /**
@@ -83,7 +85,7 @@ final class RegisterProviders
      * Merge the given providers into the provider configuration
      * before registration.
      *
-     * @param array $providers
+     * @param array<class-string> $providers
      * @param string|null $bootstrapProviderPath
      * @return void
      */
@@ -92,10 +94,8 @@ final class RegisterProviders
         self::$bootstrapProviderPath = $bootstrapProviderPath;
 
         self::$merge = array_values(
-            array: array_filter(
-                array: array_unique(
-                    array: array_merge(self::$merge, $providers)
-                )
+            array: array_unique(
+                array: array_merge(self::$merge, $providers)
             )
         );
     }

@@ -22,12 +22,12 @@ final class ClassGenerator
     /**
      * Generate class files from a preset.
      *
-     * @param array       $preset
-     * @param string      $namespace
-     * @param string      $directory
-     * @param string      $className
-     * @param string|null $overridePath
-     * @return array
+     * @param array<array-key, mixed>  $preset
+     * @param string                   $namespace
+     * @param string                   $directory
+     * @param string                   $className
+     * @param string|null              $overridePath
+     * @return array<string>
      * @throws Exception
      */
     public function generate(

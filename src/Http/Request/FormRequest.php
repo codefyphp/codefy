@@ -32,7 +32,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
     /**
      * The filtered input data.
      *
-     * @param array<mixed> $data
+     * @var array<array-key, mixed> $data
      */
     protected array $data = [];
 
@@ -194,6 +194,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
 
     /**
      * @inheritDoc
+     * @return array<array-key, mixed>
      * @throws Exception
      */
     public function array(string $key, mixed $default = null): array
@@ -299,7 +300,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
     /**
      * Get the validation rules for this form request.
      *
-     * @return array<string|null>
+     * @return array<array-key, mixed>
      */
     protected function validationRules(): array
     {

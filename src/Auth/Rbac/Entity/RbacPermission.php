@@ -12,6 +12,7 @@ use function sprintf;
 
 class RbacPermission implements Permission
 {
+    /** @var array<mixed> $childrenNames */
     protected array $childrenNames = [];
     protected ?string $ruleClass = '';
 

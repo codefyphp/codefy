@@ -9,6 +9,7 @@ use Codefy\Framework\Scheduler\Processor\Callback;
 use Codefy\Framework\Scheduler\Processor\Processor;
 use Codefy\Framework\Scheduler\Processor\Shell;
 use Codefy\Framework\Scheduler\Traits\LiteralAware;
+use Cron\CronExpression;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Support\DateTime\QubusDateTimeZone;
@@ -70,6 +71,11 @@ class Schedule
         return $this;
     }
 
+    /**
+     * @param callable|string $command
+     * @param array<string, string> $args
+     * @return Shell|Callback
+     */
     public function command(callable|string $command, array $args = []): Shell|Callback
     {
         if (is_callable($command)) {
@@ -86,6 +92,12 @@ class Schedule
         return $command;
     }
 
+    /**
+     * @param string $script
+     * @param string|null $bin
+     * @param array<string, string> $args
+     * @return Shell
+     */
     public function php(string $script, ?string $bin = null, array $args = []): Shell
     {
         $bin = ! is_null__($bin) && is_string($bin) && file_exists($bin) ?
@@ -113,6 +125,7 @@ class Schedule
 
     /**
      * @param class-string $task
+     * @param array<array-key, array<mixed>|int|string|bool|CronExpression|null> $options
      * @throws \ReflectionException
      * @throws \Exception
      */
@@ -199,6 +212,8 @@ class Schedule
 
     /**
      * Compile the Task command.
+     *
+     * @param array<string, string> $args
      */
     protected function compileArguments(array $args = []): string
     {

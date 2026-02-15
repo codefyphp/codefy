@@ -7,6 +7,8 @@ namespace Codefy\Framework\Console\Commands;
 use Codefy\Framework\Console\ConsoleCommand;
 use League\Flysystem\FilesystemException;
 use Qubus\FileSystem\FileSystem;
+use Qubus\Injector\ServiceProvider\Bootable;
+use Qubus\Injector\ServiceProvider\Serviceable;
 use Symfony\Component\Console\Input\InputOption;
 
 use function basename;
@@ -83,11 +85,15 @@ EOT
         $tag      = $this->input->getOption('tag');
         $force    = $this->input->getOption('force');
 
+        /** @var array<Serviceable|Bootable, bool> $registeredProviders */
         $registeredProviders = $this->codefy->getRegisteredProviders();
 
+        /**
+         * @var Serviceable|Bootable $instance
+         */
         foreach ($registeredProviders as $instance => $value) {
 
-            $paths = $instance->pathsToPublish($tag); // @phpstan-ignore method.nonObject
+            $paths = $instance->pathsToPublish($tag);
 
             foreach ($paths as $from => $type) {
                 $destination = $this->resolveDestination($from, $type);
@@ -179,14 +185,18 @@ EOT
 
     private function listPublishables(): int
     {
+        /** @var array<Serviceable|Bootable, bool> $providers */
         $providers = $this->codefy->getRegisteredProviders();
 
         $this->output->writeln("<info>Available publishable resources:</info>");
 
+        /**
+         * @var Serviceable|Bootable $instance
+         */
         foreach ($providers as $instance => $value) {
 
             foreach (['config', 'migrations'] as $tag) {
-                $paths = $instance->pathsToPublish($tag); // @phpstan-ignore method.nonObject
+                $paths = $instance->pathsToPublish($tag);
                 if (!empty($paths)) {
                     $this->output->writeln("    - tag: <info>{$tag}</info>");
                     foreach ($paths as $from => $type) {
@@ -204,6 +214,7 @@ EOT
      */
     private function publishDefinedProvider(): int
     {
+        /** @var array<Serviceable|Bootable, bool> $registeredProviders */
         $registeredProviders = $this->codefy->getRegisteredProviders();
 
         $provider = $this->input->getOption('provider');
@@ -212,6 +223,9 @@ EOT
 
         $providers = $this->findKeysLike($provider, $registeredProviders);
 
+        /**
+         * @var Serviceable|Bootable $p
+         */
         foreach ($providers as $int => $p) {
 
             $paths = $p->pathsToPublish($tag);
@@ -233,11 +247,11 @@ EOT
     /**
      * Search array keys for a substring and return all matching keys.
      *
-     * @param string $needle
-     * @param array  $haystack
-     * @param bool   $caseSensitive
+     * @param string                             $needle
+     * @param array<Serviceable|Bootable, bool>  $haystack
+     * @param bool                               $caseSensitive
      *
-     * @return array List of matching keys (empty if none found).
+     * @return list<string> List of matching keys (empty if none found).
      */
     protected function findKeysLike(string $needle, array $haystack, bool $caseSensitive = true): array
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Auth;
 
+use Codefy\Framework\Auth\Rbac\Entity\Role;
 use Codefy\Framework\Auth\Rbac\Rbac;
 use Codefy\Framework\Auth\Repository\AuthUserRepository;
 use Codefy\Framework\Factory\FileLoggerFactory;
@@ -25,7 +26,7 @@ class Gate
      * Authorization check.
      *
      * @param string $permissionName
-     * @param array $ruleParams
+     * @param array<array-key, mixed> $ruleParams
      * @return bool
      * @throws \ReflectionException
      * @throws TypeException
@@ -90,7 +91,7 @@ class Gate
     }
 
     /**
-     * @return array
+     * @return array<string, Role>
      * @throws \ReflectionException
      */
     private function getRoles(): array

@@ -10,7 +10,7 @@ trait FileLoggerAware
      * System is unusable.
      *
      * @param string|\Stringable $message
-     * @param array $context
+     * @param array<array-key, mixed> $context
      * @return void
      * @throws \Exception
      * @throws \ReflectionException
@@ -27,7 +27,7 @@ trait FileLoggerAware
      * trigger the SMS alerts and wake you up.
      *
      * @param string|\Stringable $message
-     * @param array $context
+     * @param array<array-key, mixed> $context
      * @return void
      * @throws \Exception
      * @throws \ReflectionException
@@ -43,7 +43,7 @@ trait FileLoggerAware
      * Example: Application component unavailable, unexpected exception.
      *
      * @param string|\Stringable $message
-     * @param array $context
+     * @param array<array-key, mixed> $context
      * @return void
      * @throws \Exception
      * @throws \ReflectionException
@@ -58,7 +58,7 @@ trait FileLoggerAware
      * be logged and monitored.
      *
      * @param string|\Stringable $message
-     * @param array $context
+     * @param array<array-key, mixed> $context
      * @return void
      * @throws \Exception
      * @throws \ReflectionException
@@ -75,7 +75,7 @@ trait FileLoggerAware
      * that are not necessarily wrong.
      *
      * @param string|\Stringable $message
-     * @param array $context
+     * @param array<array-key, mixed> $context
      * @return void
      * @throws \Exception
      * @throws \ReflectionException
@@ -89,7 +89,7 @@ trait FileLoggerAware
      * Normal but significant events.
      *
      * @param string|\Stringable $message
-     * @param array $context
+     * @param array<array-key, mixed> $context
      * @return void
      * @throws \Exception
      * @throws \ReflectionException
@@ -105,7 +105,7 @@ trait FileLoggerAware
      * Example: User logs in, SQL logs.
      *
      * @param string|\Stringable $message
-     * @param array $context
+     * @param array<array-key, mixed> $context
      * @return void
      * @throws \Exception
      * @throws \ReflectionException
@@ -119,7 +119,7 @@ trait FileLoggerAware
      * Detailed debug information.
      *
      * @param string|\Stringable $message
-     * @param array $context
+     * @param array<array-key, mixed> $context
      * @return void
      * @throws \Exception
      * @throws \ReflectionException

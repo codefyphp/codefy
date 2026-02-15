@@ -13,10 +13,12 @@ use Codefy\Framework\Auth\Rbac\Exception\SentinelException;
 abstract class BaseStorageResource implements StorageResource
 {
     //phpcs:disable
+    /** @var array<Role> $roles */
     public protected(set) array $roles = [] {
         &get => $this->roles;
     }
 
+    /** @var array<Permission> $permissions */
     public protected(set) array $permissions = [] {
         &get => $this->permissions;
     }

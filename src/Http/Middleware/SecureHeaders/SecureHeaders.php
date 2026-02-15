@@ -35,19 +35,26 @@ final class SecureHeaders
     protected bool $compiled = false;
 
     /**
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $headers = [];
 
+    /** @var array<string, mixed>  */
     protected static array $nonces = [
         'script' => [],
         'style' => [],
     ];
 
+    /**
+     * @param array<array-key, mixed> $config
+     */
     public function __construct(protected array $config = [])
     {
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     public function headers(): array
     {
         if (! $this->compiled) {
@@ -71,6 +78,9 @@ final class SecureHeaders
         $this->compiled = true;
     }
 
+    /**
+     * @return array<string>
+     */
     protected function csp(): array
     {
         if (isset($this->config['custom-csp'])) {
@@ -116,6 +126,9 @@ final class SecureHeaders
         return ['Strict-Transport-Security' => $hsts];
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     protected function expectCT(): array
     {
         $config = $this->config['expect-ct'] ?? [];
@@ -140,7 +153,7 @@ final class SecureHeaders
     /**
      * Generate Clear-Site-Data header.
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     protected function clearSiteData(): array
     {
@@ -170,6 +183,9 @@ final class SecureHeaders
         return ['Clear-Site-Data' => implode(separator: ', ', array: $build)];
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     protected function permissionsPolicy(): array
     {
         $config = $this->config['permissions-policy'] ?? [];
@@ -248,7 +264,7 @@ final class SecureHeaders
     /**
      * Parse a specific permission policy value.
      *
-     * @param array $config
+     * @param array<array-key, mixed> $config
      * @return string
      */
     protected function directive(array $config): string
@@ -270,6 +286,9 @@ final class SecureHeaders
 
     /**
      * Get valid origins.
+     *
+     * @param array<array-key, mixed> $origins
+     * @return array<array-key, mixed>
      */
     protected function origins(array $origins): array
     {

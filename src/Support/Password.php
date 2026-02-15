@@ -106,7 +106,7 @@ final class Password
     /**
      * Get available password hashing algorithm IDs.
      *
-     * @return array<string>
+     * @return array<array-key, string>
      */
     public static function algos(): array
     {
@@ -117,7 +117,7 @@ final class Password
      * Returns information about the given hash.
      *
      * @param string $password
-     * @return array<string, int|string|array>
+     * @return array<array-key, mixed>
      */
     public static function getInfo(string $password): array
     {

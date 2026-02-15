@@ -11,7 +11,9 @@ use function array_merge;
 
 class RbacRole implements Role
 {
+    /** @var array<mixed> $childrenNames */
     protected array $childrenNames = [];
+    /** @var array<string, bool> $permissionNames */
     protected array $permissionNames = [];
 
     //phpcs:disable

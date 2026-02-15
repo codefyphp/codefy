@@ -7,7 +7,7 @@ namespace Codefy\Framework\Auth\Rbac\Entity;
 interface AssertionRule
 {
     /**
-     * @param array|null $params
+     * @param array<mixed, mixed>|null $params
      * @return bool
      */
     public function execute(?array $params): bool;

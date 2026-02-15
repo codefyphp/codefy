@@ -17,7 +17,7 @@ final class SeoFactory
 {
     /**
      * @param string $type
-     * @param array<mixed> $data
+     * @param array<string, string> $data
      * @return Thing
      */
     public static function thing(string $type, array $data = []): Thing
@@ -48,7 +48,7 @@ final class SeoFactory
      * Initialize new sitemap builder.
      *
      * @param string $domain
-     * @param array<mixed> $options
+     * @param array<string, string> $options
      * @return Sitemap
      */
     public static function sitemap(string $domain, array $options = []): Sitemap
@@ -69,7 +69,7 @@ final class SeoFactory
     /**
      * Initialize new sitemap ping.
      *
-     * @param array $append
+     * @param array<string> $append
      * @return Ping
      */
     public static function ping(array $append = []): Ping
@@ -81,7 +81,7 @@ final class SeoFactory
      * Initialize indexer.
      *
      * @param string $host
-     * @param array<mixed> $keys
+     * @param array<string, string> $keys
      * @return Indexing
      */
     public static function indexing(string $host, array $keys): Indexing

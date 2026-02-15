@@ -17,12 +17,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class PhpMigCommand extends ConsoleCommand
 {
+    /** @var \ArrayAccess<string, mixed>|null */
     protected ?\ArrayAccess $objectmap = null;
 
     protected ?MigrationAdapter $adapter = null;
 
     protected ?string $bootstrap = null;
 
+    /** @var array<object> */
     protected array $migrations = [];
 
     /**
@@ -81,9 +83,9 @@ abstract class PhpMigCommand extends ConsoleCommand
     }
 
     /**
-     * @return \ArrayAccess
+     * @return \ArrayAccess<string, mixed>
      */
-    protected function bootstrapObjectMap(): \ArrayAccess
+    protected function bootstrapObjectMap(): object
     {
         $bootstrapFile = $this->getBootstrap();
 
@@ -93,7 +95,7 @@ abstract class PhpMigCommand extends ConsoleCommand
 
         $objectmap = $func();
 
-        if (!($objectmap instanceof \ArrayAccess)) {
+        if (!$objectmap instanceof \ArrayAccess) {
             throw new \RuntimeException(
                 message: sprintf(
                     '%s must return object of type ArrayAccess.',
@@ -158,7 +160,7 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return array
+     * @return array<object>
      * @throws TypeException
      */
     protected function bootstrapMigrations(InputInterface $input, OutputInterface $output): array
@@ -340,7 +342,7 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Set migrations
      *
-     * @param array $migrations
+     * @param array<object> $migrations
      * @return static
      */
     public function setMigrations(array $migrations): static
@@ -352,7 +354,7 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Get migrations.
      *
-     * @return array
+     * @return array<object>
      */
     public function getMigrations(): array
     {
@@ -362,7 +364,7 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Set objectmap.
      *
-     * @param \ArrayAccess $objectmap
+     * @param \ArrayAccess<string, mixed> $objectmap
      * @return static
      */
     public function setObjectMap(\ArrayAccess $objectmap): static
@@ -374,7 +376,7 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Get objectmap.
      *
-     * @return \ArrayAccess|null
+     * @return \ArrayAccess<string, mixed>|null
      */
     public function getObjectMap(): ?\ArrayAccess
     {
@@ -407,11 +409,11 @@ abstract class PhpMigCommand extends ConsoleCommand
     /**
      * Transform create_table_user to CreateTableUser
      *
-     * @param $migrationName
+     * @param string $migrationName
      * @return string
      * @throws TypeException
      */
-    protected function migrationToClassName($migrationName): string
+    protected function migrationToClassName(string $migrationName): string
     {
         $class = str_replace(search: '_', replace: ' ', subject: $migrationName);
         $class = ucwords(string: $class);
@@ -430,11 +432,11 @@ abstract class PhpMigCommand extends ConsoleCommand
     }
 
     /**
-     * @param $className
+     * @param class-string $className
      * @return bool
      * @see http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.class
      */
-    private function isValidClassName($className): bool
+    private function isValidClassName(string $className): bool
     {
         return preg_match(pattern: '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', subject: $className) === 1;
     }

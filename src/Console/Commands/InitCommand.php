@@ -42,7 +42,7 @@ EOT
      * @param OutputInterface $output
      * @return void
      */
-    protected function initMigrationsDir($migrations, OutputInterface $output): void
+    protected function initMigrationsDir(string $migrations, OutputInterface $output): void
     {
         if (file_exists(filename: $migrations) && is_dir(filename: $migrations)) {
             $output->writeln(

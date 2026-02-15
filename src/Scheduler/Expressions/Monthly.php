@@ -14,6 +14,11 @@ final class Monthly implements Expressional
 
     /**
      * Sets the job execution time to once per month.
+     *
+     * @param int|string|array<int> $month
+     * @param int|string|array<int> $day
+     * @param int|string|array<int> $hour
+     * @param int|string|array<int> $minute
      * @throws TypeException
      */
     public static function make(

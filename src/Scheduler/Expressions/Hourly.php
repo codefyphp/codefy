@@ -14,6 +14,8 @@ final class Hourly implements Expressional
 
     /**
      * Sets the job execution time to run once every hour.
+     *
+     * @param int|string|array<int> $minute
      * @throws TypeException
      */
     public static function make(int|string|array $minute = 0): CronExpression

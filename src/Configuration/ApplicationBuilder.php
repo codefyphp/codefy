@@ -121,12 +121,12 @@ final class ApplicationBuilder
     /**
      * Register the routing services for the application.
      *
-     * @param callable|\Closure|null    $using
-     * @param array|string|null        $web
-     * @param array<class-string>|null $class
-     * @param array|string|null        $api
-     * @param string                   $apiPrefix
-     * @param callable|null            $then
+     * @param callable|\Closure|null     $using
+     * @param array<string>|string|null  $web
+     * @param array<class-string>|null   $class
+     * @param array<string>|string|null  $api
+     * @param string                     $apiPrefix
+     * @param callable|null              $then
      * @return $this
      * @throws TypeException
      */
@@ -179,10 +179,10 @@ final class ApplicationBuilder
     /**
      * Create the routing callback for the application.
      *
-     * @param array|string|null $web
-     * @param array|string|null $api
-     * @param string            $apiPrefix
-     * @param callable|null     $then
+     * @param array<string>|string|null $web
+     * @param array<string>|string|null $api
+     * @param string                    $apiPrefix
+     * @param callable|null             $then
      * @return \Closure
      */
     protected function buildRoutingCallback(

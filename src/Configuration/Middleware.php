@@ -9,6 +9,7 @@ use Psr\Http\Server\MiddlewareInterface;
 
 class Middleware
 {
+    /** @var array<string, class-string<MiddlewareInterface>> $customAliases */
     protected static array $customAliases = [];
 
     /**
@@ -32,7 +33,7 @@ class Middleware
     /**
      * Returns additional middleware aliases.
      *
-     * @return array
+     * @return array<string, class-string<MiddlewareInterface>>
      */
     public function getAliases(): array
     {

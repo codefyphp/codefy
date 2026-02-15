@@ -13,6 +13,9 @@ class Sunday implements Expressional
 {
     /**
      * Sets the job execution time to run once every Sunday.
+     *
+     * @param int|string|array<int> $hour
+     * @param int|string|array<int> $minute
      * @throws TypeException
      */
     public static function make(int|string|array $hour = 0, int|string|array $minute = 0): CronExpression

@@ -155,10 +155,10 @@ PHP;
             '.' . str_replace(search: getcwd(), replace: '', subject: $path) . '</info>'
         );
 
-        return ConsoleCommand::SUCCESS;
+        return self::SUCCESS;
     }
 
-    protected function transMigName($migrationName): string
+    protected function transMigName(string $migrationName): string
     {
         //http://php.net/manual/en/language.variables.basics.php
         if (preg_match(pattern: '/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', subject: $migrationName)) {

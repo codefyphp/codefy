@@ -16,6 +16,7 @@ use function str_replace;
 class CodefyCollector extends DataCollector implements Renderable
 {
     /**
+     * @return array<array-key, mixed>
      * @throws Exception
      */
     public function collect(): array
@@ -47,6 +48,9 @@ class CodefyCollector extends DataCollector implements Renderable
         return 'codefy';
     }
 
+    /**
+     * @return array<array-key, array<array-key, string>>
+     */
     public function getWidgets(): array
     {
         return [

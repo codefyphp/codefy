@@ -36,8 +36,7 @@ class AssetsServiceProvider extends CodefyServiceProvider
      * Register an instance of the assets manager library.
      *
      * @param string $name   Name of the group.
-     * @param array  $config Config of the group.
-     *
+     * @param array<array-key, mixed>  $config Config of the group.
      * @return void
      */
     protected function registerAssetsManagerInstance(string $name, array $config): void

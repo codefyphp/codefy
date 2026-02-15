@@ -14,6 +14,12 @@ use function sprintf;
 trait ScheduleValidateAware
 {
     /**
+     * @param int|string|array<int>|null $minute
+     * @param int|string|array<int>|null $hour
+     * @param int|string|array<int>|null $day
+     * @param int|string|array<int>|null $month
+     * @param int|string|array<int>|null $weekday
+     * @return array<string, string|int|null>
      * @throws TypeException
      */
     protected static function sequence(
@@ -33,6 +39,10 @@ trait ScheduleValidateAware
     }
 
     /**
+     * @param int|string|array<int>|null $value
+     * @param int $min
+     * @param int $max
+     * @return int|string|null
      * @throws TypeException
      */
     protected static function range(int|string|array|null $value = null, int $min = 0, int $max = 0): int|string|null
@@ -43,10 +53,7 @@ trait ScheduleValidateAware
 
         if (is_array($value)) {
             foreach ($value as $v) {
-                if (
-                    ! is_numeric($v) ||
-                    ! ($v >= $min && $v <= $max)
-                ) {
+                if (! ($v >= $min && $v <= $max)) {
                     throw new TypeException(
                         sprintf(
                             "Invalid value. It should be '*' or between %s and %s.",

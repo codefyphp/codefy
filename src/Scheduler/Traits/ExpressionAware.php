@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Scheduler\Traits;
 
+use Codefy\Framework\Queue\NodeQueue;
+use Codefy\Framework\Scheduler\Processor\BaseProcessor;
 use Codefy\Framework\Scheduler\Schedule;
 use Carbon\Carbon;
 use Cron\CronExpression;
@@ -383,6 +385,9 @@ trait ExpressionAware
 
     /**
      * Schedule the task to run quarterly.
+     *
+     * @param int|string|array<int> $day
+     * @param string|null $time
      * @throws TypeException
      */
     public function quarterly(int|string|array $day = 1, ?string $time = null): self
@@ -584,7 +589,9 @@ trait ExpressionAware
             is_string($this->expression) => $this->expression
         };
 
-        $segments = explode(' ', $expression);
+        if (is_string($expression)) {
+            $segments = explode(' ', $expression);
+        }
 
         $segments[$position] = $value;
 
@@ -611,10 +618,15 @@ trait ExpressionAware
 
     /**
      * Parses a time string (like 4:08 pm) into minutes and hours.
+     *
+     * @return array<int|string>
      */
     protected function parseTime(string $time): array
     {
         $time = strtotime($time);
+        if ($time === false) {
+            $time = null;
+        }
 
         return [
             (int) date('i', $time), // minutes

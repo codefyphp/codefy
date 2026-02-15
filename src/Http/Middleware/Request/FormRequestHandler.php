@@ -27,6 +27,7 @@ abstract readonly class FormRequestHandler implements RequestHandlerInterface
         };
 
         return $this->middleware->process($request, new class ($callable) implements RequestHandlerInterface {
+            /** @var callable $callable */
             private $callable;
 
             public function __construct(callable $callable)

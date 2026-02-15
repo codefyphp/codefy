@@ -18,6 +18,9 @@ final class WeekEnds implements Expressional
 
     /**
      * Sets the job execution time to once per week.
+     *
+     * @param int|string|array<int> $hour
+     * @param int|string|array<int> $minute
      * @throws TypeException
      */
     public static function make(

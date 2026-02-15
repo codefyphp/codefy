@@ -13,6 +13,10 @@ final class May implements Expressional
 {
     /**
      * Sets the job execution time to run once every May.
+     *
+     * @param int|string|array<int> $day
+     * @param int|string|array<int> $hour
+     * @param int|string|array<int> $minute
      * @throws TypeException
      */
     public static function make(

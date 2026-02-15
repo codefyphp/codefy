@@ -23,10 +23,10 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     protected ?ShouldQueue $queue = null;
     private ?Collection $db = null;
 
-    /** @var array $filters */
+    /** @var array<callable|bool> $filters */
     protected array $filters = [];
 
-    /** @var array $rejects */
+    /** @var array<callable|bool> $rejects */
     protected array $rejects = [];
 
     protected \DateTimeZone|string $timezone;
@@ -243,17 +243,6 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
         }
 
         return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function createQueue()
-    {
-        /**
-         * All tasks are stored in a single node (which is created on
-         * demand) so there is nothing we need to do to create a new queue.
-         */
     }
 
     /**

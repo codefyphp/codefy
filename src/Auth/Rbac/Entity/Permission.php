@@ -23,7 +23,7 @@ interface Permission
     public function removeChild(string $permissionName): void;
 
     /**
-     * @return Permission[]
+     * @return array<Permission>
      */
     public function getChildren(): array;
 
@@ -38,7 +38,7 @@ interface Permission
     public function getRuleClass(): ?string;
 
     /**
-     * @param array|null $params
+     * @param array<array-key, mixed>|null $params
      * @return bool
      */
     public function checkAccess(?array $params = null): bool;

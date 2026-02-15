@@ -102,6 +102,10 @@ class MakeCommand extends ConsoleCommand
         return self::SUCCESS;
     }
 
+    /**
+     * @param string $root
+     * @return array<string>
+     */
     private function scanDirectories(string $root): array
     {
         $dirs = [];

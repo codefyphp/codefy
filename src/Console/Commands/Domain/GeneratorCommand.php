@@ -273,7 +273,7 @@ abstract class GeneratorCommand extends ConsoleCommand
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, int|string>>
      */
     protected function getArguments(): array
     {
@@ -285,7 +285,7 @@ abstract class GeneratorCommand extends ConsoleCommand
     /**
      * Prompt for missing input arguments using the returned questions.
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     protected function promptForMissingArgumentsUsing(): array
     {

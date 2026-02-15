@@ -15,9 +15,9 @@ final class Quarterly implements Expressional
     /**
      * Sets the job execution time to once per Quarter.
      *
-     * @param int|string|array $day Defaults to run the 1st day of each quarter.
-     * @param int|string|array $hour
-     * @param int|string|array $minute
+     * @param int|string|array<int> $day Defaults to run the 1st day of each quarter.
+     * @param int|string|array<int> $hour
+     * @param int|string|array<int> $minute
      * @return CronExpression
      * @throws TypeException
      */

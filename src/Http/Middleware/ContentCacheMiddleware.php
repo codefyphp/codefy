@@ -48,7 +48,7 @@ class ContentCacheMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    protected function buildResponse($html, ResponseInterface $response): ResponseInterface
+    protected function buildResponse(string $html, ResponseInterface $response): ResponseInterface
     {
         $body = new Stream('php://memory', 'w');
         $body->write($html);
@@ -80,7 +80,7 @@ class ContentCacheMiddleware implements MiddlewareInterface
     /**
      * @throws InvalidArgumentException
      */
-    protected function getCachedResponseHtml(RequestInterface $request)
+    protected function getCachedResponseHtml(RequestInterface $request): mixed
     {
         return $this
             ->cacheItemPool

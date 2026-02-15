@@ -31,7 +31,7 @@ final readonly class ErrorViewRenderer
         $message     = Status::getMessageForCode($httpCode);
         $template    = $this->loadTemplate();
 
-        return $this->replaceTags($template, $httpCode, $message);
+        return $this->replaceTags((string) $template, $httpCode, $message);
     }
 
     /**
@@ -46,7 +46,7 @@ final readonly class ErrorViewRenderer
      * @throws NotFoundException
      * @throws \Exception
      */
-    private function loadTemplate(): string
+    private function loadTemplate(): bool|string
     {
         $path = $this->app->hook->filter->applyFilter(
             'error.view',

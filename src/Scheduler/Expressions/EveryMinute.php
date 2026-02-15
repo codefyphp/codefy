@@ -17,7 +17,7 @@ final class EveryMinute implements Expressional
     /**
      * Set the job execution time to every minute.
      *
-     * @param int|string|array|null $minute If not null, specifies that the job will run every $minute minutes.
+     * @param int|string|array<int>|null $minute If not null, specifies that the job will run every $minute minutes.
      * @throws TypeException
      */
     public static function make(int|string|array|null $minute = null): CronExpression

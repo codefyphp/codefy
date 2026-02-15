@@ -135,7 +135,7 @@ final class Application extends Container
         &get => $this->serviceProviders;
     }
 
-    /** @var array<Serviceable|Bootable> $serviceProvidersRegistered */
+    /** @var array<Serviceable|Bootable, bool> $serviceProvidersRegistered */
     private array $serviceProvidersRegistered = [] {
         &get => $this->serviceProvidersRegistered;
     }
@@ -312,9 +312,9 @@ final class Application extends Container
     }
 
     /**
-     * @return ServiceContainer|ContainerInterface
+     * @return self
      */
-    public function getContainer(): ServiceContainer|ContainerInterface
+    public function getContainer(): self
     {
         return $this;
     }
@@ -468,7 +468,7 @@ final class Application extends Container
     /**
      * Get the service providers that have been registered.
      *
-     * @return array<Serviceable|Bootable>
+     * @return array<Serviceable|Bootable, bool>
      */
     public function getRegisteredProviders(): array
     {
@@ -816,7 +816,7 @@ final class Application extends Container
     }
 
     /**
-     * @return array
+     * @return array<string, array<string|class-string, class-string>>
      */
     protected function coreAliases(): array
     {

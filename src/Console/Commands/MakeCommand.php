@@ -9,6 +9,7 @@ use Codefy\Framework\Console\ConsoleCommand;
 use Codefy\Framework\Console\Exceptions\MakeCommandFileAlreadyExistsException;
 use League\Flysystem\FilesystemException;
 use Qubus\Exception\Data\TypeException;
+use ReflectionException;
 
 /**
  * @deprecated since 3.1, will be removed in version 4.
@@ -21,15 +22,6 @@ class MakeCommand extends ConsoleCommand
     use MakeCommandAware;
 
     protected const string FILE_EXTENSION = '.php';
-
-    // @phpstan-ignore property.onlyWritten
-    private array $errors = [];
-
-    // @phpstan-ignore property.onlyWritten
-    private array $comments = [];
-
-    // @phpstan-ignore property.onlyWritten
-    private array $info = [];
 
     protected string $name = 'stub:make';
 
@@ -66,6 +58,9 @@ class MakeCommand extends ConsoleCommand
         ],
     ];
 
+    /**
+     * @throws ReflectionException
+     */
     public function handle(): int
     {
         $stub = $this->getArgument(key: 'resource');
