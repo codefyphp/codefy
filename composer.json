@@ -13,9 +13,10 @@
     "require": {
         "php": ">=8.2",
         "ext-pdo": "*",
-        "codefyphp/domain-driven-core": "^1",
+        "codefyphp/domain-driven-core": "^2",
         "dragonmantank/cron-expression": "^3",
         "qubus/cache": "^3",
+        "qubus/dbal": "^2",
         "qubus/error": "^2",
         "qubus/event-dispatcher": "^3",
         "qubus/exception": "^3",
@@ -50,7 +51,7 @@
         "qubus/qubus-coding-standard": "^1.1"
     },
     "scripts": {
-        "test": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --min=50 --colors=always",
+        "test": "vendor/bin/pest",
         "cs-check": "phpcs",
         "cs-fix": "phpcbf"
     },
