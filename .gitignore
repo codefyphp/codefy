@@ -1,4 +1,8 @@
+.cache
 .idea
+.phpunit.cache
+:memory
+bootloader
 /config/
 files
 Scheduler/Tests
