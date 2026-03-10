@@ -35,14 +35,18 @@ use function ucfirst;
 /**
  * Get the available container instance.
  *
- * @param string|null $name
- * @param array $args
- * @return mixed
+ * @param class-string|string|null $name
+ * @param array<string, class-string> $args
+ * @return ($name is null ? Application : mixed)
  */
 function app(?string $name = null, array $args = []): mixed
 {
-    /** @var Application $app */
-    $app = get_fresh_bootstrap();
+    static $app;
+
+    if (is_null__($app)) {
+        /** @var Application $app */
+        $app = get_fresh_bootstrap();
+    }
 
     if (is_null__(var: $name)) {
         return $app->getContainer();
