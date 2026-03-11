@@ -69,7 +69,7 @@ final class Application extends Container
 {
     use InvokerAware;
 
-    public const APP_VERSION = '2.1.6';
+    public const APP_VERSION = '2.3.0';
 
     public const MIN_PHP_VERSION = '8.2';
 
@@ -187,6 +187,7 @@ final class Application extends Container
      * FileLogger
      *
      * @throws ReflectionException
+     * @throws TypeException
      */
     public static function getLogger(): LoggerInterface
     {
@@ -377,13 +378,13 @@ final class Application extends Container
      *
      * @param string|Serviceable|Bootable $serviceProvider
      * @param bool $force
-     * @return Serviceable|Bootable|string
+     * @return Serviceable|Bootable
      * @throws TypeException
      */
     public function registerServiceProvider(
         string|Serviceable|Bootable $serviceProvider,
         bool $force = false
-    ): Serviceable|Bootable|string {
+    ): Serviceable|Bootable {
         // If the Service Provider had already been registered, then return it.
         if (($registered = $this->getRegisteredServiceProvider(provider: $serviceProvider)) && !$force) {
             return $registered;
@@ -409,11 +410,13 @@ final class Application extends Container
      * Get the registered service provider instance if it exists.
      *
      * @param  Serviceable|Bootable|string $provider
-     * @return string|null
+     * @return Serviceable|Bootable|null
      */
-    public function getRegisteredServiceProvider(Serviceable|Bootable|string $provider): string|null
+    public function getRegisteredServiceProvider(Serviceable|Bootable|string $provider): Serviceable|Bootable|null
     {
-        return $this->serviceProviders[$provider] ?? null;
+        $registered = is_string(value: $provider) ? $provider : get_class(object: $provider);
+
+        return $this->serviceProviders[$registered] ?? null;
     }
 
     /**
@@ -453,12 +456,14 @@ final class Application extends Container
     /**
      * Determine if the given service provider is registered.
      *
-     * @param  string  $provider
+     * @param string|Serviceable|Bootable $provider
      * @return bool
      */
-    public function providerIsRegistered(string $provider): bool
+    public function providerIsRegistered(string|Serviceable|Bootable $provider): bool
     {
-        return isset($this->serviceProvidersRegistered[$provider]);
+        $registered = is_string(value: $provider) ? $provider : get_class(object: $provider);
+
+        return isset($this->serviceProvidersRegistered[$registered]);
     }
 
     /**
@@ -529,8 +534,9 @@ final class Application extends Container
         string|null $registered,
         Serviceable|Bootable $serviceProvider
     ): void {
-        $this->serviceProviders[$registered] = $serviceProvider;
-        $this->serviceProvidersRegistered[$registered] = true;
+        $class = get_class($serviceProvider);
+        $this->serviceProviders[$class] = $serviceProvider;
+        $this->serviceProvidersRegistered[$class] = true;
     }
 
     /**

@@ -35,6 +35,7 @@ use Qubus\View\Renderer;
 use ReflectionException;
 
 use function dirname;
+use function error_log;
 use function getcwd;
 use function is_array;
 use function is_int;
@@ -331,7 +332,7 @@ function logger(string|\Stringable $level, string $message, array $context = [])
 {
     try {
         FileLoggerFactory::getLogger()->{$level}($message, $context);
-    } catch (\ReflectionException $e) {
+    } catch (\ReflectionException | TypeException $e) {
         error_log($e->getMessage());
     }
 }
@@ -341,13 +342,12 @@ function logger(string|\Stringable $level, string $message, array $context = [])
  * @param string $message
  * @param array<mixed> $context
  * @return void
- * @throws TypeException
  */
 function smtp_logger(string|\Stringable $level, string $message, array $context = []): void
 {
     try {
         FileLoggerSmtpFactory::getLogger()->{$level}($message, $context);
-    } catch (\ReflectionException $e) {
+    } catch (\ReflectionException | TypeException $e) {
         error_log($e->getMessage());
     }
 }

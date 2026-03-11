@@ -43,7 +43,7 @@ final class RegisterProviders
         $arrayMerge = array_unique(
             array_merge(
                 self::$merge,
-                $config->getConfigKey(key: 'app.providers'),
+                $config->array(key: 'app.providers'),
             )
         );
 

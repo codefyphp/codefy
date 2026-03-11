@@ -6,6 +6,7 @@ namespace Codefy\Framework\Http;
 
 use Codefy\Framework\Contracts\RoutingController;
 use Psr\Http\Message\ResponseInterface;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Http\Factories\RedirectResponseFactory;
 use Qubus\Http\Session\SessionService;
 use Qubus\Routing\Controller\Controller;
@@ -17,12 +18,15 @@ use function Codefy\Framework\Helpers\config;
 
 class BaseController extends Controller implements RoutingController
 {
+    /**
+     * @throws TypeException
+     */
     public function __construct(
         protected SessionService $sessionService,
         protected Router $router,
         protected ?Renderer $view = null,
     ) {
-        $this->setView(view: $view ?? new NativeLoader(config('view.path')));
+        $this->setView(view: $view ?? new NativeLoader(config()->array('view.path')));
     }
 
     /**
