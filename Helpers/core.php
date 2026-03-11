@@ -4,25 +4,41 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Helpers;
 
+use Codefy\CommandBus\Busses\SynchronousCommandBus;
+use Codefy\CommandBus\Command;
+use Codefy\CommandBus\Containers\ContainerFactory;
+use Codefy\CommandBus\Exceptions\CommandCouldNotBeHandledException;
+use Codefy\CommandBus\Exceptions\UnresolvableCommandHandlerException;
+use Codefy\CommandBus\Odin;
+use Codefy\CommandBus\Resolvers\NativeCommandHandlerResolver;
 use Codefy\Framework\Application;
 use Codefy\Framework\Codefy;
 use Codefy\Framework\Factory\FileLoggerFactory;
+use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Codefy\Framework\Support\CodefyMailer;
-use Qubus\Config\Collection;
+use Codefy\QueryBus\Busses\SynchronousQueryBus;
+use Codefy\QueryBus\Enquire;
+use Codefy\QueryBus\Query;
+use Codefy\QueryBus\Resolvers\NativeQueryHandlerResolver;
+use Codefy\QueryBus\UnresolvableQueryHandlerException;
+use Psr\Http\Message\ResponseInterface;
+use Qubus\Config\ConfigContainer;
 use Qubus\Dbal\Connection;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Expressive\OrmBuilder;
+use Qubus\Http\Factories\HtmlResponseFactory;
 use Qubus\Routing\Exceptions\NamedRouteNotFoundException;
 use Qubus\Routing\Exceptions\RouteParamFailedConstraintException;
 use Qubus\Routing\Router;
+use Qubus\View\Renderer;
 use ReflectionException;
 
 use function dirname;
 use function getcwd;
+use function is_array;
 use function is_int;
 use function Qubus\Security\Helpers\__observer;
-use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
 use function file_exists;
 use function in_array;
@@ -57,19 +73,23 @@ function app(?string $name = null, array $args = []): mixed
 /**
  * Get the available config instance.
  *
- * @param string $key
+ * @param string|array|null $key
  * @param array|bool $set
- * @return mixed
- * @throws TypeException
+ * @return ($key is null ? ConfigContainer : mixed)
  */
-function config(string $key, array|bool $set = false): mixed
+function config(string|array|null $key = null, mixed $set = ''): mixed
 {
-    if (!is_false__(var: $set)) {
-        app(name: Collection::class)->setConfigKey($key, $set);
-        return app(name: Collection::class)->getConfigKey($key);
+    if (is_null__($key)) {
+        return app(name: 'codefy.config');
     }
 
-    return app(name: Collection::class)->getConfigKey($key);
+    if (is_array($key)) {
+        app(name: 'codefy.config')->setConfigKey($key[0], $key[1]);
+    } elseif (is_array($set)) {
+        app(name: 'codefy.config')->setConfigKey($key, $set);
+    }
+
+    return app(name: 'codefy.config')->getConfigKey($key, $set);
 }
 
 /**
@@ -97,7 +117,7 @@ function get_fresh_bootstrap(): mixed
  */
 function env(string $key, mixed $default = null): mixed
 {
-    return $_ENV[$key] ?? $default;
+    return \Qubus\Config\Helpers\env($key, $default);
 }
 
 /**
@@ -142,7 +162,7 @@ function mail(string|array $to, string $subject, string $message, array $headers
     $instance = new CodefyMailer(config: app(name: 'codefy.config'));
 
     // Set the mailer transport.
-    $func = sprintf('with%s', ucfirst(config(key: 'mailer.mail_transport')));
+    $func = sprintf('with%s', ucfirst(config()->string(key: 'mailer.mail_transport')));
     $instance = $instance->{$func}();
 
     // Detect HTML markdown.
@@ -216,6 +236,59 @@ function mail(string|array $to, string $subject, string $message, array $headers
 }
 
 /**
+ * Dispatches the given `$command` through
+ * the CommandBus.
+ *
+ * @param Command $command
+ * @throws \ReflectionException
+ * @throws UnresolvableCommandHandlerException
+ * @throws CommandCouldNotBeHandledException
+ * @throws TypeException
+ */
+function command(Command $command): void
+{
+    $resolver = new NativeCommandHandlerResolver(
+        container: ContainerFactory::make(config: config()->array(key: 'commandbus.container'))
+    );
+    $odin = new Odin(bus: new SynchronousCommandBus($resolver));
+
+    $odin->execute($command);
+}
+
+/**
+ * Queries the given query and returns
+ * a result if any.
+ *
+ * @throws \ReflectionException
+ * @throws UnresolvableQueryHandlerException
+ * @throws TypeException
+ */
+function ask(Query $query): mixed
+{
+    $resolver = new NativeQueryHandlerResolver(
+        container: ContainerFactory::make(config: config()->array(key: 'querybus.aliases'))
+    );
+    $enquirer = new Enquire(bus: new SynchronousQueryBus($resolver));
+
+    return $enquirer->execute($query);
+}
+
+/**
+ * @param array<mixed>|string $template
+ * @param array<array-key, mixed> $data
+ * @return ResponseInterface
+ * @throws \Exception
+ */
+function view(array|string $template, array $data = []): ResponseInterface
+{
+    /** @var Renderer $view */
+    $view = Codefy::$PHP->make(name: Renderer::class);
+
+    // @phpstan-ignore method.notFound
+    return HtmlResponseFactory::create($view->render($template, $data));
+}
+
+/**
  * Generate url's from named routes.
  *
  * @param string $name Name of the route.
@@ -229,4 +302,52 @@ function route(string $name, array $params = []): string
     /** @var Router $route */
     $route = app('router');
     return $route->url($name, $params);
+}
+
+/**
+ * Return an array of system user roles.
+ *
+ * @return array<array-key, mixed>
+ * @throws Exception
+ */
+function get_system_roles(): array
+{
+    $userRoles = [];
+    $roles = Codefy::$PHP->configContainer->array(key: 'rbac.roles');
+    foreach ($roles as $role => $description) {
+        $userRoles[] = $role;
+    }
+
+    return $userRoles;
+}
+
+/**
+ * @param string|\Stringable $level
+ * @param string $message
+ * @param array<mixed> $context
+ * @return void
+ */
+function logger(string|\Stringable $level, string $message, array $context = []): void
+{
+    try {
+        FileLoggerFactory::getLogger()->{$level}($message, $context);
+    } catch (\ReflectionException $e) {
+        error_log($e->getMessage());
+    }
+}
+
+/**
+ * @param string|\Stringable $level
+ * @param string $message
+ * @param array<mixed> $context
+ * @return void
+ * @throws TypeException
+ */
+function smtp_logger(string|\Stringable $level, string $message, array $context = []): void
+{
+    try {
+        FileLoggerSmtpFactory::getLogger()->{$level}($message, $context);
+    } catch (\ReflectionException $e) {
+        error_log($e->getMessage());
+    }
 }
