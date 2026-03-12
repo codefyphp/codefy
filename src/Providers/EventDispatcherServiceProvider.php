@@ -28,6 +28,8 @@ class EventDispatcherServiceProvider extends CodefyServiceProvider
         );
 
         $this->codefy->alias(original: ListenerProviderInterface::class, alias: $provider);
+        $this->codefy->share(nameOrInstance: ListenerProviderInterface::class);
         $this->codefy->alias(original: EventDispatcherInterface::class, alias: $dispatcher);
+        $this->codefy->share(nameOrInstance: EventDispatcherInterface::class);
     }
 }
