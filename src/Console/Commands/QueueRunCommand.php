@@ -41,7 +41,7 @@ EOT;
     public function handle(): int
     {
         try {
-            $path = "" !== $this->getOptions('name') ? $this->getOptions('name') : 'nodequeue';
+            $path = $this->getOptions('name') ?: 'nodequeue';
 
             $db = Node::open(database_path(path: $path));
             $queues = $db->all();
