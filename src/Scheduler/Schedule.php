@@ -21,6 +21,7 @@ use function file_exists;
 use function is_callable;
 use function is_string;
 use function Qubus\Support\Helpers\is_null__;
+use function sprintf;
 
 use const PHP_BINARY;
 
@@ -72,6 +73,8 @@ class Schedule
     }
 
     /**
+     * For running Codex commands.
+     *
      * @param callable|string $command
      * @param array<string, string> $args
      * @return Shell|Callback
@@ -81,10 +84,8 @@ class Schedule
         if (is_callable($command)) {
             $command = new Callback($this->mutex, $command, $args, $this->timeZone);
         } else {
-            if (count($args)) {
-                $command .= $this->compileArguments($args);
-            }
-            $command = new Shell($this->mutex, $command, $args, $this->timeZone);
+            $codexCommand = sprintf('%s codex %s', PHP_BINARY, $command);
+            $command = new Shell($this->mutex, $codexCommand, $args, $this->timeZone);
         }
 
         $this->queueProcessor($command);
@@ -221,7 +222,7 @@ class Schedule
 
         // Sanitize command arguments.
         foreach ($args as $key => $value) {
-            $compiled = ' ' . escapeshellarg($key);
+            $compiled .= ' ' . escapeshellarg($key);
             if (! is_null__($value)) {
                 $compiled .= ' ' . escapeshellarg($value);
             }
