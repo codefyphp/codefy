@@ -15,6 +15,7 @@ use Qubus\Support\Serializer\JsonSerializer;
 
 use function call_user_func;
 use function is_callable;
+use function time;
 
 class NodeQueue implements ReliableQueue, QueueGarbageCollection
 {
@@ -270,6 +271,8 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
      */
     public function garbageCollection(): void
     {
+        $requestTime = time();
+
         $delete = $this->db;
         $delete->begin();
         try {
@@ -277,7 +280,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
              * Clean up the queue for failed batches.
              */
             $delete
-                ->where('executions', '>=', $this->queue->executions)
+                ->where('created', '<', $requestTime - 864000)
                 ->where('name', $this->queue->name)
                 ->delete();
             $delete->commit();
@@ -295,7 +298,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
              * that's not used, this will simply be a no-op.
              */
             $update->where('expire', 'not in', (int) 0)
-                    ->where('expire', '<', $_SERVER['REQUEST_TIME'])
+                    ->where('expire', '<', $requestTime)
                     ->update([
                         'expire' => (int) 0
                     ]);
