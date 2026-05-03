@@ -9,7 +9,7 @@ interface ShouldQueue
     /**
      * The name of the queue this instance is working with.
      */
-    public string $name = '' {
+    public string $name {
         get;
         set;
     }
@@ -17,7 +17,7 @@ interface ShouldQueue
     /**
      * How long the processing is expected to take in seconds.
      */
-    public int $leaseTime = 3600 {
+    public int $leaseTime {
         get;
         set;
     }
@@ -25,7 +25,7 @@ interface ShouldQueue
     /**
      * When should the process run.
      */
-    public string $schedule = '* * * * *' {
+    public string $schedule {
         get;
         set;
     }
@@ -34,7 +34,7 @@ interface ShouldQueue
      * How many times should a job execute before
      * considered dead.
      */
-    public int $executions = 3 {
+    public int $executions {
         get;
         set;
     }
