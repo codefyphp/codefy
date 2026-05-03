@@ -29,7 +29,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
     /** @var array<callable|bool> $rejects */
     protected array $rejects = [];
 
-    protected \DateTimeZone|string $timezone;
+    protected \DateTimeZone|string|null $timezone = null;
 
     public function __construct(ShouldQueue $queue, ?string $node = null, \DateTimeZone|string|null $timezone = null)
     {
@@ -48,7 +48,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
             return call_user_func($schedule);
         }
 
-        $dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $schedule);
+        $dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $schedule, $this->timezone);
         if ($dateTime !== false) {
             return $dateTime->format('Y-m-d H:i') == (date('Y-m-d H:i'));
         }
