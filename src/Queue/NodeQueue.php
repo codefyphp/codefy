@@ -280,7 +280,7 @@ class NodeQueue implements ReliableQueue, QueueGarbageCollection
              * Clean up the queue for failed batches.
              */
             $delete
-                ->where('created', '<', $requestTime - 864000)
+                ->where('created', '<', $requestTime - $this->queue->leaseTime)
                 ->where('name', $this->queue->name)
                 ->delete();
             $delete->commit();
