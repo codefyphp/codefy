@@ -30,6 +30,7 @@ use Gravatar\Profile;
 use PHPUnit\Event\Code\Throwable;
 use Psr\Http\Message\ResponseInterface;
 use Qubus\Config\ConfigContainer;
+use Qubus\Exception\Data\TypeException;
 use Qubus\Exception\Exception;
 use Qubus\Exception\Http\HttpExceptionFactory;
 use Qubus\Expressive\Connection;
@@ -41,11 +42,14 @@ use Qubus\Routing\Exceptions\TooLateToAddNewRouteException;
 use Qubus\Routing\Route\RouteAttributes;
 use Qubus\Support\HtmlString;
 use Qubus\View\Renderer;
+use RuntimeException;
 
 use function dirname;
 use function error_log;
 use function filter_var;
 use function getcwd;
+use function is_array;
+use function is_file;
 use function is_int;
 use function parse_url;
 use function preg_match;
@@ -55,7 +59,6 @@ use function Qubus\Security\Helpers\esc_attr__;
 use function Qubus\Security\Helpers\esc_html__;
 use function Qubus\Security\Helpers\t__;
 use function Qubus\Support\Helpers\is_null__;
-use function file_exists;
 use function in_array;
 use function is_string;
 use function realpath;
@@ -80,37 +83,41 @@ use const FILTER_VALIDATE_IP;
  */
 function app(?string $name = null, array $args = []): mixed
 {
-    static $app;
+    /** @var Application $app */
+    static $app = null;
 
     if (is_null__($app)) {
-        /** @var Application $app */
         $app = get_fresh_bootstrap();
     }
 
     if (is_null__(var: $name)) {
-        return $app->getContainer();
+        return $app;
     }
-    return $app->getContainer()->make($name, $args);
+    return $app->make($name, $args);
 }
 
 /**
  * Get the available config instance.
  *
- * @param array<array-key, mixed>|string|null  $key
+ * @param array<array-key, mixed>|string|null $key
  * @param mixed $default
  * @return ($key is null ? ConfigContainer : mixed)
+ * @throws TypeException
  */
 function config(string|array|null $key = null, mixed $default = ''): mixed
 {
+    /** @var ConfigContainer $config */
+    $config = app(name: 'codefy.config');
+
     if (is_null__($key)) {
-        return app(name: 'codefy.config');
+        return $config;
     }
 
     if (is_array($key)) {
-        app(name: 'codefy.config')->setConfigKey($key[0], $key[1]);
+        $config->setConfigKey($key[0], $key[1]);
     }
 
-    return app(name: 'codefy.config')->getConfigKey($key, $default);
+    return $config->getConfigKey($key, $default);
 }
 
 /**
@@ -121,13 +128,24 @@ function config(string|array|null $key = null, mixed $default = ''): mixed
  */
 function get_fresh_bootstrap(): mixed
 {
-    if (file_exists(filename: $file = getcwd() . '/bootstrap/app.php')) {
-        return require(realpath(path: $file));
-    } elseif (file_exists(filename: $file = dirname(path: getcwd()) . '/bootstrap/app.php')) {
-        return require(realpath(path: $file));
-    } else {
-        return require(realpath(path: dirname(path: getcwd()) . '/bootstrap/app.php'));
+    static $app = null;
+
+    if (!is_null__($app)) {
+        return $app;
     }
+
+    $paths = [
+        getcwd() . '/bootstrap/app.php',
+        dirname(path: getcwd()) . '/bootstrap/app.php',
+    ];
+
+    foreach ($paths as $file) {
+        if (is_file($file)) {
+            return $app = require realpath($file);
+        }
+    }
+
+    throw new RuntimeException('Unable to locate bootstrap/app.php.');
 }
 
 /**
