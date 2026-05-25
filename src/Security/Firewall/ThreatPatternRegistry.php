@@ -225,7 +225,7 @@ final class ThreatPatternRegistry
     private function scannerProbes(): array
     {
         $paths = [
-            'admin', 'administrator', 'login', 'cpanel', 'phpmyadmin', 'pma',
+            'cpanel', 'phpmyadmin', 'pma',
             'mysql', 'dbadmin', 'webadmin', 'server-status', 'server-info',
             'actuator', 'actuator/env', 'actuator/health', 'debug/default/view',
             'vendor/phpunit', 'phpunit', 'cgi-bin', 'boaform', 'HNAP1',
@@ -254,13 +254,13 @@ final class ThreatPatternRegistry
     private function sensitiveFiles(): array
     {
         $files = [
-                '.env', '.git/config', '.git/HEAD', '.svn/entries', '.DS_Store',
-                'composer.json', 'composer.lock', 'package.json', 'yarn.lock',
-                'config.php', 'configuration.php', 'settings.php', 'database.php',
-                'backup.sql', 'dump.sql', 'db.sql', 'database.sql', 'site.sql',
-                'backup.zip', 'backup.tar.gz', 'www.zip', 'public.zip',
-                'credentials.json', 'service-account.json', 'id_rsa', 'id_dsa',
-                'web.config', 'nginx.conf', 'apache.conf', 'httpd.conf',
+            '.env', '.git/config', '.git/HEAD', '.svn/entries', '.DS_Store',
+            'composer.json', 'composer.lock', 'package.json', 'yarn.lock',
+            'config.php', 'configuration.php', 'settings.php', 'database.php',
+            'backup.sql', 'dump.sql', 'db.sql', 'database.sql', 'site.sql',
+            'backup.zip', 'backup.tar.gz', 'www.zip', 'public.zip',
+            'credentials.json', 'service-account.json', 'id_rsa', 'id_dsa',
+            'web.config', 'nginx.conf', 'apache.conf', 'httpd.conf',
         ];
 
         $files = array_merge($files, $this->config->array(key: 'firewall.sensitive_file_probe'));
