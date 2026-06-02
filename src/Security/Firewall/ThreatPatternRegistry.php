@@ -158,21 +158,17 @@ final class ThreatPatternRegistry
     private function fileTraversal(): array
     {
         $patterns = [
-            '/\.\.\//',
-            '/\.\.\\\\/',
-            '/%2e%2e%2f/i',
-            '/%2e%2e%5c/i',
-            '/etc\/passwd/i',
-            '/etc\/shadow/i',
-            '/boot\.ini/i',
-            '/win\.ini/i',
-            '/windows\/system32/i',
-            '/\/proc\/self\/environ/i',
-            '/\/proc\/version/i',
-            '/\/var\/log\//i',
-            '/\/var\/www\//i',
-            '/\/home\/[^\/]+\/\.ssh/i',
-            '/id_rsa/i',
+            '#(?:^|[\\\\/])\.\.(?:[\\\\/]|$)#',
+            '#%2e%2e(?:%2f|%5c)#i',
+            '#(?:^|[\\\\/])etc/passwd#i',
+            '#(?:^|[\\\\/])etc/shadow#i',
+            '#(?:^|[\\\\/])boot\.ini#i',
+            '#(?:^|[\\\\/])win\.ini#i',
+            '#windows[\\\\/]system32#i',
+            '#/proc/(?:self/environ|version)#i',
+            '#/var/log/#i',
+            '#/home/[^/]+/\.ssh#i',
+            '#(?:^|[\\\\/])id_rsa(?:$|[\\\\/])#i',
         ];
 
         return $this->map(
