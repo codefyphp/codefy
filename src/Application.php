@@ -65,7 +65,7 @@ final class Application extends Container
     use InvokerAware;
     use LoggerAware;
 
-    public const string APP_VERSION = '3.2.2';
+    public const string APP_VERSION = '3.2.3';
 
     public const string MIN_PHP_VERSION = '8.4';
 
@@ -895,7 +895,7 @@ final class Application extends Container
      * @return void
      * @throws \ReflectionException
      */
-    private static function loadEnvironment(string $basePath): void
+    public static function loadEnvironment(string $basePath): void
     {
         if (self::$encryptedEnv) {
             try {
@@ -999,6 +999,14 @@ final class Application extends Container
      */
     public static function create(array $config): ApplicationBuilder
     {
+        if (($config['encryptedEnv'] ?? false) === true) {
+            self::$encryptedEnv = true;
+        }
+
+        $basePath = $config['basePath'] ?? self::inferBasePath();
+
+        self::loadEnvironment($basePath);
+
         return new ApplicationBuilder(new self($config))
             ->withKernels()
             ->withProviders();

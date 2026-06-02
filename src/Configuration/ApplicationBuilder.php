@@ -14,6 +14,8 @@ use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Routing\Route\RoutingRegistrar;
 use Qubus\Routing\Router;
 
+use ReflectionException;
+
 use function array_merge;
 use function array_unique;
 use function is_array;
@@ -168,10 +170,15 @@ final class ApplicationBuilder
      *
      * @param bool $bool Default: false.
      * @return $this
+     * @throws ReflectionException
      */
     public function withEncryptedEnv(bool $bool = false): self
     {
         $this->app::$encryptedEnv = $bool;
+
+        if ($bool) {
+            $this->app::loadEnvironment($this->app->basePath());
+        }
 
         return $this;
     }
