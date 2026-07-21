@@ -8,6 +8,7 @@ use Codefy\Framework\Security\Firewall\BlockedResponseFactory;
 use Codefy\Framework\Security\Firewall\ThreatDetector;
 use Codefy\Framework\Security\Firewall\ThreatLogger;
 use Codefy\Framework\Security\Firewall\ThreatMatch;
+use Codefy\Framework\Security\Firewall\ThreatNotifier;
 use Exception;
 use JsonException;
 use Psr\Http\Message\ResponseInterface;
@@ -16,15 +17,24 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Data\TypeException;
+use Throwable;
+
+use function array_any;
+use function Codefy\Framework\Helpers\logger;
+use function is_string;
+use function rtrim;
+use function str_starts_with;
+use function strtolower;
 
 final readonly class FirewallMiddleware implements MiddlewareInterface
 {
-    /**
-     * @param ThreatDetector $detector
-     * @param ThreatLogger $logger
-     * @param BlockedResponseFactory $blockedResponseFactory
-     * @param ConfigContainer $config
-     */
+    private const array SEVERITY_RANK = [
+        'low' => 1,
+        'medium' => 2,
+        'high' => 3,
+        'critical' => 4,
+    ];
+
     public function __construct(
         private ThreatDetector $detector,
         private ThreatLogger $logger,
@@ -38,11 +48,9 @@ final readonly class FirewallMiddleware implements MiddlewareInterface
      * @throws JsonException
      * @throws Exception
      */
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
-        if (! $this->config->boolean('firewall.enabled') || $this->isIgnored($request)) {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        if (! $this->isEnabled() || $this->isIgnored($request)) {
             return $handler->handle($request);
         }
 
@@ -52,19 +60,47 @@ final readonly class FirewallMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $this->logger->log($request, $match);
+        $this->logger->log(
+            request: $request,
+            match: $match
+        );
 
         if ($this->shouldAlert($match)) {
-            foreach ($this->config->array(key: 'firewall.notifiers') as $notifier) {
-                $notifier->notify($request, $match);
-            }
+            $this->notify(
+                request: $request,
+                match: $match
+            );
         }
 
-        if (! $this->config->boolean('firewall.block')) {
+        if (! $this->shouldBlock()) {
             return $handler->handle($request);
         }
 
-        return $this->blockedResponseFactory->create($match);
+        return $this->blockedResponseFactory->create(
+            match: $match
+        );
+    }
+
+    /**
+     * @throws TypeException
+     */
+    private function isEnabled(): bool
+    {
+        return $this->config->boolean(
+            key: 'firewall.enabled',
+            default: false
+        );
+    }
+
+    /**
+     * @throws TypeException
+     */
+    private function shouldBlock(): bool
+    {
+        return $this->config->boolean(
+            key: 'firewall.block',
+            default: true
+        );
     }
 
     /**
@@ -72,11 +108,35 @@ final readonly class FirewallMiddleware implements MiddlewareInterface
      */
     private function isIgnored(ServerRequestInterface $request): bool
     {
-        $path = $request->getUri()->getPath();
+        $path = $this->normalizePath(
+            $request->getUri()->getPath()
+        );
+
+        $ignoredPaths = $this->config->array(
+            key: 'firewall.ignored_paths',
+            default: []
+        );
 
         return array_any(
-            $this->config->array('firewall.ignored_paths', []),
-            fn($ignoredPath) => $path === $ignoredPath || str_starts_with($path, rtrim($ignoredPath, '/') . '/')
+            $ignoredPaths,
+            function (mixed $ignoredPath) use ($path): bool {
+                if (
+                        ! is_string($ignoredPath)
+                        || $ignoredPath === ''
+                ) {
+                    return false;
+                }
+
+                $ignoredPath = $this->normalizePath(
+                    $ignoredPath
+                );
+
+                if ($ignoredPath === '/') {
+                    return $path === '/';
+                }
+
+                return $path === $ignoredPath || str_starts_with($path, $ignoredPath . '/');
+            }
         );
     }
 
@@ -85,14 +145,82 @@ final readonly class FirewallMiddleware implements MiddlewareInterface
      */
     private function shouldAlert(ThreatMatch $match): bool
     {
-        $rank = [
-            'low' => 1,
-            'medium' => 2,
-            'high' => 3,
-            'critical' => 4,
-        ];
+        if ($match->excluded) {
+            return false;
+        }
 
-        return ($rank[$match->severity] ?? 0) >=
-        ($rank[$this->config->string(key: 'firewall.alert_min_severity', default: 'high')]);
+        $minimumSeverity = strtolower(
+            $this->config->string(
+                key: 'firewall.alert_min_severity',
+                default: 'high'
+            )
+        );
+
+        $minimumRank = self::SEVERITY_RANK[$minimumSeverity] ?? self::SEVERITY_RANK['high'];
+        $matchRank = self::SEVERITY_RANK[strtolower($match->severity)] ?? 0;
+
+        return $matchRank >= $minimumRank;
+    }
+
+    /**
+     * @throws TypeException
+     */
+    private function notify(ServerRequestInterface $request, ThreatMatch $match): void
+    {
+        $notifiers = $this->config->array(
+            key: 'firewall.notifiers',
+            default: []
+        );
+
+        foreach ($notifiers as $notifier) {
+            if (! $notifier instanceof ThreatNotifier) {
+                continue;
+            }
+
+            try {
+                $notifier->notify(
+                    request: $request,
+                    match: $match
+                );
+            } catch (Throwable $exception) {
+                $this->logNotifierFailure(
+                    request: $request,
+                    match: $match,
+                    notifier: $notifier,
+                    exception: $exception
+                );
+            }
+        }
+    }
+
+    private function normalizePath(string $path): string
+    {
+        if ($path === '' || $path === '/') {
+            return '/';
+        }
+
+        return '/' . ltrim(
+            rtrim($path, '/'),
+            '/'
+        );
+    }
+
+    private function logNotifierFailure(
+        ServerRequestInterface $request,
+        ThreatMatch $match,
+        ThreatNotifier $notifier,
+        Throwable $exception
+    ): void {
+        logger(
+            level: 'error',
+            message: 'Firewall threat notifier failed.',
+            context: [
+                'exception' => $exception,
+                'notifier' => $notifier::class,
+                'threat_group' => $match->group,
+                'threat_type' => $match->type,
+                'request_path' => $request->getUri()->getPath(),
+            ]
+        );
     }
 }

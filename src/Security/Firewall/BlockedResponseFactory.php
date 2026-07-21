@@ -16,6 +16,6 @@ final readonly class BlockedResponseFactory
      */
     public function create(ThreatMatch $match): ResponseInterface
     {
-        return view(template: 'framework::blocked', data: ['type' => $match->type]);
+        return view(template: 'framework::blocked', data: ['type' => $match->type])->withStatus(403);
     }
 }
