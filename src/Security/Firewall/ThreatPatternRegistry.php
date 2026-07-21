@@ -138,9 +138,9 @@ final class ThreatPatternRegistry
         );
 
         return $this->map(
-            patterns: $this->configureValues(
+            patterns: $this->configurePatterns(
                 group: 'sql_injection',
-                builtInValues: $patterns
+                builtInPatterns: $patterns
             ),
             group: 'sql_injection',
             type: 'sql_injection',
@@ -185,9 +185,9 @@ final class ThreatPatternRegistry
         );
 
         return $this->map(
-            patterns: $this->configureValues(
+            patterns: $this->configurePatterns(
                 group: 'xss',
-                builtInValues: $patterns
+                builtInPatterns: $patterns
             ),
             group: 'xss',
             type: 'xss',
@@ -232,9 +232,9 @@ final class ThreatPatternRegistry
         );
 
         return $this->map(
-            patterns: $this->configureValues(
+            patterns: $this->configurePatterns(
                 group: 'rce',
-                builtInValues: $patterns
+                builtInPatterns: $patterns
             ),
             group: 'rce',
             type: 'remote_code_execution',
@@ -264,9 +264,9 @@ final class ThreatPatternRegistry
         );
 
         return $this->map(
-            patterns: $this->configureValues(
+            patterns: $this->configurePatterns(
                 group: 'file_traversal',
-                builtInValues: $patterns
+                builtInPatterns: $patterns
             ),
             group: 'file_traversal',
             type: 'file_traversal',
@@ -309,9 +309,9 @@ final class ThreatPatternRegistry
         );
 
         return $this->map(
-            patterns: $this->configureValues(
+            patterns: $this->configurePatterns(
                 group: 'ssrf',
-                builtInValues: $patterns
+                builtInPatterns: $patterns
             ),
             group: 'ssrf',
             type: 'ssrf',
@@ -378,7 +378,10 @@ final class ThreatPatternRegistry
             '.enc.key', '.env.enc',
         ];
 
-        $files = $this->configureValues(group: 'sensitive_file_probe', builtInValues: $files);
+        $files = $this->configureValues(
+            group: 'sensitive_file_probe',
+            builtInValues: $files
+        );
 
         return array_map(
             fn (string $file): ThreatPattern => new ThreatPattern(
@@ -411,7 +414,11 @@ final class ThreatPatternRegistry
             'wp-blog-header.php', 'wp-comments-post.php',
         ];
 
-        $paths = $this->configureValues(group: 'wordpress_probe', builtInValues: $paths);
+        $paths = $this->configureValues(
+            group: 'wordpress_probe',
+            builtInValues: $paths,
+            includeLegacy: false
+        );
 
         $allowedSources = $this->allowedSources(
             group: 'wordpress_probe',
@@ -445,7 +452,10 @@ final class ThreatPatternRegistry
             'vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php',
         ];
 
-        $files = $this->configureValues(group: 'php_probe', builtInValues: $files);
+        $files = $this->configureValues(
+            group: 'php_probe',
+            builtInValues: $files
+        );
 
         return array_map(
             fn (string $file): ThreatPattern => new ThreatPattern(
@@ -512,22 +522,22 @@ final class ThreatPatternRegistry
     }
 
     /**
-     * @param list<string> $builtInValues
+     * @param list<string> $builtInPatterns
      * @return list<string>
      * @throws TypeException
      */
-    private function configureValues(
+    private function configurePatterns(
         string $group,
-        array $builtInValues
+        array $builtInPatterns
     ): array {
         $replace = $this->config->array(
             key: 'firewall.rules.' . $group . '.replace',
             default: []
         );
 
-        $values = $replace !== []
+        $patterns = $replace !== []
         ? $replace
-        : $builtInValues;
+        : $builtInPatterns;
 
         $remove = $this->config->array(
             key: 'firewall.rules.' . $group . '.remove',
@@ -535,21 +545,96 @@ final class ThreatPatternRegistry
         );
 
         if ($remove !== []) {
-            $values = array_values(
+            $patterns = array_values(
                 array_filter(
-                    $values,
-                    static fn (string $value): bool => ! in_array($value, $remove, true)
+                    $patterns,
+                    static fn (string $pattern): bool =>
+                        ! in_array(
+                            needle: $pattern,
+                            haystack: $remove,
+                            strict: true
+                        )
                 )
             );
         }
 
         return [
-            ...$values,
+            ...$patterns,
+            /*
+             * Deprecated legacy additions.
+             *
+             * Remove in the next major version (4.0).
+             */
+            ...$this->config->array(
+                key: 'firewall.' . $group,
+                default: []
+            ),
+
             ...$this->config->array(
                 key: 'firewall.rules.' . $group . '.add',
                 default: []
             ),
         ];
+    }
+
+    /**
+     * @param list<string> $builtInValues
+     * @return list<string>
+     * @throws TypeException
+     */
+    private function configureValues(
+        string $group,
+        array $builtInValues,
+        bool $includeLegacy = true
+    ): array {
+        $legacyValues = $includeLegacy
+        ? $this->config->array(
+            key: 'firewall.' . $group,
+            default: []
+        )
+        : [];
+
+        $replace = $this->config->array(
+            key: 'firewall.rules.' . $group . '.replace',
+            default: []
+        );
+
+        $values = [
+            ...($replace !== [] ? $replace : $builtInValues),
+
+            /*
+             * Deprecated legacy additions.
+             */
+            ...$legacyValues,
+
+            ...$this->config->array(
+                key: 'firewall.rules.' . $group . '.add',
+                default: []
+            ),
+        ];
+
+        $remove = $this->config->array(
+            key: 'firewall.rules.' . $group . '.remove',
+            default: []
+        );
+
+        if ($remove === []) {
+            return array_values(array_unique($values));
+        }
+
+        return array_values(
+            array_unique(
+                array_filter(
+                    $values,
+                    static fn (string $value): bool =>
+                        ! in_array(
+                            needle: $value,
+                            haystack: $remove,
+                            strict: true
+                        )
+                )
+            )
+        );
     }
 
     /**

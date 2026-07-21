@@ -6,8 +6,8 @@ use Codefy\Framework\Security\Firewall\FirewallExclusionPolicy;
 use Codefy\Framework\Security\Firewall\NullThreatLogger;
 use Codefy\Framework\Security\Firewall\ThreatDetector;
 use Codefy\Framework\Security\Firewall\ThreatMatch;
+use Codefy\Framework\Security\Firewall\ThreatPattern;
 use Codefy\Framework\Security\Firewall\ThreatPatternRegistry;
-use Psr\Http\Message\ServerRequestInterface;
 
 beforeEach(function (): void {
     $this->detector = new ThreatDetector(
@@ -15,35 +15,7 @@ beforeEach(function (): void {
         new FirewallExclusionPolicy(codefy()->make('codefy.config')),
         new NullThreatLogger()
     );
-    ;
 });
-
-function firewall_request(
-    string $method = 'GET',
-    string $uri = '/'
-): ServerRequestInterface {
-    $baseRequest = codefy()->request;
-
-    $request = $baseRequest
-            ->withMethod($method)
-            ->withUri($baseRequest->getUri()->withPath('/')->withQuery(''));
-
-    $parts = parse_url($uri);
-
-    if (isset($parts['path'])) {
-        $request = $request->withUri(
-            $request->getUri()->withPath($parts['path'])
-        );
-    }
-
-    if (isset($parts['query'])) {
-        $request = $request->withUri(
-            $request->getUri()->withQuery($parts['query'])
-        );
-    }
-
-    return $request;
-}
 
 it('does not detect a Chrome mobile version as SSRF', function (): void {
     $request = firewall_request()
@@ -62,7 +34,7 @@ it('does not inspect User-Agent headers using SSRF rules', function (
     string $userAgent
 ): void {
     $request = firewall_request()
-            ->withHeader('User-Agent', $userAgent);
+        ->withHeader('User-Agent', $userAgent);
 
     expect($this->detector->detect($request))->toBeNull();
 })->with([
@@ -578,9 +550,9 @@ it('does not classify absolute paths as traversal without traversal sequences', 
     string $path
 ): void {
     $request = firewall_request('GET', '/download')
-            ->withQueryParams([
-                    'file' => $path,
-            ]);
+        ->withQueryParams([
+            'file' => $path,
+        ]);
 
     expect($this->detector->detect($request))->toBeNull();
 })->with([
@@ -588,9 +560,108 @@ it('does not classify absolute paths as traversal without traversal sequences', 
         '/home/user/documents/report.pdf',
     ],
     'Unix SSH key path' => [
-            '/home/user/.ssh/id_rsa',
+        '/home/user/.ssh/id_rsa',
     ],
     'Windows file path' => [
-            'C:\\Users\\user\\documents\\report.pdf',
+        'C:\\Users\\user\\documents\\report.pdf',
     ],
 ]);
+
+it('supports legacy regex rule additions', function (): void {
+    $config = firewall_config([
+        'sql_injection' => [
+            '/legacy-sql-payload/i',
+        ],
+    ]);
+
+    $registry = new ThreatPatternRegistry($config);
+
+    expect(
+        array_any(
+            $registry->all(),
+            static fn (ThreatPattern $pattern): bool =>
+                $pattern->group === 'sql_injection'
+                && $pattern->regex === '/legacy-sql-payload/i'
+        )
+    )->toBeTrue();
+});
+
+it('supports new regex rule additions', function (): void {
+    $config = firewall_config([
+        'rules' => [
+            'sql_injection' => [
+                'add' => [
+                    '/new-sql-payload/i',
+                ],
+            ],
+        ],
+    ]);
+
+    $registry = new ThreatPatternRegistry($config);
+
+    expect(
+        array_any(
+            $registry->all(),
+            static fn (ThreatPattern $pattern): bool =>
+                $pattern->group === 'sql_injection'
+                && $pattern->regex === '/new-sql-payload/i'
+        )
+    )->toBeTrue();
+});
+
+it('supports legacy sensitive file additions', function (): void {
+    $config = firewall_config([
+        'sensitive_file_probe' => [
+            'custom-secret.json',
+        ],
+    ]);
+
+    $registry = new ThreatPatternRegistry($config);
+
+    expect(
+        array_any(
+            $registry->all(),
+            static fn (ThreatPattern $pattern): bool =>
+                $pattern->group === 'sensitive_file_probe'
+                && str_contains(
+                    haystack: $pattern->regex,
+                    needle: 'custom\\-secret\\.json'
+                )
+        )
+    )->toBeTrue();
+});
+
+it('supports new sensitive file additions', function (): void {
+    $config = firewall_config([
+        'rules' => [
+            'sensitive_file_probe' => [
+                'add' => [
+                    'custom-secret.json',
+                ],
+            ],
+        ],
+    ]);
+
+    expect(
+        $config->array(
+            key: 'firewall.rules.sensitive_file_probe.add',
+            default: []
+        )
+    )->toBe([
+        'custom-secret.json',
+    ]);
+
+    $registry = new ThreatPatternRegistry($config);
+
+    expect(
+        array_any(
+            $registry->all(),
+            static fn (ThreatPattern $pattern): bool =>
+                $pattern->group === 'sensitive_file_probe'
+                && str_contains(
+                    haystack: $pattern->regex,
+                    needle: 'custom\\-secret\\.json'
+                )
+        )
+    )->toBeTrue();
+});
