@@ -25,6 +25,8 @@
 */
 
 use Codefy\Framework\Application;
+use Psr\Http\Message\ServerRequestInterface;
+use Qubus\Config\ConfigContainer;
 
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
@@ -45,4 +47,44 @@ function codefy(): Application
 {
     $app = require(dirname(__DIR__) . '/bootstrap/app.php');
     return $app;
+}
+
+function firewall_config(array $overrides = []): ConfigContainer
+{
+    $defaults = [
+        'enabled' => true,
+        'block' => true,
+        'alert_min_severity' => 'high',
+        'notifiers' => [],
+        'ignored_paths' => [],
+    ];
+
+    return codefy()->configContainer->setConfigKey('firewall', array_replace_recursive($defaults, $overrides));
+}
+
+function firewall_request(
+    string $method = 'GET',
+    string $uri = '/'
+): ServerRequestInterface {
+    $baseRequest = codefy()->request;
+
+    $request = $baseRequest
+            ->withMethod($method)
+            ->withUri($baseRequest->getUri()->withPath('/')->withQuery(''));
+
+    $parts = parse_url($uri);
+
+    if (isset($parts['path'])) {
+        $request = $request->withUri(
+            $request->getUri()->withPath($parts['path'])
+        );
+    }
+
+    if (isset($parts['query'])) {
+        $request = $request->withUri(
+            $request->getUri()->withQuery($parts['query'])
+        );
+    }
+
+    return $request;
 }

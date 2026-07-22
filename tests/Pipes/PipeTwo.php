@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codefy\Framework\tests\Pipes;
+namespace Codefy\Framework\Tests\Pipes;
 
 class PipeTwo
 {

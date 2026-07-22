@@ -2,6 +2,14 @@
 
 use Codefy\Framework\Application;
 use PHPUnit\Framework\Assert;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Qubus\Config\ConfigContainer;
+use Qubus\Http\Response;
+use Qubus\Http\ServerRequest;
+use Qubus\Mail\Mailer;
+use Qubus\Routing\Psr7Router;
+use Qubus\Routing\Router;
 
 it(description: 'gets default charset value.', closure: function () {
     $charset = Application::getInstance()->charset;
@@ -51,4 +59,32 @@ it(description: 'sets booted value.', closure: function () {
     $app = Application::getInstance();
     $app->setBooted(bool: true);
     Assert::assertSame(expected: true, actual: $app->booted);
+});
+
+it(description: 'should be the same request instance.', closure: function () {
+    $app = Application::getInstance();
+    Assert::assertInstanceOf(RequestInterface::class, $app->request);
+    Assert::assertInstanceOf(ServerRequest::class, $app->request);
+});
+
+it(description: 'should be the same response instance.', closure: function () {
+    $app = Application::getInstance();
+    Assert::assertInstanceOf(ResponseInterface::class, $app->response);
+    Assert::assertInstanceOf(Response::class, $app->response);
+});
+
+it(description: 'should be the same mailer instance.', closure: function () {
+    $app = Application::getInstance();
+    Assert::assertInstanceOf(Mailer::class, $app->mailer);
+});
+
+it(description: 'should be the same config instance.', closure: function () {
+    $app = Application::getInstance();
+    Assert::assertInstanceOf(ConfigContainer::class, $app->configContainer);
+});
+
+it(description: 'should be the same router instance.', closure: function () {
+    $app = Application::getInstance();
+    Assert::assertInstanceOf(Psr7Router::class, $app->router);
+    Assert::assertInstanceOf(Router::class, $app->router);
 });
