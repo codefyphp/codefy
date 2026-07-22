@@ -6,26 +6,10 @@ use Codefy\Framework\Http\Middleware\FirewallMiddleware;
 use Codefy\Framework\Security\Firewall\BlockedResponseFactory;
 use Codefy\Framework\Security\Firewall\FirewallExclusionPolicy;
 use Codefy\Framework\Security\Firewall\ThreatDetector;
-use Codefy\Framework\Security\Firewall\ThreatMatch;
 use Codefy\Framework\Security\Firewall\ThreatPatternRegistry;
 use Codefy\Framework\Tests\Security\Fixtures\FakeRequestHandler;
 use Codefy\Framework\Tests\Security\Fixtures\FakeThreatLogger;
 use Laminas\Diactoros\Response;
-
-function middleware_threat_match(
-    string $severity = 'high'
-): ThreatMatch {
-    return new ThreatMatch(
-        type: 'file_traversal',
-        severity: $severity,
-        confidence: 95.0,
-        pattern: '#\.\.[/\\\\]#',
-        value: '../../etc/passwd',
-        group: 'file_traversal',
-        source: 'query',
-        field: 'file'
-    );
-}
 
 it('passes through when the firewall is disabled', function (): void {
     $config = firewall_config([
@@ -34,9 +18,9 @@ it('passes through when the firewall is disabled', function (): void {
 
     $logger = new FakeThreatLogger();
     $detector = new ThreatDetector(
-        new ThreatPatternRegistry(codefy()->configContainer),
-        new FirewallExclusionPolicy(codefy()->configContainer),
-        $logger,
+        registry: new ThreatPatternRegistry(codefy()->configContainer),
+        exclusionPolicy: new FirewallExclusionPolicy(codefy()->configContainer),
+        threatLogger: $logger,
     );
 
     $middleware = new FirewallMiddleware(

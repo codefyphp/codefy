@@ -116,95 +116,95 @@ it('detects dangerous URL schemes in body fields', function (
     string $destination
 ): void {
     $request = firewall_request('POST', '/fetch')
-            ->withParsedBody([
-                    'resource' => $destination,
-            ]);
+        ->withParsedBody([
+                'resource' => $destination,
+        ]);
 
     $match = $this->detector->detect($request);
 
     expect($match)
-            ->not->toBeNull()
-            ->and($match->group)->toBe('ssrf')
-            ->and($match->field)->toBe('resource');
+        ->not->toBeNull()
+        ->and($match->group)->toBe('ssrf')
+        ->and($match->field)->toBe('resource');
 })->with([
-        'file scheme' => [
-                'file:///tmp/firewall-test-resource.txt',
-        ],
-        'gopher scheme' => [
-                'gopher://example.com:6379/_INFO',
-        ],
-        'dict scheme' => [
-                'dict://example.com:11211/stats',
-        ],
-        'FTP scheme' => [
-                'ftp://example.com/private',
-        ],
+    'file scheme' => [
+        'file:///tmp/firewall-test-resource.txt',
+    ],
+    'gopher scheme' => [
+        'gopher://example.com:6379/_INFO',
+    ],
+    'dict scheme' => [
+        'dict://example.com:11211/stats',
+    ],
+    'FTP scheme' => [
+        'ftp://example.com/private',
+    ],
 ]);
 
 it('detects dangerous system file URLs as SSRF', function (
     string $destination
 ): void {
     $request = firewall_request('POST', '/fetch')
-            ->withParsedBody([
-                    'resource' => $destination,
-            ]);
+        ->withParsedBody([
+            'resource' => $destination,
+        ]);
 
     $match = $this->detector->detect($request);
 
     expect($match)
-            ->not->toBeNull()
-            ->and($match->group)->toBe('ssrf')
-            ->and($match->type)->toBe('ssrf')
-            ->and($match->field)->toBe('resource');
+        ->not->toBeNull()
+        ->and($match->group)->toBe('ssrf')
+        ->and($match->type)->toBe('ssrf')
+        ->and($match->field)->toBe('resource');
 })->with([
-        'passwd file URL' => [
-                'file:///etc/passwd',
-        ],
-        'shadow file URL' => [
-                'file:///etc/shadow',
-        ],
+    'passwd file URL' => [
+        'file:///etc/passwd',
+    ],
+    'shadow file URL' => [
+        'file:///etc/shadow',
+    ],
 ]);
 
 it('prioritizes file traversal over SSRF when a file URL contains traversal', function (
     string $destination
 ): void {
     $request = firewall_request('POST', '/fetch')
-            ->withParsedBody([
-                    'resource' => $destination,
-            ]);
+        ->withParsedBody([
+                'resource' => $destination,
+        ]);
 
     $match = $this->detector->detect($request);
 
     expect($match)
-            ->not->toBeNull()
-            ->and($match->group)->toBe('file_traversal')
-            ->and($match->type)->toBe('file_traversal')
-            ->and($match->field)->toBe('resource');
+        ->not->toBeNull()
+        ->and($match->group)->toBe('file_traversal')
+        ->and($match->type)->toBe('file_traversal')
+        ->and($match->field)->toBe('resource');
 })->with([
-        'passwd traversal URL' => [
-                'file:///var/www/../../etc/passwd',
-        ],
-        'shadow traversal URL' => [
-                'file:///var/www/../../etc/shadow',
-        ],
-        'encoded passwd traversal URL' => [
-                'file:///var/www/%2e%2e%2f%2e%2e%2fetc%2fpasswd',
-        ],
+    'passwd traversal URL' => [
+        'file:///var/www/../../etc/passwd',
+    ],
+    'shadow traversal URL' => [
+        'file:///var/www/../../etc/shadow',
+    ],
+    'encoded passwd traversal URL' => [
+        'file:///var/www/%2e%2e%2f%2e%2e%2fetc%2fpasswd',
+    ],
 ]);
 
 it('detects private-key file URLs as SSRF', function (): void {
     $request = firewall_request('POST', '/fetch')
-            ->withParsedBody([
-                    'resource' => 'file:///home/joshua/.ssh/id_rsa',
-            ]);
+        ->withParsedBody([
+            'resource' => 'file:///home/joshua/.ssh/id_rsa',
+        ]);
 
     $match = $this->detector->detect($request);
 
     expect($match)
-            ->not->toBeNull()
-            ->and($match->group)->toBe('ssrf')
-            ->and($match->type)->toBe('ssrf')
-            ->and($match->field)->toBe('resource');
+        ->not->toBeNull()
+        ->and($match->group)->toBe('ssrf')
+        ->and($match->type)->toBe('ssrf')
+        ->and($match->field)->toBe('resource');
 });
 
 it('detects SSRF in query parameters', function (): void {
@@ -262,37 +262,37 @@ it('detects the unspecified IPv4 address in host contexts', function (
     string $value
 ): void {
     $request = firewall_request('POST', '/save')
-            ->withParsedBody([
-                    'resource' => $value,
-            ]);
+        ->withParsedBody([
+            'resource' => $value,
+        ]);
 
     $match = $this->detector->detect($request);
 
     expect($match)
-            ->not->toBeNull()
-            ->and($match->group)->toBe('ssrf');
+        ->not->toBeNull()
+        ->and($match->group)->toBe('ssrf');
 })->with([
-        'plain host' => ['0.0.0.0'],
-        'host with port' => ['0.0.0.0:8080'],
-        'HTTP URL' => ['http://0.0.0.0/admin'],
-        'HTTPS URL' => ['https://0.0.0.0/private'],
-        'host with path' => ['0.0.0.0/internal'],
+    'plain host' => ['0.0.0.0'],
+    'host with port' => ['0.0.0.0:8080'],
+    'HTTP URL' => ['http://0.0.0.0/admin'],
+    'HTTPS URL' => ['https://0.0.0.0/private'],
+    'host with path' => ['0.0.0.0/internal'],
 ]);
 
 it('does not treat dotted version values as SSRF hosts', function (
     string $value
 ): void {
     $request = firewall_request('POST', '/save')
-            ->withParsedBody([
-                    'description' => $value,
-            ]);
+        ->withParsedBody([
+            'description' => $value,
+        ]);
 
     expect($this->detector->detect($request))->toBeNull();
 })->with([
-        'prerelease version' => ['package-name 0.0.0.0-beta'],
-        'build version' => ['build-0.0.0.0-dev'],
-        'prefixed value' => ['foo0.0.0.0'],
-        'extended address' => ['0.0.0.0.1'],
+    'prerelease version' => ['package-name 0.0.0.0-beta'],
+    'build version' => ['build-0.0.0.0-dev'],
+    'prefixed value' => ['foo0.0.0.0'],
+    'extended address' => ['0.0.0.0.1'],
 ]);
 
 it('does not apply scanner probe rules to body content', function (): void {
@@ -479,32 +479,32 @@ it('detects file traversal in query parameters', function (
     string $payload
 ): void {
     $request = firewall_request('GET', '/download')
-            ->withQueryParams([
-                    'file' => $payload,
-            ]);
+        ->withQueryParams([
+            'file' => $payload,
+        ]);
 
     $match = $this->detector->detect($request);
 
     expect($match)
-            ->not->toBeNull()
-            ->and($match->group)->toBe('file_traversal')
-            ->and($match->field)->toBe('file');
+        ->not->toBeNull()
+        ->and($match->group)->toBe('file_traversal')
+        ->and($match->field)->toBe('file');
 })->with([
-        'Unix traversal' => [
-                '../../etc/passwd',
-        ],
-        'Windows traversal' => [
-                '..\\..\\windows\\win.ini',
-        ],
-        'encoded Unix traversal' => [
-                '%2e%2e%2fetc%2fpasswd',
-        ],
-        'encoded Windows traversal' => [
-                '%2e%2e%5cwindows%5cwin.ini',
-        ],
-        'SSH key traversal' => [
-                '../../home/user/.ssh/id_rsa',
-        ],
+    'Unix traversal' => [
+        '../../etc/passwd',
+    ],
+    'Windows traversal' => [
+        '..\\..\\windows\\win.ini',
+    ],
+    'encoded Unix traversal' => [
+        '%2e%2e%2fetc%2fpasswd',
+    ],
+    'encoded Windows traversal' => [
+        '%2e%2e%5cwindows%5cwin.ini',
+    ],
+    'SSH key traversal' => [
+        '../../home/user/.ssh/id_rsa',
+    ],
 ]);
 
 it('ignores empty input values', function (): void {

@@ -1,6 +1,8 @@
 <?php
 
-namespace Codefy\Framework\Tests\Security;
+declare(strict_types=1);
+
+namespace Codefy\Framework\Tests\Security\Fixtures;
 
 use Codefy\Framework\Security\Firewall\ThreatMatch;
 use Codefy\Framework\Security\Firewall\ThreatNotifier;

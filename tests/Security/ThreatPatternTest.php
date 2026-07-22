@@ -74,9 +74,9 @@ it('distinguishes configuration group from reported type', function (): void {
     );
 
     expect($pattern->group)
-            ->toBe('scanner_path_probe')
-            ->and($pattern->type)
-            ->toBe('bot_scanner');
+        ->toBe('scanner_path_probe')
+        ->and($pattern->type)
+        ->toBe('bot_scanner');
 });
 
 it('retains the configured severity and confidence', function (): void {
@@ -90,7 +90,7 @@ it('retains the configured severity and confidence', function (): void {
     );
 
     expect($pattern->severity)
-            ->toBe('critical')
-            ->and($pattern->confidence)
-            ->toBe(98.0);
+        ->toBe('critical')
+        ->and($pattern->confidence)
+        ->toBe(98.0);
 });
