@@ -13,7 +13,6 @@ use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
 use Qubus\Routing\Route\RoutingRegistrar;
 use Qubus\Routing\Router;
-
 use ReflectionException;
 
 use function array_merge;

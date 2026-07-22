@@ -6,6 +6,7 @@ namespace Codefy\Framework\Support;
 
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
+use Qubus\Exception\Data\TypeException;
 use Qubus\FileSystem\FileSystem;
 
 use function Codefy\Framework\Helpers\config;
@@ -14,6 +15,11 @@ use const LOCK_EX;
 
 final class LocalStorage
 {
+    /**
+     * @param string|null $name
+     * @return FileSystem
+     * @throws TypeException
+     */
     public static function disk(?string $name = null): FileSystem
     {
         $name = $name ?? 'local';
@@ -26,16 +32,18 @@ final class LocalStorage
     /**
      * @param string $name
      * @return array<array-key, mixed>
+     * @throws TypeException
      */
     private static function getConfigForDriverName(string $name): array
     {
-        return config(key: "filesystem.disks.{$name}") ?? [];
+        return config()->array(key: "filesystem.disks.{$name}") ?? [];
     }
 
     /**
      * @param string $name
      * @param array<array-key, mixed> $configArray
      * @return FileSystem
+     * @throws TypeException
      */
     public static function createInstanceOfLocalDriver(string $name, array $configArray): FileSystem
     {
@@ -60,6 +68,7 @@ final class LocalStorage
     /**
      * @param string $name
      * @return array<array-key, mixed>
+     * @throws TypeException
      */
     private static function setVisibilityConverterByDiskName(string $name): array
     {
