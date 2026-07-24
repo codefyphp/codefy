@@ -6,7 +6,6 @@ namespace Codefy\Framework\Http;
 
 use Codefy\Framework\Http\Errors\HttpRequestError;
 use Codefy\Framework\Support\ArgsParser;
-use Codefy\Framework\Support\RequestMethod;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
@@ -67,7 +66,7 @@ class HttpClient extends GuzzleClient
      *      @type string|array                      $proxy              Whether to enable keep-alive connections with
      *                                                                  the server. Useful and might improve performance
      *                                                                  if several consecutive requests to the same
-     *                                                                  server are performed. Default: false.
+     *                                                                  server are performed. Default: ''.
      *      @type array                             $headers            Array of headers to send with the request.
      *                                                                  Default: [].
      *      @type string|resource|StreamInterface   $body               Used to control the body of an entity enclosing
@@ -115,7 +114,7 @@ class HttpClient extends GuzzleClient
              * @param bool|array          $allow_redirects The redirect behavior of a request. Default: false.
              * @param string|UriInterface $uri             URI object or string.
              */
-                'allow_redirects '     => __observer()->filter->applyFilter(
+                'allow_redirects'     => __observer()->filter->applyFilter(
                     'http.request.allow.redirects',
                     false,
                     $uri
@@ -124,18 +123,12 @@ class HttpClient extends GuzzleClient
                 'body'                 => null,
                 'delay'                => null,
                 'http_errors'          => true,
-                'proxy'                => false,
+                'proxy'                => '',
                 'stream'               => false,
 
         ];
 
-        // Pre-parse for the HEAD checks.
         $options = ArgsParser::parse($options);
-        // By default, HEAD requests do not cause redirections.
-        if (isset($options['method']) && $options['method'] === RequestMethod::HEAD) {
-            $defaults['allow_redirects'] = false;
-        }
-
         $parsedArgs = ArgsParser::parse($options, $defaults);
         /**
          * Filters the arguments used in an HTTP request.
