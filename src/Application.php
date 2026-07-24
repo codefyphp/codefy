@@ -19,7 +19,6 @@ use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Dotenv\Dotenv;
-use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,7 +37,6 @@ use Qubus\Http\Session\PhpSession;
 use Qubus\Inheritance\InvokerAware;
 use Qubus\Injector\Config\InjectorFactory;
 use Qubus\Injector\Psr11\Container;
-use Qubus\Injector\ServiceContainer;
 use Qubus\Injector\ServiceProvider\BaseServiceProvider;
 use Qubus\Injector\ServiceProvider\Bootable;
 use Qubus\Injector\ServiceProvider\Serviceable;
@@ -65,7 +63,7 @@ final class Application extends Container
     use InvokerAware;
     use LoggerAware;
 
-    public const string APP_VERSION = '3.2.1';
+    public const string APP_VERSION = '3.3.0';
 
     public const string MIN_PHP_VERSION = '8.4';
 
@@ -895,7 +893,7 @@ final class Application extends Container
      * @return void
      * @throws \ReflectionException
      */
-    private static function loadEnvironment(string $basePath): void
+    public static function loadEnvironment(string $basePath): void
     {
         if (self::$encryptedEnv) {
             try {
@@ -999,6 +997,14 @@ final class Application extends Container
      */
     public static function create(array $config): ApplicationBuilder
     {
+        if (($config['encryptedEnv'] ?? false) === true) {
+            self::$encryptedEnv = true;
+        }
+
+        $basePath = $config['basePath'] ?? self::inferBasePath();
+
+        self::loadEnvironment($basePath);
+
         return new ApplicationBuilder(new self($config))
             ->withKernels()
             ->withProviders();

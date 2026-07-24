@@ -1,6 +1,15 @@
+<?php
+
+use Codefy\Framework\Proxy\Codefy;
+
+?>
 <!DOCTYPE html>
+<html lang="<?=Codefy::$PHP->configContainer->string('app.language', 'en');?>">
 <head>
+    <meta charset="<?=Codefy::$PHP->configContainer->string('app.charset');?>">
     <title>{{ code }} Error</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
     <style>
         @import url(https://fonts.googleapis.com/css?family=Open+Sans);
         html{

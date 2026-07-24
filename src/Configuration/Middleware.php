@@ -20,7 +20,7 @@ class Middleware
      */
     public function alias(array $aliases): static
     {
-        self::$customAliases = $aliases;
+        self::$customAliases[] = $aliases;
 
         return $this;
     }

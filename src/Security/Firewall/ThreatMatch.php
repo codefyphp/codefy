@@ -12,6 +12,10 @@ final readonly class ThreatMatch
         public float $confidence,
         public string $pattern,
         public string $value,
+        public ?string $group = null,
+        public ?string $source = null,
+        public ?string $field = null,
+        public bool $excluded = false,
     ) {
     }
 }

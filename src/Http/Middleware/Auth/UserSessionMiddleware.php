@@ -19,7 +19,9 @@ use Qubus\Http\Cookies\CookiesRequest;
 use Qubus\Http\Cookies\CookiesResponse;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 use Qubus\Http\Status;
+use Throwable;
 
+use function Codefy\Framework\Helpers\logger;
 use function is_string;
 use function Qubus\Support\Helpers\is_null__;
 
@@ -110,7 +112,13 @@ final class UserSessionMiddleware implements MiddlewareInterface
         }
 
         if (false === $this->isNew($request)) {
-            return $response;
+            try {
+                if ($this->tokensMatch($request)) {
+                    return $response;
+                }
+            } catch (Throwable) {
+                logger(level: 'notice', message: 'Bad or stale cookie was replaced');
+            }
         }
 
         $signed = $this->sign($token);
@@ -184,7 +192,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
         }
 
         throw new InvalidTokenException(
-            uri: $request->getServerParams()['HTTP_REFERER'],
+            uri: $request->getHeaderLine('Referer'),
             message: 'User token is missing or invalid.',
             code: Status::FORBIDDEN
         );

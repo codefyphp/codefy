@@ -4,13 +4,53 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Security\Firewall;
 
+use InvalidArgumentException;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Data\TypeException;
 
-use function array_merge;
+use function usort;
 
 final class ThreatPatternRegistry
 {
+    private const array HTML_INPUT_SOURCES = [
+        'uri',
+        'path',
+        'query',
+        'body',
+    ];
+
+    private const array URL_INPUT_SOURCES = [
+        'uri',
+        'query',
+        'body',
+    ];
+
+    private const array FILE_PATH_INPUT_SOURCES = [
+        'uri',
+        'path',
+        'query',
+        'body',
+    ];
+
+    private const array REQUEST_PATH_SOURCES = [
+        'path',
+    ];
+
+    private const array SQL_INPUT_SOURCES = [
+        'query',
+        'body',
+    ];
+
+    private const array COMMAND_INPUT_SOURCES = [
+        'query',
+        'body',
+    ];
+
+    /**
+     * @var list<ThreatPattern>|null
+     */
+    private ?array $patterns = null;
+
     public function __construct(protected ConfigContainer $config)
     {
     }
@@ -21,17 +61,46 @@ final class ThreatPatternRegistry
      */
     public function all(): array
     {
-        return [
-            ...$this->sqlInjection(),
-            ...$this->xss(),
-            ...$this->rce(),
-            ...$this->fileTraversal(),
-            ...$this->ssrf(),
-            ...$this->scannerProbes(),
-            ...$this->sensitiveFiles(),
-            ...$this->wordpressProbes(),
-            ...$this->phpProbes(),
+
+        if ($this->patterns !== null) {
+            return $this->patterns;
+        }
+
+        $patterns = [
+            ...$this->whenEnabled('sql_injection', fn (): array => $this->sqlInjection()),
+            ...$this->whenEnabled('xss', fn (): array => $this->xss()),
+            ...$this->whenEnabled('rce', fn (): array => $this->rce()),
+            ...$this->whenEnabled('file_traversal', fn (): array => $this->fileTraversal()),
+            ...$this->whenEnabled('ssrf', fn (): array => $this->ssrf()),
+            ...$this->whenEnabled('scanner_path_probe', fn (): array => $this->scannerProbes()),
+            ...$this->whenEnabled('sensitive_file_probe', fn (): array => $this->sensitiveFiles()),
+            ...$this->whenEnabled('wordpress_probe', fn (): array => $this->wordpressProbes()),
+            ...$this->whenEnabled('php_probe', fn (): array => $this->phpProbes()),
         ];
+
+        usort(
+            $patterns,
+            static function (
+                ThreatPattern $left,
+                ThreatPattern $right
+            ): int {
+                $priorityComparison = $right->priority <=> $left->priority;
+
+                if ($priorityComparison !== 0) {
+                    return $priorityComparison;
+                }
+
+                $groupComparison = $left->group <=> $right->group;
+
+                if ($groupComparison !== 0) {
+                    return $groupComparison;
+                }
+
+                return $left->regex <=> $right->regex;
+            }
+        );
+
+        return $this->patterns = $patterns;
     }
 
     /**
@@ -63,14 +132,22 @@ final class ThreatPatternRegistry
             '/\bgroup_concat\s*\(/i',
         ];
 
+        $allowedSources = $this->allowedSources(
+            group: 'sql_injection',
+            defaults: self::SQL_INPUT_SOURCES
+        );
+
         return $this->map(
-            array_merge(
-                $patterns,
-                $this->config->array(key: 'firewall.sql_injection')
+            patterns: $this->configurePatterns(
+                group: 'sql_injection',
+                builtInPatterns: $patterns
             ),
-            'sql_injection',
-            'critical',
-            95.0
+            group: 'sql_injection',
+            type: 'sql_injection',
+            severity: 'critical',
+            confidence: 95.0,
+            allowedSources: $allowedSources,
+            priority: 90
         );
     }
 
@@ -102,14 +179,22 @@ final class ThreatPatternRegistry
             '/prompt\s*\(/i',
         ];
 
+        $allowedSources = $this->allowedSources(
+            group: 'xss',
+            defaults: self::HTML_INPUT_SOURCES
+        );
+
         return $this->map(
-            array_merge(
-                $patterns,
-                $this->config->array(key: 'firewall.xss')
+            patterns: $this->configurePatterns(
+                group: 'xss',
+                builtInPatterns: $patterns
             ),
-            'xss',
-            'high',
-            90.0
+            group: 'xss',
+            type: 'xss',
+            severity: 'high',
+            confidence: 90.0,
+            allowedSources: $allowedSources,
+            priority: 60
         );
     }
 
@@ -141,14 +226,22 @@ final class ThreatPatternRegistry
             '/\/bin\/sh/i',
         ];
 
+        $allowedSources = $this->allowedSources(
+            group: 'rce',
+            defaults: self::COMMAND_INPUT_SOURCES
+        );
+
         return $this->map(
-            array_merge(
-                $patterns,
-                $this->config->array('firewall.rce')
+            patterns: $this->configurePatterns(
+                group: 'rce',
+                builtInPatterns: $patterns
             ),
-            'remote_code_execution',
-            'critical',
-            98.0
+            group: 'rce',
+            type: 'remote_code_execution',
+            severity: 'critical',
+            confidence: 98.0,
+            allowedSources: $allowedSources,
+            priority: 100
         );
     }
 
@@ -158,31 +251,29 @@ final class ThreatPatternRegistry
     private function fileTraversal(): array
     {
         $patterns = [
-            '/\.\.\//',
-            '/\.\.\\\\/',
-            '/%2e%2e%2f/i',
-            '/%2e%2e%5c/i',
-            '/etc\/passwd/i',
-            '/etc\/shadow/i',
-            '/boot\.ini/i',
-            '/win\.ini/i',
-            '/windows\/system32/i',
-            '/\/proc\/self\/environ/i',
-            '/\/proc\/version/i',
-            '/\/var\/log\//i',
-            '/\/var\/www\//i',
-            '/\/home\/[^\/]+\/\.ssh/i',
-            '/id_rsa/i',
+            '#(?:^|[\\\\/])\.\.(?:[\\\\/]|$)#',
+            '#%2e%2e(?:%2f|%5c)#i',
+            '#\.\.%2f#i',
+            '#\.\.%5c#i',
+            '#%252e%252e(?:%252f|%255c)#i',
         ];
 
+        $allowedSources = $this->allowedSources(
+            group: 'file_traversal',
+            defaults: self::FILE_PATH_INPUT_SOURCES
+        );
+
         return $this->map(
-            array_merge(
-                $patterns,
-                $this->config->array(key: 'firewall.file_traversal')
+            patterns: $this->configurePatterns(
+                group: 'file_traversal',
+                builtInPatterns: $patterns
             ),
-            'file_traversal',
-            'high',
-            92.0
+            group: 'file_traversal',
+            type: 'file_traversal',
+            severity: 'high',
+            confidence: 92.0,
+            allowedSources: $allowedSources,
+            priority: 80
         );
     }
 
@@ -192,30 +283,42 @@ final class ThreatPatternRegistry
     private function ssrf(): array
     {
         $patterns = [
-            '/169\.254\.169\.254/i',
-            '/metadata\.google\.internal/i',
-            '/metadata\.azure\.com/i',
-            '/localhost/i',
-            '/127\.0\.0\.1/',
-            '/0\.0\.0\.0/',
-            '/::1/',
-            '/file:\/\//i',
-            '/gopher:\/\//i',
-            '/dict:\/\//i',
-            '/ftp:\/\//i',
-            '/http:\/\/10\./i',
-            '/http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\./i',
-            '/http:\/\/192\.168\./i',
+            '/(?<![\w.-])169\.254\.169\.254(?::\d+)?(?:[\/?#]|$)/i',
+            '/(?<![\w.-])metadata\.google\.internal(?::\d+)?(?:[\/?#]|$)/i',
+            '/(?<![\w.-])metadata\.azure\.com(?::\d+)?(?:[\/?#]|$)/i',
+            '/(?<![\w.-])localhost(?::\d+)?(?:[\/?#]|$)/i',
+
+            '/(?<![\w.-])127(?:\.\d{1,3}){3}(?::\d+)?(?:[\/?#]|$)/i',
+            '/(?<![\w.-])0\.0\.0\.0(?::\d+)?(?:[\/?#]|$)/i',
+
+            '/(?:^|[\/\[\s])::1(?::\d+)?(?:$|[\/\]?#\s])/i',
+
+            '/\bfile:\/\//i',
+            '/\bgopher:\/\//i',
+            '/\bdict:\/\//i',
+            '/\bftp:\/\//i',
+
+            '/\bhttps?:\/\/10(?:\.\d{1,3}){3}(?::\d+)?(?:[\/?#]|$)/i',
+            '/\bhttps?:\/\/172\.(?:1[6-9]|2\d|3[01])(?:\.\d{1,3}){2}(?::\d+)?(?:[\/?#]|$)/i',
+            '/\bhttps?:\/\/192\.168(?:\.\d{1,3}){2}(?::\d+)?(?:[\/?#]|$)/i',
         ];
 
+        $allowedSources = $this->allowedSources(
+            group: 'ssrf',
+            defaults: self::URL_INPUT_SOURCES
+        );
+
         return $this->map(
-            array_merge(
-                $patterns,
-                $this->config->array(key: 'firewall.ssrf')
+            patterns: $this->configurePatterns(
+                group: 'ssrf',
+                builtInPatterns: $patterns
             ),
-            'ssrf',
-            'high',
-            88.0
+            group: 'ssrf',
+            type: 'ssrf',
+            severity: 'high',
+            confidence: 88.0,
+            allowedSources: $allowedSources,
+            priority: 70
         );
     }
 
@@ -235,14 +338,25 @@ final class ThreatPatternRegistry
             'owa/auth/logon.aspx', 'ecp', 'autodiscover/autodiscover.xml',
         ];
 
-        $paths = array_merge($paths, $this->config->array(key: 'firewall.scanner_path_probe'));
+        $paths = $this->configureValues(
+            group: 'scanner_path_probe',
+            builtInValues: $paths
+        );
+
+        $allowedSources = $this->allowedSources(
+            group: 'scanner_path_probe',
+            defaults: self::REQUEST_PATH_SOURCES
+        );
 
         return array_map(
             fn (string $path): ThreatPattern => new ThreatPattern(
-                'bot_scanner',
-                'medium',
-                75.0,
-                '#/(?:' . preg_quote($path, '#') . ')(?:/|$|\?)#i'
+                group: 'scanner_path_probe',
+                type: 'bot_scanner',
+                severity: 'medium',
+                confidence: 75.0,
+                regex: '#/(?:' . preg_quote($path, '#') . ')(?:/|$|\?)#i',
+                allowedSources: $allowedSources,
+                priority: 40
             ),
             $paths
         );
@@ -261,21 +375,35 @@ final class ThreatPatternRegistry
             'backup.zip', 'backup.tar.gz', 'www.zip', 'public.zip',
             'credentials.json', 'service-account.json', 'id_rsa', 'id_dsa',
             'web.config', 'nginx.conf', 'apache.conf', 'httpd.conf',
+            '.enc.key', '.env.enc',
         ];
 
-        $files = array_merge($files, $this->config->array(key: 'firewall.sensitive_file_probe'));
+        $files = $this->configureValues(
+            group: 'sensitive_file_probe',
+            builtInValues: $files
+        );
 
         return array_map(
             fn (string $file): ThreatPattern => new ThreatPattern(
-                'sensitive_file_probe',
-                'high',
-                90.0,
-                '#/(?:' . preg_quote($file, '#') . ')(?:$|\?)#i'
+                group: 'sensitive_file_probe',
+                type: 'sensitive_file_probe',
+                severity: 'high',
+                confidence: 90.0,
+                regex: '#/(?:' . preg_quote($file, '#') . ')(?:$|\?)#i',
+                allowedSources: $this->allowedSources(
+                    group: 'sensitive_file_probe',
+                    defaults: self::REQUEST_PATH_SOURCES
+                ),
+                priority: 50
             ),
             $files
         );
     }
 
+    /**
+     * @return array
+     * @throws TypeException
+     */
     private function wordpressProbes(): array
     {
         $paths = [
@@ -286,12 +414,26 @@ final class ThreatPatternRegistry
             'wp-blog-header.php', 'wp-comments-post.php',
         ];
 
+        $paths = $this->configureValues(
+            group: 'wordpress_probe',
+            builtInValues: $paths,
+            includeLegacy: false
+        );
+
+        $allowedSources = $this->allowedSources(
+            group: 'wordpress_probe',
+            defaults: self::REQUEST_PATH_SOURCES
+        );
+
         return array_map(
             fn (string $path): ThreatPattern => new ThreatPattern(
-                'cms_probe',
-                'medium',
-                80.0,
-                '#/(?:' . preg_quote($path, '#') . ')(?:/|$|\?)#i'
+                group: 'wordpress_probe',
+                type: 'cms_probe',
+                severity: 'medium',
+                confidence: 80.0,
+                regex: '#/(?:' . preg_quote($path, '#') . ')(?:/|$|\?)#i',
+                allowedSources: $allowedSources,
+                priority: 30
             ),
             $paths
         );
@@ -310,14 +452,23 @@ final class ThreatPatternRegistry
             'vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php',
         ];
 
-        $files = array_merge($files, $this->config->array(key: 'firewall.php_probe'));
+        $files = $this->configureValues(
+            group: 'php_probe',
+            builtInValues: $files
+        );
 
         return array_map(
             fn (string $file): ThreatPattern => new ThreatPattern(
-                'php_probe',
-                'high',
-                88.0,
-                '#/(?:' . preg_quote($file, '#') . ')(?:$|\?)#i'
+                group: 'php_probe',
+                type: 'php_probe',
+                severity: 'high',
+                confidence: 88.0,
+                regex: '#/(?:' . preg_quote($file, '#') . ')(?:$|\?)#i',
+                allowedSources: $this->allowedSources(
+                    group: 'php_probe',
+                    defaults: self::REQUEST_PATH_SOURCES
+                ),
+                priority: 31
             ),
             $files
         );
@@ -325,13 +476,224 @@ final class ThreatPatternRegistry
 
     /**
      * @param list<string> $patterns
+     * @param list<string> $allowedSources
      * @return list<ThreatPattern>
      */
-    private function map(array $patterns, string $type, string $severity, float $confidence): array
-    {
+    private function map(
+        array $patterns,
+        string $group,
+        string $type,
+        string $severity,
+        float $confidence,
+        array $allowedSources = [],
+        int $priority = 0
+    ): array {
         return array_map(
-            fn (string $regex): ThreatPattern => new ThreatPattern($type, $severity, $confidence, $regex),
+            fn (string $regex): ThreatPattern => new ThreatPattern(
+                group: $group,
+                type: $type,
+                severity: $severity,
+                confidence: $confidence,
+                regex: $this->validateRegex($regex, $group),
+                allowedSources: $allowedSources,
+                priority: $priority
+            ),
             $patterns
         );
+    }
+
+    /**
+     * @param callable(): list<ThreatPattern> $patterns
+     * @return list<ThreatPattern>
+     * @throws TypeException
+     */
+    private function whenEnabled(string $group, callable $patterns): array
+    {
+        if (
+                ! $this->config->boolean(
+                    key: 'firewall.rules.' . $group . '.enabled',
+                    default: true
+                )
+        ) {
+            return [];
+        }
+
+        return $patterns();
+    }
+
+    /**
+     * @param list<string> $builtInPatterns
+     * @return list<string>
+     * @throws TypeException
+     */
+    private function configurePatterns(
+        string $group,
+        array $builtInPatterns
+    ): array {
+        $replace = $this->config->array(
+            key: 'firewall.rules.' . $group . '.replace',
+            default: []
+        );
+
+        $patterns = $replace !== []
+        ? $replace
+        : $builtInPatterns;
+
+        $remove = $this->config->array(
+            key: 'firewall.rules.' . $group . '.remove',
+            default: []
+        );
+
+        if ($remove !== []) {
+            $patterns = array_values(
+                array_filter(
+                    $patterns,
+                    static fn (string $pattern): bool =>
+                        ! in_array(
+                            needle: $pattern,
+                            haystack: $remove,
+                            strict: true
+                        )
+                )
+            );
+        }
+
+        return [
+            ...$patterns,
+            /*
+             * Deprecated legacy additions.
+             *
+             * Remove in the next major version (4.0).
+             */
+            ...$this->config->array(
+                key: 'firewall.' . $group,
+                default: []
+            ),
+
+            ...$this->config->array(
+                key: 'firewall.rules.' . $group . '.add',
+                default: []
+            ),
+        ];
+    }
+
+    /**
+     * @param list<string> $builtInValues
+     * @return list<string>
+     * @throws TypeException
+     */
+    private function configureValues(
+        string $group,
+        array $builtInValues,
+        bool $includeLegacy = true
+    ): array {
+        $legacyValues = $includeLegacy
+        ? $this->config->array(
+            key: 'firewall.' . $group,
+            default: []
+        )
+        : [];
+
+        $replace = $this->config->array(
+            key: 'firewall.rules.' . $group . '.replace',
+            default: []
+        );
+
+        $values = [
+            ...($replace !== [] ? $replace : $builtInValues),
+
+            /*
+             * Deprecated legacy additions.
+             */
+            ...$legacyValues,
+
+            ...$this->config->array(
+                key: 'firewall.rules.' . $group . '.add',
+                default: []
+            ),
+        ];
+
+        $remove = $this->config->array(
+            key: 'firewall.rules.' . $group . '.remove',
+            default: []
+        );
+
+        if ($remove === []) {
+            return array_values(array_unique($values));
+        }
+
+        return array_values(
+            array_unique(
+                array_filter(
+                    $values,
+                    static fn (string $value): bool =>
+                        ! in_array(
+                            needle: $value,
+                            haystack: $remove,
+                            strict: true
+                        )
+                )
+            )
+        );
+    }
+
+    /**
+     * @param list<string> $defaults
+     * @return list<string>
+     * @throws TypeException
+     */
+    private function allowedSources(
+        string $group,
+        array $defaults
+    ): array {
+        $configuredSources = $this->config->array(
+            key: 'firewall.rules.' . $group . '.sources',
+            default: []
+        );
+
+        if ($configuredSources === []) {
+            return $defaults;
+        }
+
+        $supportedSources = [
+            'method',
+            'uri',
+            'path',
+            'query',
+            'body',
+            'header',
+            'cookie',
+        ];
+
+        $sources = array_values(
+            array_filter(
+                $configuredSources,
+                static fn (mixed $source): bool =>
+                    is_string($source)
+                    && in_array(
+                        $source,
+                        $supportedSources,
+                        true
+                    )
+            )
+        );
+
+        return $sources !== [] ? $sources : $defaults;
+    }
+
+    private function validateRegex(string $regex, string $group): string
+    {
+        if (@preg_match($regex, '') === false) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Invalid firewall regex configured for group [%s]: %s. Error: %s',
+                    $group,
+                    $regex,
+                    preg_last_error_msg()
+                )
+            );
+        }
+
+        return $regex;
     }
 }

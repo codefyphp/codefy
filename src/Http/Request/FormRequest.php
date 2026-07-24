@@ -39,8 +39,8 @@ abstract class FormRequest extends ServerRequest implements DataValidator
     //phpcs:disable
     protected ?ServiceContainer $container = null
     {
-        get => $this->container ?? Codefy::$PHP;
-        set(null|ServiceContainer $value) => $this->container  = $value;
+        get => $this->container ??= Codefy::$PHP;
+        set(null|ServiceContainer $value) => $this->container = $value;
     }
     //phpcs:enable
 

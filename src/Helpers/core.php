@@ -42,6 +42,7 @@ use Qubus\Routing\Exceptions\TooLateToAddNewRouteException;
 use Qubus\Routing\Route\RouteAttributes;
 use Qubus\Support\HtmlString;
 use Qubus\View\Renderer;
+use ReflectionException;
 use RuntimeException;
 
 use function dirname;
@@ -279,8 +280,9 @@ function mail(string|array $to, string $subject, string $message, array $headers
  * the CommandBus.
  *
  * @param Command $command
- * @throws \ReflectionException
+ * @throws TypeException
  * @throws UnresolvableCommandHandlerException
+ * @throws ReflectionException
  */
 function command(Command $command): void
 {
@@ -296,7 +298,10 @@ function command(Command $command): void
  * Queries the given query and returns
  * a result if any.
  *
- * @throws \ReflectionException
+ * @param Query $query
+ * @return mixed
+ * @throws ReflectionException
+ * @throws TypeException
  * @throws UnresolvableQueryHandlerException
  */
 function ask(Query $query): mixed
@@ -414,6 +419,7 @@ function normalize_url(string $url): string
  *
  * @param string $string
  * @return string
+ * @throws TypeException
  */
 function trans(string $string): string
 {
