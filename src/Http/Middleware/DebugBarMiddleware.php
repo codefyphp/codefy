@@ -105,8 +105,8 @@ class DebugBarMiddleware implements MiddlewareInterface
         $stream = $this->streamFactory->createStream($result);
 
         return $this->responseFactory->createResponse()
-                ->withBody($stream)
-                ->withAddedHeader('Content-type', 'text/html');
+            ->withBody($stream)
+            ->withAddedHeader('Content-type', 'text/html');
     }
 
     private function attachDebugBarToHtmlResponse(ResponseInterface $response): ResponseInterface
@@ -125,26 +125,56 @@ class DebugBarMiddleware implements MiddlewareInterface
 
     private function getStaticFile(UriInterface $uri): ?ResponseInterface
     {
-        $path = $this->extractPath($uri);
+        $requestPath = rawurldecode($this->extractPath($uri));
+        $baseUrl = rtrim($this->debugBarRenderer->getBaseUrl(), '/');
 
-        if (!str_starts_with($path, $this->debugBarRenderer->getBaseUrl())) {
+        // Require the configured base URL to match a complete path segment.
+        if (! str_starts_with($requestPath, $baseUrl . '/')) {
             return null;
         }
 
-        $pathToFile = substr($path, strlen($this->debugBarRenderer->getBaseUrl()));
+        $relativePath = substr($requestPath, strlen($baseUrl) + 1);
 
-        $fullPathToFile = $this->debugBarRenderer->getBasePath() . $pathToFile;
-
-        if (!file_exists($fullPathToFile)) {
+        if ($relativePath === '' || str_contains($relativePath, "\0")) {
             return null;
         }
 
-        $contentType = $this->getContentTypeByFileName($fullPathToFile);
-        $stream = $this->streamFactory->createStreamFromResource(fopen($fullPathToFile, 'rb'));
+        $assetRoot = realpath($this->debugBarRenderer->getBasePath());
 
-        return $this->responseFactory->createResponse()
-                ->withBody($stream)
-                ->withAddedHeader('Content-type', $contentType);
+        if ($assetRoot === false) {
+            return null;
+        }
+
+        $assetRoot = rtrim($assetRoot, DIRECTORY_SEPARATOR);
+        $candidate = realpath(
+            $assetRoot . DIRECTORY_SEPARATOR . $relativePath
+        );
+
+        if (
+                $candidate === false
+                || ! str_starts_with(
+                    $candidate,
+                    $assetRoot . DIRECTORY_SEPARATOR
+                )
+                || ! is_file($candidate)
+                || ! is_readable($candidate)
+        ) {
+            return null;
+        }
+
+        $resource = fopen($candidate, 'rb');
+
+        if ($resource === false) {
+            return null;
+        }
+
+        $contentType = $this->getContentTypeByFileName($candidate);
+        $stream = $this->streamFactory->createStreamFromResource($resource);
+
+        return $this->responseFactory
+            ->createResponse()
+            ->withBody($stream)
+            ->withHeader('Content-Type', $contentType);
     }
 
     private function extractPath(UriInterface $uri): string
@@ -157,14 +187,14 @@ class DebugBarMiddleware implements MiddlewareInterface
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
 
         $map = [
-                'css' => 'text/css',
-                'js' => 'text/javascript',
-                'otf' => 'font/opentype',
-                'eot' => 'application/vnd.ms-fontobject',
-                'svg' => 'image/svg+xml',
-                'ttf' => 'application/font-sfnt',
-                'woff' => 'application/font-woff',
-                'woff2' => 'application/font-woff2',
+            'css' => 'text/css',
+            'js' => 'text/javascript',
+            'otf' => 'font/opentype',
+            'eot' => 'application/vnd.ms-fontobject',
+            'svg' => 'image/svg+xml',
+            'ttf' => 'application/font-sfnt',
+            'woff' => 'application/font-woff',
+            'woff2' => 'application/font-woff2',
         ];
 
         return $map[$ext] ?? 'text/plain';

@@ -63,7 +63,7 @@ final class Application extends Container
     use InvokerAware;
     use LoggerAware;
 
-    public const string APP_VERSION = '3.3.0';
+    public const string APP_VERSION = '3.3.1';
 
     public const string MIN_PHP_VERSION = '8.4';
 
