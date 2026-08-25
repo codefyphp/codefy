@@ -70,21 +70,6 @@ class CsrfTokenMiddleware implements MiddlewareInterface
         // Retrieve an existing token from the cookie or generate a new one. Plaintext.
         $this->token = $this->prepareToken($request);
 
-        if (
-            $request->hasHeader($this->configContainer->getConfigKey(key: 'csrf.header'))
-            && $request->getHeaderLine($this->configContainer->getConfigKey(key: 'csrf.header')) !== ''
-        ) {
-            $this->token = $request->getHeaderLine($this->configContainer->getConfigKey(key: 'csrf.header'));
-        }
-
-        /**
-         * If true, the application will do a header check, if not,
-         * it will expect data submitted via an HTML form tag.
-         */
-        if ($this->configContainer->getConfigKey(key: 'csrf.request_header') === true) {
-            $request = $request->withHeader($this->configContainer->getConfigKey(key: 'csrf.header'), $this->token);
-        }
-
         $response = $handler->handle(
             $request
                 ->withAttribute(self::CSRF_SESSION_ATTRIBUTE, $this->token)
