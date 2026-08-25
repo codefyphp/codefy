@@ -15,6 +15,7 @@ use Qubus\Config\ConfigContainer;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 use Qubus\Http\Status;
 
+use function hash_equals;
 use function is_array;
 use function is_string;
 
@@ -64,7 +65,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
         $expected = $this->fetchToken($request);
         $provided = $this->getTokenFromRequest($request);
 
-        return $this->compareTokens($expected, $provided);
+        return hash_equals($expected, $provided);
     }
 
 
