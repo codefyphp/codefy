@@ -34,7 +34,13 @@ class Auth implements Sentinel
         $identity = $this->configContainer->getConfigKey(key: 'auth.pdo.fields.identity', default: 'username');
         $password = $this->configContainer->getConfigKey(key: 'auth.pdo.fields.password', default: 'password');
 
-        if (! isset($params[$identity]) || ! isset($params[$password])) {
+        if (
+            !is_array($params)
+            || !is_string($params[$identity] ?? null)
+            || !is_string($params[$password] ?? null)
+            || $params[$identity] === ''
+            || $params[$password] === ''
+        ) {
             return null;
         }
 

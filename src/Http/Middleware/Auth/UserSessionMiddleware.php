@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Auth;
 
 use Codefy\Framework\Http\Middleware\Csrf\InvalidTokenException;
-use Codefy\Framework\Traits\TokenEncryptionAware;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
@@ -15,19 +14,15 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Data\TypeException;
-use Qubus\Http\Cookies\CookiesRequest;
 use Qubus\Http\Cookies\CookiesResponse;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 use Qubus\Http\Status;
-use Throwable;
 
-use function Codefy\Framework\Helpers\logger;
 use function is_string;
-use function Qubus\Support\Helpers\is_null__;
 
 final class UserSessionMiddleware implements MiddlewareInterface
 {
-    use TokenEncryptionAware;
+    use AuthTokenAware;
 
     public const string SESSION_ATTRIBUTE = 'USERSESSION';
 
@@ -44,9 +39,10 @@ final class UserSessionMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $userDetails = $this->userDetails($request);
+        $token = $this->fetchToken($request);
         $response = $handler->handle($request->withAttribute(self::SESSION_ATTRIBUTE, $userDetails));
 
-        return $this->createCookie($request, $response, $userDetails->token);
+        return $this->createCookie($request, $response, $token);
     }
 
     /**
@@ -56,10 +52,10 @@ final class UserSessionMiddleware implements MiddlewareInterface
      */
     protected function cookieTtl(ServerRequestInterface $request): int
     {
-        $ttl = isset($request->getParsedBody()['rememberme'])
-        && $request->getParsedBody()['rememberme'] === 'yes'
-        ? $this->configContainer->getConfigKey(key: 'cookies.remember')
-        : $this->configContainer->getConfigKey(key: 'cookies.lifetime');
+        $body = $request->getParsedBody();
+        $ttl = is_array($body) && ($body['rememberme'] ?? null) === 'yes'
+        ? $this->configContainer->getConfigKey(key: 'cookies.remember', default: 2592000)
+        : $this->configContainer->getConfigKey(key: 'cookies.lifetime', default: 3600);
 
         return (int) $ttl;
     }
@@ -103,25 +99,11 @@ final class UserSessionMiddleware implements MiddlewareInterface
         ResponseInterface $response,
         string $token
     ): ResponseInterface {
-        if (
-                (isset($request->getCookieParams()[$this->cookieName()])
-                        && !empty($request->getCookieParams()[$this->cookieName()]))
-                && false === $this->tokensMatch($request)
-        ) {
+        if ($this->tokensMatch($request)) {
             return $response;
         }
 
-        if (false === $this->isNew($request)) {
-            try {
-                if ($this->tokensMatch($request)) {
-                    return $response;
-                }
-            } catch (Throwable) {
-                logger(level: 'notice', message: 'Bad or stale cookie was replaced');
-            }
-        }
-
-        $signed = $this->sign($token);
+        $signed = $this->encryptAuthToken($token, $this->cookieTtl($request));
 
         return CookiesResponse::set(
             response: $response,
@@ -139,12 +121,8 @@ final class UserSessionMiddleware implements MiddlewareInterface
     public function isNew(ServerRequestInterface $request): bool
     {
         $name = $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID');
-        $cookie = CookiesRequest::get($request, $name);
-        if (is_null__($cookie->getValue()) || '' === $cookie->getValue()) {
-            return true;
-        }
-
-        return false;
+        $value = $request->getCookieParams()[$name] ?? null;
+        return !is_string($value) || $value === '';
     }
 
     /**
@@ -165,7 +143,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
         $name = $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID');
         $value = $cookies[$name] ?? '';
 
-        return '' === $value ? null : $this->unsign($value);
+        return $this->decryptAuthToken($value);
     }
 
     /**
@@ -176,7 +154,7 @@ final class UserSessionMiddleware implements MiddlewareInterface
         $expected = $this->fetchToken($request);
         $provided = $this->getTokenFromCookie($request->getCookieParams());
 
-        return $this->compareTokens($expected, $provided);
+        return $provided !== null && $this->compareTokens($expected, $provided);
     }
 
 
@@ -187,12 +165,12 @@ final class UserSessionMiddleware implements MiddlewareInterface
     {
         $userDetails = $this->userDetails($request);
 
-        if (is_string($userDetails->token)) {
+        if (is_object($userDetails) && is_string($userDetails->token ?? null) && $userDetails->token !== '') {
             return $userDetails->token;
         }
 
         throw new InvalidTokenException(
-            uri: $request->getHeaderLine('Referer'),
+            uri: '/',
             message: 'User token is missing or invalid.',
             code: Status::FORBIDDEN
         );

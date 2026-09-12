@@ -12,9 +12,7 @@ final class TaskCompleted extends BaseEvent implements Event
 {
     public const string EVENT_NAME = 'task.completed';
 
-    public private(set) ?Task $task = null {
-        get => $this->task;
-    }
+    public private(set) ?Task $task = null;
 
     public function __construct(Task $task)
     {

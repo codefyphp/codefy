@@ -34,7 +34,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
      *
      * @var array<array-key, mixed> $data
      */
-    protected array $data = [];
+    protected ?array $data = null;
 
     //phpcs:disable
     protected ?ServiceContainer $container = null
@@ -54,12 +54,18 @@ abstract class FormRequest extends ServerRequest implements DataValidator
      */
     protected ?Validation $validator = null;
 
+    public function __clone()
+    {
+        $this->data = null;
+        $this->validator = null;
+    }
+
     /**
      * @inheritDoc
      */
     public function all(): array
     {
-        if (empty($this->data)) {
+        if ($this->data === null) {
             $this->data = array_merge(
                 $this->getQueryParams(),
                 (array) $this->getParsedBody(),
@@ -76,6 +82,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
     public function only(array $keys): static
     {
         $clone = clone $this;
+        $clone->validator = null;
         $clone->data = new DataType()->array->only($this->all(), $keys);
         return $clone;
     }
@@ -86,6 +93,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
     public function except(array $keys): static
     {
         $clone = clone $this;
+        $clone->validator = null;
         $clone->data = new DataType()->array->except($this->all(), $keys);
         return $clone;
     }
@@ -97,7 +105,7 @@ abstract class FormRequest extends ServerRequest implements DataValidator
     {
         $this->validateResolved();
 
-        return $this->data;
+        return $this->validator->getValidData();
     }
 
     /**
@@ -237,10 +245,10 @@ abstract class FormRequest extends ServerRequest implements DataValidator
 
         $factory = $this->container->make(name: ValidationFactory::class);
 
-        if (!method_exists($this, 'validator')) {
-            $validator = $this->createDefaultValidator($factory);
-            $this->setValidator($validator);
-        }
+        $validator = method_exists($this, 'validator')
+        ? $this->validator($factory)
+        : $this->createDefaultValidator($factory);
+        $this->setValidator($validator);
 
         return $this->validator;
     }

@@ -40,6 +40,21 @@ class RbacPermission implements Permission
     #[\Override]
     public function addChild(Permission $permission): void
     {
+        $pending = [$permission];
+        $visited = [];
+        while ($pending !== []) {
+            $child = array_pop($pending);
+            if ($child->name === $this->name) {
+                throw new \LogicException('RBAC inheritance must not contain cycles.');
+            }
+            if (isset($visited[$child->name])) {
+                continue;
+            }
+            $visited[$child->name] = true;
+            foreach ($child->getChildren() as $descendant) {
+                $pending[] = $descendant;
+            }
+        }
         $this->childrenNames[$permission->name] = true;
     }
 

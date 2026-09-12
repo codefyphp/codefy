@@ -9,17 +9,13 @@ class RateException extends \RuntimeException
     /**
      * @var Condition
      */
-    public protected(set) Condition $condition {
-        get {
-            return $this->condition;
-        }
-    }
+    public protected(set) Condition $condition;
 
     /**
      * @param string $identifier
      * @param Condition $condition
      */
-    public function __construct(string $identifier, Condition $condition)
+    public function __construct(string $identifier, Condition $condition, public readonly int $retryAfter = 1)
     {
         $this->condition = $condition;
 

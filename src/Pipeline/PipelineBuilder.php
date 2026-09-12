@@ -10,7 +10,6 @@ final class PipelineBuilder
 {
     /**
      * @var array<mixed> $pipes
-     * @phpstan-ignore property.onlyWritten
      */
     private array $pipes = [];
 
@@ -28,6 +27,6 @@ final class PipelineBuilder
 
     public function build(): Chainable
     {
-        return new Pipeline(Codefy::$PHP->getContainer());
+        return new Pipeline(Codefy::$PHP->getContainer())->through($this->pipes);
     }
 }

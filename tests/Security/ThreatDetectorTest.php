@@ -665,3 +665,30 @@ it('supports new sensitive file additions', function (): void {
         )
     )->toBeTrue();
 });
+
+it('inspects configured header and cookie sources', function () {
+    $config = codefy()->configContainer;
+    $old = $config->getConfigKey('firewall', []);
+    try {
+        $rules = $old['rules'] ?? [];
+        $rules['xss'] = array_replace($rules['xss'] ?? [], ['enabled' => true, 'sources' => ['header', 'cookie']]);
+        $config->setConfigKey('firewall', ['rules' => $rules]);
+        $detector = new ThreatDetector(
+            new ThreatPatternRegistry($config),
+            new FirewallExclusionPolicy($config),
+            new NullThreatLogger()
+        );
+        $header = $detector->detect(
+            middleware_request(headers: ['X-Input' => '<script>alert(1)</script>'])
+                ->withUri(new \Laminas\Diactoros\Uri('https://example.org/'))
+        );
+        expect($header?->source)->toBe('header')->and($header?->field)->toBe('x-input');
+        $cookie = $detector->detect(
+            middleware_request()->withUri(new \Laminas\Diactoros\Uri('https://example.org/'))
+                ->withCookieParams(['input' => '<script>alert(1)</script>'])
+        );
+        expect($cookie?->source)->toBe('cookie');
+    } finally {
+        $config->setConfigKey('firewall', $old);
+    }
+});

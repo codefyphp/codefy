@@ -11,7 +11,7 @@ abstract class FormDataRequest extends FormRequest
      */
     protected function passedValidation(): void
     {
-        foreach ($this->validated() as $key => $value) {
+        foreach ($this->validator->getValidData() as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->{$key} = $value;
             }

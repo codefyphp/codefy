@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Console\ConsoleCommand;
-use Qubus\Exception\Data\TypeException;
-use Qubus\NoSql\Exceptions\InvalidJsonException;
 use Qubus\NoSql\Node;
-use Qubus\Support\Serializer\JsonSerializer;
+use Codefy\Framework\Queue\JobSerializer;
+use Codefy\Framework\Queue\NodeQueue;
 use Symfony\Component\Console\Input\InputOption;
 
 use function Codefy\Framework\Helpers\database_path;
-use function Codefy\Framework\Helpers\queue;
 
 class QueueRunCommand extends ConsoleCommand
 {
@@ -40,6 +38,7 @@ EOT;
 
     public function handle(): int
     {
+        $failed = false;
         try {
             $path = $this->getOptions('name') ?: 'nodequeue';
 
@@ -47,16 +46,28 @@ EOT;
             $queues = $db->all();
 
             foreach ($queues as $queue) {
-                $object = new JsonSerializer()->unserialize($queue['object']);
-                queue($object)->dispatch();
+                if (($queue['failed'] ?? false) || $queue['expire'] > time()) {
+                    continue;
+                }
+                $object = JobSerializer::decode(
+                    $queue['object'],
+                    $this->codefy->configContainer->getConfigKey('queue.jobs', [])
+                );
+                $worker = new NodeQueue($object, database_path(path: $path));
+                if (!$worker->isDue($object->schedule)) {
+                    continue;
+                }
+                if (!$worker->dispatch()) {
+                    $failed = true;
+                }
             }
-        } catch (InvalidJsonException | \ReflectionException | TypeException $e) {
+        } catch (\Throwable $e) {
             return ConsoleCommand::FAILURE;
         }
 
         // return value is important when using CI
         // to fail the build when the command fails
         // 0 = success, other values = fail
-        return ConsoleCommand::SUCCESS;
+        return $failed ? self::FAILURE : self::SUCCESS;
     }
 }

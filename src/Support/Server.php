@@ -20,7 +20,8 @@ class Server
         // Prevent instantiation
     }
 
-    public static function isSsl(): bool
+    /** @param list<string> $trustedProxies Exact proxy IP addresses. */
+    public static function isSsl(array $trustedProxies = []): bool
     {
         if (
             isset($_SERVER['HTTPS'])
@@ -36,7 +37,11 @@ class Server
             return true;
         }
 
-        // Handle reverse proxy / load balancer headers
+        if (!in_array($_SERVER['REMOTE_ADDR'] ?? '', $trustedProxies, true)) {
+            return false;
+        }
+
+        // Forwarded headers are meaningful only from explicitly trusted peers.
         if (
             isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
                 && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https'

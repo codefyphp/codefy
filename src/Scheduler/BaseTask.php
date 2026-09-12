@@ -182,7 +182,7 @@ abstract class BaseTask extends BaseProcessor implements Task
      */
     private function shouldRun(): bool
     {
-        if (is_false__($this->options['enabled'])) {
+        if (is_false__($this->options['enabled'] ?? true)) {
             return false;
         }
 
@@ -203,22 +203,24 @@ abstract class BaseTask extends BaseProcessor implements Task
             return false;
         }
 
-        $this->dispatcher->dispatch(event: new TaskStarted($this));
-
         try {
-            // Run code before executing task.
+            $this->dispatcher->dispatch(event: new TaskStarted($this));
             $this->setUp();
-            // Execute task.
-            $this->execute($this->schedule);
-            // Run code after executing task.
-            $this->tearDown();
-        } catch (\Exception $ex) {
+            try {
+                $this->execute($this->schedule);
+            } finally {
+                $this->tearDown();
+            }
+            $this->dispatcher->dispatch(event: new TaskCompleted($this));
+            return true;
+        } catch (\Throwable $ex) {
             $this->dispatcher->dispatch(event: new TaskFailed($this));
             $this->sendEmail($ex);
+            return false;
+        } finally {
+            if ($this->canRunOnlyOneInstance()) {
+                return $this->mutex->unlock($this);
+            }
         }
-
-        $this->dispatcher->dispatch(event: new TaskCompleted($this));
-
-        return true;
     }
 }

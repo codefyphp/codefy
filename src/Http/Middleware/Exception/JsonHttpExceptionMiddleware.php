@@ -34,7 +34,10 @@ class JsonHttpExceptionMiddleware implements MiddlewareInterface
         } catch (HttpException | Psr7Exception $e) {
             $this->logException($e);
 
-            return JsonResponseFactory::create(data: $e->getMessage(), status: (int) $e->getCode());
+            return JsonResponseFactory::create(
+                data: $this->publicErrorMessage($e),
+                status: $this->normalizeStatusCode((int) $e->getCode())
+            );
         } catch (\Throwable $t) {
             $this->logException($t);
 

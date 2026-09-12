@@ -10,7 +10,7 @@ use Psr\Http\Server\MiddlewareInterface;
 class Middleware
 {
     /** @var array<string, class-string<MiddlewareInterface>> $customAliases */
-    protected static array $customAliases = [];
+    protected array $customAliases = [];
 
     /**
      * Register additional middleware aliases.
@@ -20,7 +20,7 @@ class Middleware
      */
     public function alias(array $aliases): static
     {
-        self::$customAliases[] = $aliases;
+        $this->customAliases = array_replace($this->customAliases, $aliases);
 
         return $this;
     }
@@ -37,6 +37,6 @@ class Middleware
      */
     public function getAliases(): array
     {
-        return self::$customAliases;
+        return $this->customAliases;
     }
 }

@@ -15,6 +15,7 @@ use Qubus\Config\ConfigContainer;
 use Qubus\Http\Cookies\Factory\HttpCookieFactory;
 use Qubus\Http\Status;
 
+use function array_key_exists;
 use function hash_equals;
 use function is_array;
 use function is_string;
@@ -37,7 +38,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
     {
         if (true === $this->needsProtection($request) && false === $this->tokensMatch($request)) {
             throw new TokenMismatchException(
-                uri: $request->getServerParams()['HTTP_REFERER'],
+                uri: '/',
                 message: 'Bad CSRF Token',
                 code: Status::PRECONDITION_FAILED
             );
@@ -82,7 +83,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
         }
 
         throw new InvalidTokenException(
-            uri: $request->getServerParams()['HTTP_REFERER'],
+            uri: '/',
             message: 'Unable to prepare CSRF protection, token attribute is missing or invalid.',
             code: Status::FORBIDDEN
         );
@@ -93,7 +94,17 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
      */
     private function getTokenFromRequest(ServerRequestInterface $request): string
     {
-        if ($request->hasHeader($this->configContainer->getConfigKey(key: 'csrf.header'))) {
+        $attributes = $request->getAttributes();
+        $submittedHeaderAttribute = CsrfTokenMiddleware::CSRF_SUBMITTED_HEADER_ATTRIBUTE;
+
+        if (array_key_exists($submittedHeaderAttribute, $attributes)) {
+            $submittedHeader = $attributes[$submittedHeaderAttribute];
+
+            if (is_string($submittedHeader) && $submittedHeader !== '') {
+                return $submittedHeader;
+            }
+        } elseif ($request->hasHeader($this->configContainer->getConfigKey(key: 'csrf.header'))) {
+            // Support direct use when CsrfTokenMiddleware is not in the same pipeline.
             return (string) $request->getHeaderLine($this->configContainer->getConfigKey(key: 'csrf.header'));
         }
 

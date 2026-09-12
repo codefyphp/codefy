@@ -7,18 +7,15 @@ namespace Codefy\Framework\Scheduler\Processor;
 use Codefy\Framework\Scheduler\Mutex\Locker;
 use Codefy\Framework\Scheduler\Traits\ExpressionAware;
 use Cron\CronExpression;
+use ReflectionException;
 
 use function escapeshellarg;
 use function is_callable;
 use function is_string;
-use function pclose;
-use function popen;
 use function Qubus\Support\Helpers\is_false__;
 use function Qubus\Support\Helpers\is_null__;
 use function Qubus\Support\Helpers\windows_os;
 use function serialize;
-use function sha1;
-use function substr;
 use function trim;
 
 abstract class BaseProcessor implements Processor
@@ -32,9 +29,9 @@ abstract class BaseProcessor implements Processor
 
     protected string $description;
 
-    protected \DateTimeZone|string $timezone;
+    protected \DateTimeZone|string|null $timezone = null;
 
-    /** @var array<string, string> $args */
+    /** @var array<array-key, string|null> $args */
     protected array $args = [];
 
     /** @var array<callable|bool> $filters */
@@ -58,7 +55,7 @@ abstract class BaseProcessor implements Processor
     /**
      * @param Locker $mutex
      * @param callable|string $command
-     * @param array<string, string>|null $args
+     * @param array<array-key, string|null>|null $args
      * @param \DateTimeZone|string|null $timezone
      */
     public function __construct(
@@ -75,16 +72,26 @@ abstract class BaseProcessor implements Processor
 
     /**
      * @inheritDoc
+     * @throws ReflectionException
      */
     public function mutexName(): string
     {
-        return substr(sha1(serialize($this->getExpression() . $this->command)), 0, 8);
+        $command = $this->command;
+        if ($command instanceof \Closure) {
+            $reflection = new \ReflectionFunction($command);
+            $command = [$reflection->getFileName(), $reflection->getStartLine(), $reflection->getEndLine()];
+        } elseif (is_array($command) && is_object($command[0])) {
+            $command = [$command[0]::class, $command[1]];
+        } elseif (is_object($command)) {
+            $command = $command::class;
+        }
+        return hash('sha256', serialize([$this->getExpression(), $command, $this->args, $this->description ?? '']));
     }
 
     /**
      * Set arguments for the command.
      *
-     * @param array<string, string>|null $args
+     * @param array<array-key, string|null>|null $args
      * @return static
      */
     public function withArgs(?array $args = null): static
@@ -105,9 +112,7 @@ abstract class BaseProcessor implements Processor
 
     protected function runCommandInForeground(): string
     {
-        $command = $this->command;
-
-        return trim($command);
+        return trim($this->compile());
     }
 
     protected function runCommandInBackground(): string
@@ -115,7 +120,7 @@ abstract class BaseProcessor implements Processor
         $command = $this->compile();
 
         if (windows_os()) {
-            $command = (string) pclose(popen("start /B " . $command, "r"));
+            $command = 'start /B "" ' . $command;
         } else {
             $command = '(' . $command . ') > /dev/null 2>&1 &';
         }
@@ -224,7 +229,12 @@ abstract class BaseProcessor implements Processor
      */
     public function onlyOneInstance(int $expiresAfter = 120): static
     {
+        if ($expiresAfter <= 0) {
+            throw new \InvalidArgumentException('The lock lifetime must be positive.');
+        }
+
         $this->preventOverlapping = true;
+        $this->runInForeground();
 
         $this->expiresAfter = $expiresAfter;
 
@@ -285,7 +295,9 @@ abstract class BaseProcessor implements Processor
 
         // Sanitize command arguments.
         foreach ($this->args as $key => $value) {
-            $compiled .= ' ' . escapeshellarg($key);
+            if (is_string($key)) {
+                $compiled .= ' ' . escapeshellarg($key);
+            }
             if (! is_null__($value)) {
                 $compiled .= ' ' . escapeshellarg($value);
             }

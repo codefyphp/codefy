@@ -186,6 +186,7 @@ it('should send self through pipeline using PipeAware trait.', function () {
 });
 
 it('should send self through pipeline using PipeAware trait and withTransaction.', function () {
+    Codefy::$PHP->share(new PDO('sqlite::memory:'));
     $pipeline = new class ('one', 'two') {
         use PipeAware;
 

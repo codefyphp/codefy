@@ -8,9 +8,6 @@ use Codefy\Framework\Console\ConsoleCommand;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Key;
 
-use function Codefy\Framework\Helpers\base_path;
-use function file_put_contents;
-
 class GenerateEncryptionKeyFileCommand extends ConsoleCommand
 {
     protected string $name = 'generate:key:file';
@@ -28,7 +25,28 @@ class GenerateEncryptionKeyFileCommand extends ConsoleCommand
 
         $this->terminalRaw(string: 'Generating encryption key file . . .');
 
-        file_put_contents(base_path(path: '.enc.key'), $key);
+        $path = $this->codefy->basePath() . DIRECTORY_SEPARATOR . '.enc.key';
+        if (file_exists($path) || is_link($path)) {
+            $this->terminalRaw('<error>The encryption key file already exists.</error>');
+            return self::FAILURE;
+        }
+        $mask = umask(0077);
+        try {
+            $file = @fopen($path, 'x');
+        } finally {
+            umask($mask);
+        }
+        if ($file === false) {
+            $this->terminalRaw('<error>Unable to create .enc.key; it may already exist.</error>');
+            return self::FAILURE;
+        }
+        try {
+            if (fwrite($file, $key) !== strlen($key) || !fflush($file)) {
+                throw new \RuntimeException('Unable to write the encryption key.');
+            }
+        } finally {
+            fclose($file);
+        }
 
         $this->terminalRaw(string: '<comment>.enc.key</comment> file created.');
 

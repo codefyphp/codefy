@@ -12,8 +12,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Http\Cookies\CookiesResponse;
 
-use function sha1;
-use function uniqid;
+use function bin2hex;
+use function random_bytes;
 
 trait CsrfTokenAware
 {
@@ -29,7 +29,7 @@ trait CsrfTokenAware
 
     protected function generateToken(): string
     {
-        return sha1(string: uniqid(prefix: sha1(string: $this->salt), more_entropy: true));
+        return bin2hex(random_bytes(32));
     }
 
     /**
@@ -44,6 +44,7 @@ trait CsrfTokenAware
     {
         // Try to retrieve an existing token from the cookie request.
         $token = $this->getTokenFromCookie($request->getCookieParams());
+        $this->isNew = $token === null;
 
         // If token isn't present in the session, we generate a new token.
         if ($token === null) {
@@ -72,13 +73,22 @@ trait CsrfTokenAware
         $name = $this->configContainer->getConfigKey(key: 'csrf.cookie_name', default: 'CSRFSESSID');
         $value = $cookies[$name] ?? '';
 
-        return '' === $value ? null : $this->unsign($value);
+        if (!is_string($value) || $value === '') {
+            return null;
+        }
+
+        try {
+            $token = $this->unsign($value);
+            return ctype_alnum($token) ? $token : null;
+        } catch (WrongKeyOrModifiedCiphertextException) {
+            return null;
+        }
     }
 
     /**
      * Create CSRF cookie to store the encrypted token value.
      *
-     * Encrypt the value for better security (in case of XSS attack).
+     * Authenticate the cookie value. CSRF protection does not prevent XSS.
      *
      * @param ResponseInterface $response
      * @param string $token

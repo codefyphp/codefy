@@ -92,21 +92,19 @@ trait ExpressionAware
      */
     private function inTimeInterval(string $startTime, string $endTime): \Closure
     {
-        [$now, $startTime, $endTime] = [
-            QubusDateTime::now($this->timezone),
-            QubusDateTime::parse($startTime, $this->timezone),
-            QubusDateTime::parse($endTime, $this->timezone),
-        ];
-
-        if ($endTime->lessThan($startTime)) {
-            if ($startTime->greaterThan($now)) {
-                $startTime->subDay();
-            } else {
-                $endTime->addDay();
+        return function () use ($startTime, $endTime): bool {
+            $now = QubusDateTime::now($this->timezone);
+            $start = QubusDateTime::parse($startTime, $this->timezone);
+            $end = QubusDateTime::parse($endTime, $this->timezone);
+            if ($end->lessThan($start)) {
+                if ($start->greaterThan($now)) {
+                    $start->subDay();
+                } else {
+                    $end->addDay();
+                }
             }
-        }
-
-        return fn () => $now->between($startTime, $endTime);
+            return $now->between($start, $end);
+        };
     }
 
     /**
@@ -575,7 +573,9 @@ trait ExpressionAware
             );
         }
 
-        return $this->expression->isDue($now->format('Y-m-d H:i:s'));
+        $expression = $this->expression instanceof CronExpression
+        ? $this->expression : new CronExpression($this->expression);
+        return $expression->isDue($now);
     }
 
     /**

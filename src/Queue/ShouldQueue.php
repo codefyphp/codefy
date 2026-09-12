@@ -9,6 +9,8 @@ interface ShouldQueue
     /**
      * The name of the queue this instance is working with.
      */
+    // PHPCS 3 does not parse PHP 8.4 interface property hooks.
+    //phpcs:disable
     public string $name {
         get;
         set;
@@ -38,6 +40,8 @@ interface ShouldQueue
         get;
         set;
     }
+
+    //phpcs:enable
 
     /**
      * The code/task that should be executed.

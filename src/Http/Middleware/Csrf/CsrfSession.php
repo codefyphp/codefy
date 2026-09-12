@@ -21,7 +21,7 @@ final class CsrfSession implements SessionEntity
 
     public function equals(string $token): bool
     {
-        return !is_null__($this->csrfToken) && $this->csrfToken === $token;
+        return !is_null__($this->csrfToken) && hash_equals($this->csrfToken, $token);
     }
 
     public function csrfToken(): string|null
@@ -31,9 +31,7 @@ final class CsrfSession implements SessionEntity
 
     public function clear(): void
     {
-        if (!empty($this->csrfToken)) {
-            unset($this->csrfToken);
-        }
+        $this->csrfToken = null;
     }
 
     public function isEmpty(): bool

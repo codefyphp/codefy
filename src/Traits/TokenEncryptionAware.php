@@ -54,6 +54,6 @@ trait TokenEncryptionAware
      */
     protected function compareTokens(string $knownString, string $userString): bool
     {
-        return $knownString === $userString;
+        return hash_equals($knownString, $userString);
     }
 }

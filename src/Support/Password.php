@@ -49,7 +49,7 @@ final class Password
      */
     private static function options(): array
     {
-        $options = ['memory_cost' => 1 << 12, 'time_cost' => 2, 'threads' => 2];
+        $options = ['memory_cost' => 19456, 'time_cost' => 2, 'threads' => 1];
 
         if (self::algorithm() === '2y') {
             $options = ['cost' => 12];
@@ -73,7 +73,7 @@ final class Password
      * @return string Hashed password.
      * @throws Exception
      */
-    public static function hash(string $password): string
+    public static function hash(#[\SensitiveParameter] string $password): string
     {
         return password_hash(password: $password, algo: self::algorithm(), options: self::options());
     }
@@ -85,7 +85,7 @@ final class Password
      * @param string $hash
      * @return bool
      */
-    public static function verify(string $password, string $hash): bool
+    public static function verify(#[\SensitiveParameter] string $password, string $hash): bool
     {
         return password_verify($password, $hash);
     }

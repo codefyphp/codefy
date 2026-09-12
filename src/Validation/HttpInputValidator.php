@@ -33,7 +33,7 @@ abstract class HttpInputValidator implements DataValidator
      *
      * @var array<mixed> $data
      */
-    protected array $data = [];
+    protected ?array $data = null;
 
     //phpcs:disable
     protected ?ServiceContainer $container = null
@@ -73,7 +73,7 @@ abstract class HttpInputValidator implements DataValidator
      */
     public function all(): array
     {
-        if (empty($this->data)) {
+        if ($this->data === null) {
             $this->data = array_merge(
                 $this->request->getQueryParams(),
                 (array) $this->request->getParsedBody(),
@@ -90,6 +90,7 @@ abstract class HttpInputValidator implements DataValidator
     public function only(array $keys): static
     {
         $clone = clone $this;
+        $clone->validator = null;
         $clone->data = new DataType()->array->only($this->all(), $keys);
         return $clone;
     }
@@ -100,6 +101,7 @@ abstract class HttpInputValidator implements DataValidator
     public function except(array $keys): static
     {
         $clone = clone $this;
+        $clone->validator = null;
         $clone->data = new DataType()->array->except($this->all(), $keys);
         return $clone;
     }
@@ -111,7 +113,7 @@ abstract class HttpInputValidator implements DataValidator
     {
         $this->validateResolved();
 
-        return $this->data;
+        return $this->validator->getValidData();
     }
 
     /**
@@ -145,10 +147,10 @@ abstract class HttpInputValidator implements DataValidator
 
         $factory = $this->container->make(name: ValidationFactory::class);
 
-        if (!method_exists($this, 'validator')) {
-            $validator = $this->createDefaultValidator($factory);
-            $this->setValidator($validator);
-        }
+        $validator = method_exists($this, 'validator')
+        ? $this->validator($factory)
+        : $this->createDefaultValidator($factory);
+        $this->setValidator($validator);
 
         return $this->validator;
     }

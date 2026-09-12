@@ -32,5 +32,5 @@ it('handles HttpException with json strategy', function () use ($app) {
 
     expect($response->getStatusCode())->toBe(500)
         ->and($response->getHeaderLine('Content-Type'))->toBe('application/json')
-        ->and((string)$response->getBody())->toContain('JSON');
+        ->and((string)$response->getBody())->toContain('Internal Server Error.');
 });

@@ -84,7 +84,7 @@ use const FILTER_VALIDATE_IP;
  */
 function app(?string $name = null, array $args = []): mixed
 {
-    /** @var Application $app */
+    /** @var Application|null $app */
     static $app = null;
 
     if (is_null__($app)) {

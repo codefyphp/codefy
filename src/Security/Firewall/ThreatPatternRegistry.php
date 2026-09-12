@@ -152,6 +152,7 @@ final class ThreatPatternRegistry
     }
 
     /**
+     * @return list<ThreatPattern>
      * @throws TypeException
      */
     private function xss(): array
@@ -199,6 +200,7 @@ final class ThreatPatternRegistry
     }
 
     /**
+     * @return list<ThreatPattern>
      * @throws TypeException
      */
     private function rce(): array
@@ -246,6 +248,7 @@ final class ThreatPatternRegistry
     }
 
     /**
+     * @return list<ThreatPattern>
      * @throws TypeException
      */
     private function fileTraversal(): array
@@ -278,6 +281,7 @@ final class ThreatPatternRegistry
     }
 
     /**
+     * @return list<ThreatPattern>
      * @throws TypeException
      */
     private function ssrf(): array
@@ -323,6 +327,7 @@ final class ThreatPatternRegistry
     }
 
     /**
+     * @return list<ThreatPattern>
      * @throws TypeException
      */
     private function scannerProbes(): array
@@ -363,6 +368,7 @@ final class ThreatPatternRegistry
     }
 
     /**
+     * @return list<ThreatPattern>
      * @throws TypeException
      */
     private function sensitiveFiles(): array
@@ -401,7 +407,7 @@ final class ThreatPatternRegistry
     }
 
     /**
-     * @return array
+     * @return list<ThreatPattern>
      * @throws TypeException
      */
     private function wordpressProbes(): array
@@ -440,6 +446,7 @@ final class ThreatPatternRegistry
     }
 
     /**
+     * @return list<ThreatPattern>
      * @throws TypeException
      */
     private function phpProbes(): array
