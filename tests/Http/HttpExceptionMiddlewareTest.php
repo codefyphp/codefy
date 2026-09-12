@@ -34,7 +34,7 @@ it('handles json with JsonHttpExceptionMiddleware', function () use ($app) {
 
     expect($response->getStatusCode())->toBe(500)
         ->and($response->getHeaderLine('Content-Type'))->toContain('application/json')
-        ->and((string) $response->getBody())->toContain('Boom');
+        ->and((string) $response->getBody())->toContain('Internal Server Error.');
 });
 
 it('handles json with HttpExceptionMiddleware', function () use ($app) {
@@ -47,7 +47,7 @@ it('handles json with HttpExceptionMiddleware', function () use ($app) {
 
     expect($response->getStatusCode())->toBe(500)
         ->and($response->getHeaderLine('Content-Type'))->toContain('application/json')
-        ->and((string) $response->getBody())->toContain('Boom');
+        ->and((string) $response->getBody())->toContain('Internal Server Error.');
 });
 
 it('handles redirection with HttpExceptionMiddleware', function () use ($app) {

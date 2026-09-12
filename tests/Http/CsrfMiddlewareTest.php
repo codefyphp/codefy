@@ -148,3 +148,30 @@ it('accepts a matching configured form field', function () use ($csrfMiddlewareA
 
     expect($handler->calls)->toBe(1);
 });
+
+it('replaces malformed CSRF cookies with a random token', function (mixed $cookie) use ($csrfMiddlewareApp) {
+    $app = $csrfMiddlewareApp();
+    $middleware = new CsrfTokenMiddleware($app->configContainer, $app->httpCookie);
+    $handler = new FakeRequestHandler(new Response());
+    $response = $middleware->process(middleware_request()->withCookieParams(['CSRFSESSID' => $cookie]), $handler);
+    expect($handler->lastRequest->getAttribute(CsrfTokenMiddleware::CSRF_SESSION_ATTRIBUTE))->toMatch('/^[a-f0-9]{64}$/')
+        ->and($response->getHeaderLine('Set-Cookie'))->toContain('CSRFSESSID=');
+})->with(['invalid', [['array']]]);
+
+it('rejects CSRF failures without requiring a Referer', function () use ($csrfMiddlewareApp) {
+    $app = $csrfMiddlewareApp();
+    $request = middleware_request(method: 'POST')->withAttribute(CsrfTokenMiddleware::CSRF_SESSION_ATTRIBUTE, 'expected');
+    expect(fn () => new CsrfProtectionMiddleware($app->configContainer, $app->httpCookie)
+        ->process($request, new FakeRequestHandler(new Response())))->toThrow(TokenMismatchException::class);
+});
+
+it('does not refresh an existing cookie merely because a previous request was new', function () use ($csrfMiddlewareApp) {
+    $app = $csrfMiddlewareApp();
+    $middleware = new CsrfTokenMiddleware($app->configContainer, $app->httpCookie);
+    $handler = new FakeRequestHandler(new Response());
+    $middleware->process(middleware_request(), $handler);
+    $token = $handler->lastRequest->getAttribute(CsrfTokenMiddleware::CSRF_SESSION_ATTRIBUTE);
+    $signed = \Defuse\Crypto\Crypto::encrypt($token, Key::loadFromAsciiSafeString($app->configContainer->getConfigKey('app.crypto_key')));
+    $response = $middleware->process(middleware_request()->withCookieParams(['CSRFSESSID' => $signed]), $handler);
+    expect($response->hasHeader('Set-Cookie'))->toBeFalse();
+});
