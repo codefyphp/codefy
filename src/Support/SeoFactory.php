@@ -4,25 +4,28 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Support;
 
-use Melbahja\Seo\Indexing;
+use Melbahja\Seo\Exceptions\SeoException;
+use Melbahja\Seo\Indexing\GoogleIndexer;
+use Melbahja\Seo\Indexing\IndexNowIndexer;
 use Melbahja\Seo\Interfaces\SchemaInterface;
 use Melbahja\Seo\MetaTags;
-use Melbahja\Seo\Ping;
 use Melbahja\Seo\Robots;
 use Melbahja\Seo\Schema;
 use Melbahja\Seo\Schema\Thing;
 use Melbahja\Seo\Sitemap;
+use Melbahja\Seo\Sitemap\OutputMode;
+use Melbahja\Seo\Utils\HttpClient;
 
 final class SeoFactory
 {
     /**
      * @param string $type
-     * @param array<string, string> $data
+     * @param array<string, mixed> $data
      * @return Thing
      */
     public static function thing(string $type, array $data = []): Thing
     {
-        return new Thing($type, $data);
+        return new Thing(props: $data, type: $type);
     }
 
     /**
@@ -47,13 +50,36 @@ final class SeoFactory
     /**
      * Initialize new sitemap builder.
      *
-     * @param string $domain
-     * @param array<string, string> $options
+     * @param string $baseUrl
+     * @param string|null $saveDir
+     * @param string $indexName
+     * @param string|null $sitemapBaseUrl
+     * @param OutputMode $mode
+     * @param string|null $indent
+     * @param bool $hideGenerator
+     * @param string $dateFormat
      * @return Sitemap
      */
-    public static function sitemap(string $domain, array $options = []): Sitemap
-    {
-        return new Sitemap($domain, $options);
+    public static function sitemap(
+        string $baseUrl,
+        ?string $saveDir = null,
+        string $indexName = 'sitemap.xml',
+        ?string $sitemapBaseUrl = null,
+        OutputMode $mode = OutputMode::TEMP,
+        ?string $indent = ' ',
+        bool $hideGenerator = false,
+        string $dateFormat = 'c'
+    ): Sitemap {
+        return new Sitemap(
+            baseUrl: $baseUrl,
+            saveDir: $saveDir,
+            indexName: $indexName,
+            sitemapBaseUrl: $sitemapBaseUrl,
+            mode: $mode,
+            indent: $indent,
+            hideGenerator: $hideGenerator,
+            dateFormat: $dateFormat
+        );
     }
 
     /**
@@ -67,25 +93,26 @@ final class SeoFactory
     }
 
     /**
-     * Initialize new sitemap ping.
+     * Initialize an IndexNow client. Construction does not submit URLs.
      *
-     * @param array<string> $append
-     * @return Ping
+     * @throws SeoException
      */
-    public static function ping(array $append = []): Ping
-    {
-        return new Ping($append);
+    public static function indexNow(
+        #[\SensitiveParameter] string $apiKey,
+        ?HttpClient $httpClient = null
+    ): IndexNowIndexer {
+        return new IndexNowIndexer(apiKey: $apiKey, httpClient: $httpClient);
     }
 
     /**
-     * Initialize indexer.
+     * Initialize a Google Indexing client with an OAuth access token.
      *
-     * @param string $host
-     * @param array<string, string> $keys
-     * @return Indexing
+     * @throws SeoException
      */
-    public static function indexing(string $host, array $keys): Indexing
-    {
-        return new Indexing(host: $host, keys: $keys);
+    public static function googleIndexer(
+        #[\SensitiveParameter] string $accessToken,
+        ?HttpClient $httpClient = null
+    ): GoogleIndexer {
+        return new GoogleIndexer(accessToken: $accessToken, httpClient: $httpClient);
     }
 }

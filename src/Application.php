@@ -233,9 +233,9 @@ final class Application extends Container
     }
 
     /**
-     * @return QueryBuilder|null
+     * @return Database|null
      */
-    public function getDb(): ?QueryBuilder
+    public function getDb(): ?Database
     {
         return $this->make(name: Database::class);
     }
