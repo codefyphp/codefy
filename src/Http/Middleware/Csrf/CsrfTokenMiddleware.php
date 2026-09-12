@@ -26,6 +26,8 @@ class CsrfTokenMiddleware implements MiddlewareInterface
 
     public const string CSRF_SESSION_ATTRIBUTE = 'CSRF_TOKEN';
 
+    public const string CSRF_SUBMITTED_HEADER_ATTRIBUTE = 'CSRF_SUBMITTED_HEADER_TOKEN';
+
     public static CsrfTokenMiddleware $current;
 
     private ?string $token = null;
@@ -67,13 +69,24 @@ class CsrfTokenMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $header = $this->configContainer->getConfigKey(key: 'csrf.header');
+
+        // Preserve the client-supplied value before adding the compatibility header.
+        $submittedHeader = $request->getHeaderLine($header);
+
         // Retrieve an existing token from the cookie or generate a new one. Plaintext.
         $this->token = $this->prepareToken($request);
 
-        $response = $handler->handle(
-            $request
-                ->withAttribute(self::CSRF_SESSION_ATTRIBUTE, $this->token)
-        );
+        $request = $request
+            ->withAttribute(self::CSRF_SESSION_ATTRIBUTE, $this->token)
+            ->withAttribute(self::CSRF_SUBMITTED_HEADER_ATTRIBUTE, $submittedHeader);
+
+        // Keep the legacy header available downstream without treating it as client input.
+        if ($this->configContainer->getConfigKey(key: 'csrf.request_header') === true) {
+            $request = $request->withHeader($header, $this->token);
+        }
+
+        $response = $handler->handle($request);
 
         // Attach/Refresh the token cookie for the "next" request call. Will get encrypted.
         return $this->createCookie($response, $this->token);
