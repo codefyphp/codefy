@@ -13,14 +13,9 @@ class Interval
      * @param int $count
      */
     public function __construct(
-        public private(set) int $expiresAt {
-            get => $this->expiresAt;
-            set(int $value) => $this->expiresAt = time() + $value;
-        },
-        public int $count = 0 {
-            get => $this->count;
-            set(int $value) => $this->count = $value;
-        }
+        public private(set) int $expiresAt,
+        public int $count = 0,
     ) {
+        $this->expiresAt = time() + $expiresAt;
     }
 }

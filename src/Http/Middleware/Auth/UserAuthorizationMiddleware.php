@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Auth;
 
 use Codefy\Framework\Http\Middleware\Csrf\InvalidTokenException;
-use Codefy\Framework\Traits\TokenEncryptionAware;
 use Defuse\Crypto\Exception\BadFormatException;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
@@ -17,14 +16,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
 use Qubus\Exception\Data\TypeException;
 use Qubus\Http\Factories\RedirectResponseFactory;
-use Qubus\Http\Status;
 
 use function is_string;
 use function Qubus\Support\Helpers\is_false__;
 
 class UserAuthorizationMiddleware implements MiddlewareInterface
 {
-    use TokenEncryptionAware;
+    use AuthTokenAware;
 
     public const string HEADER_HTTP_STATUS_CODE = 'AUTH_STATUS_CODE';
 
@@ -72,14 +70,13 @@ class UserAuthorizationMiddleware implements MiddlewareInterface
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
      * @throws \Exception
-     * @throws WrongKeyOrModifiedCiphertextException
      */
     private function getTokenFromCookie(array $cookies): ?string
     {
         $name = $this->configContainer->getConfigKey(key: 'auth.cookie_name', default: 'USERSESSID');
         $value = $cookies[$name] ?? '';
 
-        return '' === $value ? null : $this->unsign($value);
+        return $this->decryptAuthToken($value);
     }
 
     /**
@@ -90,26 +87,22 @@ class UserAuthorizationMiddleware implements MiddlewareInterface
         $expected = $this->fetchToken($request);
         $provided = $this->getTokenFromCookie($request->getCookieParams());
 
-        return $this->compareTokens($expected, $provided);
+        return $expected !== null && $provided !== null && $this->compareTokens($expected, $provided);
     }
 
 
     /**
      * @throws \Exception
      */
-    private function fetchToken(ServerRequestInterface $request): string
+    private function fetchToken(ServerRequestInterface $request): ?string
     {
         $userDetails = $this->userDetails($request);
 
-        if (is_string($userDetails->token)) {
+        if (is_object($userDetails) && is_string($userDetails->token ?? null) && $userDetails->token !== '') {
             return $userDetails->token;
         }
 
-        throw new InvalidTokenException(
-            uri: $request->getHeaderLine('Referer'),
-            message: 'User token is missing or invalid.',
-            code: Status::FORBIDDEN
-        );
+        return null;
     }
 
     /**

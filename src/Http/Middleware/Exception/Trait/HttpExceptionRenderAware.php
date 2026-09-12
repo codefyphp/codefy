@@ -28,7 +28,7 @@ trait HttpExceptionRenderAware
         $statusCode = $this->normalizeStatusCode((int) $t->getCode());
         $html = $this->errorView->render($statusCode);
 
-        return $this->errorView->toResponse($html);
+        return $this->errorView->toResponse($html)->withStatus($statusCode);
     }
 
     /**
@@ -38,10 +38,10 @@ trait HttpExceptionRenderAware
         ServerRequestInterface $request,
         HttpException|Psr7Exception $e
     ): ResponseInterface {
-        $this->app->flash->error(esc_html($e->getMessage()));
+        $this->app->flash->error(esc_html($this->publicErrorMessage($e)));
 
         return RedirectResponseFactory::create(
-            uri: $e->getUri() ?: $this->getSafeReferrer($request)
+            uri: $this->safeRedirectUri($request, $e->getUri() ?: $request->getHeaderLine('Referer'))
         );
     }
 
@@ -54,7 +54,7 @@ trait HttpExceptionRenderAware
 
         return JsonResponseFactory::create(data: [
             'error' => 'http_error',
-            'message' => esc_html($e->getMessage()),
+            'message' => esc_html($this->publicErrorMessage($e)),
         ], status: $status);
     }
 

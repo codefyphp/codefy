@@ -36,7 +36,7 @@ final class LocalStorage
      */
     private static function getConfigForDriverName(string $name): array
     {
-        return config()->array(key: "filesystem.disks.{$name}") ?? [];
+        return config()->array(key: "filesystem.disks.{$name}", default: []);
     }
 
     /**

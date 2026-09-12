@@ -28,13 +28,7 @@ class StrategyHttpExceptionMiddleware implements MiddlewareInterface
         } catch (HttpException | Psr7Exception $e) {
             return $this->handler->handle($e, $request);
         } catch (\Throwable $t) {
-            $safeException = new HttpException(
-                uri: '/',
-                message: 'Internal Server Error.',
-                code: 500,
-            );
-
-            return $this->handler->handle($safeException, $request);
+            return $this->handler->handle($t, $request);
         }
     }
 }

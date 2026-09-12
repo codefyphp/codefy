@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Http\Middleware\Auth;
 
-use Codefy\Framework\Factory\FileLoggerFactory;
-use Defuse\Crypto\Crypto;
-use Defuse\Crypto\Key;
+use Defuse\Crypto\Exception\BadFormatException;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qubus\Config\ConfigContainer;
-use Qubus\Exception\Exception;
-use ReflectionException;
+use Qubus\Exception\Data\TypeException;
 
 class UserCookieDecryptMiddleware implements MiddlewareInterface
 {
+    use AuthTokenAware;
+
     public const string USER_COOKIE = 'auth.token';
 
     public function __construct(
@@ -25,15 +25,20 @@ class UserCookieDecryptMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws Exception
-     * @throws \ReflectionException
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
+     * @throws TypeException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $cookieName = $this->configContainer->getConfigKey('auth.cookie_name', 'USERSESSID');
         $encrypted  = $request->getCookieParams()[$cookieName] ?? null;
+        $request = $request->withoutAttribute(self::USER_COOKIE);
 
-        if ($encrypted === null || $encrypted === '') {
+        if (!is_string($encrypted) || $encrypted === '') {
             // No cookie present; just continue the pipeline.
             return $handler->handle($request);
         }
@@ -49,20 +54,13 @@ class UserCookieDecryptMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Decrypt the cookie safely. Return null on any failure.
+     * Decrypt the cookie safely. Return null for invalid ciphertext; configuration errors propagate.
      *
-     * @throws \ReflectionException
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
      */
     private function decryptCookie(string $encrypted): ?string
     {
-        try {
-            $keyString = $this->configContainer->getConfigKey(key: 'app.crypto_key');
-            $key = Key::loadFromAsciiSafeString($keyString);
-
-            return Crypto::decrypt($encrypted, $key);
-        } catch (\Throwable $e) {
-            FileLoggerFactory::getLogger()->error($e->getMessage());
-            return null;
-        }
+        return $this->decryptAuthToken($encrypted);
     }
 }

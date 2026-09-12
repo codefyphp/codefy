@@ -38,7 +38,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
     {
         if (true === $this->needsProtection($request) && false === $this->tokensMatch($request)) {
             throw new TokenMismatchException(
-                uri: $request->getServerParams()['HTTP_REFERER'],
+                uri: '/',
                 message: 'Bad CSRF Token',
                 code: Status::PRECONDITION_FAILED
             );
@@ -83,7 +83,7 @@ class CsrfProtectionMiddleware implements MiddlewareInterface
         }
 
         throw new InvalidTokenException(
-            uri: $request->getServerParams()['HTTP_REFERER'],
+            uri: '/',
             message: 'Unable to prepare CSRF protection, token attribute is missing or invalid.',
             code: Status::FORBIDDEN
         );

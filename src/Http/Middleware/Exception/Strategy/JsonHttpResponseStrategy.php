@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Codefy\Framework\Http\Middleware\Exception\Strategy;
 
 use Codefy\Framework\Application;
+use Codefy\Framework\Http\Middleware\Exception\Trait\HttpExceptionUtilityAware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Qubus\Http\Factories\JsonResponseFactory;
 
 final class JsonHttpResponseStrategy implements HttpResponseStrategy
 {
+    use HttpExceptionUtilityAware;
+
     public function __construct(protected Application $app)
     {
     }
@@ -31,8 +34,8 @@ final class JsonHttpResponseStrategy implements HttpResponseStrategy
 
         return JsonResponseFactory::create(
             data: [
-                'error' => $e->getMessage(),
-                'type' => $e::class,
+                'error' => $this->publicErrorMessage($e),
+                ...($this->app->hasDebugModeEnabled() ? ['type' => $e::class] : []),
                 'status' => $status,
             ],
             status: $status

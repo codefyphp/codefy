@@ -14,8 +14,16 @@ class BindRequestMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $previous = RequestContext::has() ? RequestContext::get() : null;
         RequestContext::set($request);
-
-        return $handler->handle($request);
+        try {
+            return $handler->handle($request);
+        } finally {
+            if ($previous !== null) {
+                RequestContext::set($previous);
+            } else {
+                RequestContext::clear();
+            }
+        }
     }
 }

@@ -68,7 +68,7 @@ final class App
                     flush();
                 } catch (\Throwable $e) {
                     $response->status(http_code: 500);
-                    $response->end(content: "Internal Server Error: {$e->getMessage()}");
+                    $response->end(content: 'Internal Server Error.');
                 }
             }
         );

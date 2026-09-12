@@ -105,6 +105,9 @@ final class Pipeline implements Chainable
      */
     public function then(\Closure $destination): mixed
     {
+        if ($this->transactionConnection !== null) {
+            throw new \LogicException('A transactional pipeline cannot be entered recursively.');
+        }
         try {
             $this->doAction(
                 'pipeline_started',

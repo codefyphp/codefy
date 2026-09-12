@@ -63,7 +63,7 @@ final class Application extends Container
     use InvokerAware;
     use LoggerAware;
 
-    public const string APP_VERSION = '3.3.2';
+    public const string APP_VERSION = '4.0.0';
 
     public const string MIN_PHP_VERSION = '8.4';
 
@@ -990,7 +990,7 @@ final class Application extends Container
     /**
      * Create a new CodefyPHP application instance.
      *
-     * @param string[] $config
+     * @param array<string, mixed> $config
      * @return ApplicationBuilder
      * @throws \ReflectionException
      * @throws TypeException

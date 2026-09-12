@@ -4,62 +4,51 @@ declare(strict_types=1);
 
 namespace Codefy\Framework\Support\Traits;
 
-use Codefy\Framework\Proxy\Codefy;
+use PDO;
 
 trait DbTransactionsAware
 {
-    //phpcs:disable
-    /**
-     * Determines whether class uses transaction.
-     */
-    protected bool $useTransaction = false {
-        get => $this->useTransaction;
-    }
-    //phpcs:enable
+    protected bool $useTransaction = false;
+    private ?PDO $transactionConnection = null;
 
-    /**
-     * Enable transaction in pipeline.
-     */
     public function withTransaction(): static
     {
         $this->useTransaction = true;
-
         return $this;
     }
 
-    /**
-     * Begin the transaction if enabled.
-     */
     protected function beginTransaction(): void
     {
         if (!$this->useTransaction) {
             return;
         }
-
-        Codefy::$PHP->getDb()->beginTransaction();
+        $connection = $this->container->make(PDO::class);
+        if ($connection->inTransaction()) {
+            throw new \LogicException('A transactional pipeline cannot own an existing transaction.');
+        }
+        if (!$connection->beginTransaction()) {
+            throw new \RuntimeException('Unable to begin the pipeline transaction.');
+        }
+        $this->transactionConnection = $connection;
     }
 
-    /**
-     * Commit the transaction if enabled.
-     */
     protected function commitTransaction(): void
     {
-        if (!$this->useTransaction) {
+        if ($this->transactionConnection === null) {
             return;
         }
-
-        Codefy::$PHP->getDb()->commit();
+        if (!$this->transactionConnection->commit()) {
+            throw new \RuntimeException('Unable to commit the pipeline transaction.');
+        }
+        $this->transactionConnection = null;
     }
 
-    /**
-     * Rollback the transaction if enabled.
-     */
     protected function rollbackTransaction(): void
     {
-        if (!$this->useTransaction) {
-            return;
+        $connection = $this->transactionConnection;
+        $this->transactionConnection = null;
+        if ($connection !== null && $connection->inTransaction()) {
+            $connection->rollBack();
         }
-
-        Codefy::$PHP->getDb()->rollback();
     }
 }

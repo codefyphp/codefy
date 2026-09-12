@@ -230,10 +230,6 @@ final readonly class FirewallMiddleware implements MiddlewareInterface
 
         if ($this->notifiers !== null) {
             foreach ($this->notifiers->all() as $notifier) {
-                if (! $notifier instanceof ThreatNotifier) {
-                    continue;
-                }
-
                 $this->addNotifier(
                     notifiers: $notifiers,
                     registered: $registered,

@@ -6,9 +6,8 @@ namespace Codefy\Framework\Console\Commands;
 
 use Codefy\Framework\Console\ConsoleCommand;
 use Cron\CronExpression;
-use Qubus\NoSql\Exceptions\InvalidJsonException;
 use Qubus\NoSql\Node;
-use Qubus\Support\Serializer\JsonSerializer;
+use Codefy\Framework\Queue\JobSerializer;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -48,28 +47,40 @@ EOT;
                 "Class",
                 "Expression",
                 "Next Execution",
+                "Attempts",
+                "State",
             ]);
 
-            $path = "" !== $this->getOptions('name') ? $this->getOptions('name') : 'nodequeue';
+            $path = $this->getOptions('name') ?: 'nodequeue';
 
             $db = Node::open(database_path(path: $path));
             $queues = $db->all();
 
             foreach ($queues as $queue) {
-                $object = new JsonSerializer()->unserialize($queue['object']);
+                $object = JobSerializer::decode(
+                    $queue['object'],
+                    $this->codefy->configContainer->getConfigKey('queue.jobs', [])
+                );
 
-                $nextRun = new CronExpression($object->schedule);
+                $nextRun = CronExpression::isValidExpression($object->schedule)
+                ? new CronExpression($object->schedule)->getNextRunDate()
+                : \DateTimeImmutable::createFromFormat('!Y-m-d H:i:s', $object->schedule);
+                if ($nextRun === false) {
+                    throw new \UnexpectedValueException('Invalid queue schedule.');
+                }
 
                 $table->addRow([
                     $queue['name'],
                     get_class($object),
-                    $nextRun->getExpression(),
-                    $nextRun->getNextRunDate()->format(format: 'd F Y h:i A'),
+                    $object->schedule,
+                    $nextRun->format(format: 'd F Y h:i A'),
+                    $queue['executions'],
+                    ($queue['failed'] ?? false) ? 'failed' : ($queue['expire'] > time() ? 'leased' : 'pending'),
                 ]);
             }
 
             $table->render();
-        } catch (InvalidJsonException | \ReflectionException | \Exception $e) {
+        } catch (\Throwable $e) {
             return ConsoleCommand::FAILURE;
         }
 

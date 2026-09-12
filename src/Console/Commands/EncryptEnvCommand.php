@@ -39,7 +39,7 @@ class EncryptEnvCommand extends ConsoleCommand
                 name: 'env',
                 shortcut: null,
                 mode: InputOption::VALUE_REQUIRED,
-                description: 'Set the environment suffix to encrypt. Example: --env=production encrypts .env.production.'
+                description: 'Environment suffix to encrypt; --env=production encrypts .env.production.'
             )
             ->addOption(
                 name: 'file',
@@ -174,6 +174,7 @@ class EncryptEnvCommand extends ConsoleCommand
         );
     }
 
+    /** @param array<string, string> $variables */
     private function expandValue(string $value, array $variables): string
     {
         return preg_replace_callback(

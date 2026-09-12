@@ -15,8 +15,6 @@ use Qubus\Routing\Route\RoutingRegistrar;
 use Qubus\Routing\Router;
 use ReflectionException;
 
-use function array_merge;
-use function array_unique;
 use function is_array;
 use function is_callable;
 use function is_string;
@@ -105,14 +103,10 @@ final class ApplicationBuilder
             $callback($middleware);
         }
 
-        $arrayMerge = array_unique(
-            array_merge(
-                $middleware->getAliases(),
-                $this->app->configContainer->getConfigKey(
-                    key: 'app.middlewares',
-                    default: Middleware::defaultMiddlewares()->toArray()
-                )
-            )
+        $arrayMerge = array_replace(
+            Middleware::defaultMiddlewares()->toArray(),
+            $this->app->configContainer->getConfigKey(key: 'app.middlewares', default: []),
+            $middleware->getAliases()
         );
 
         $this->app->configContainer->setConfigKey(key: 'app', value: ['middlewares' => $arrayMerge]);

@@ -15,15 +15,9 @@ use Qubus\View\Renderer;
 class BaseController extends Controller implements RoutingController
 {
     public function __construct(
-        protected SessionService $sessionService {
-            get => $this->sessionService;
-        },
-        protected Router $router {
-            get => $this->router;
-        },
-        protected Renderer $view {
-            get => $this->view;
-        },
+        protected SessionService $sessionService,
+        protected Router $router,
+        protected Renderer $view,
     ) {
     }
 

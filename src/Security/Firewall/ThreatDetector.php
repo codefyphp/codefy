@@ -125,14 +125,6 @@ final readonly class ThreatDetector
             ),
         ];
 
-        $inputs = [
-            ...$inputs,
-            ...$this->flatten(
-                values: $request->getQueryParams(),
-                source: 'query'
-            ),
-        ];
-
         $parsedBody = $request->getParsedBody();
 
         if (is_array($parsedBody) || is_object($parsedBody)) {
@@ -169,7 +161,10 @@ final readonly class ThreatDetector
             value: (string) $request->getUri(),
         );
 
-        // Headers and cookies follow...
+        foreach ($request->getHeaders() as $name => $values) {
+            $inputs[] = new ThreatInput(source: 'header', name: strtolower($name), value: implode(', ', $values));
+        }
+        $inputs = [...$inputs, ...$this->flatten($request->getCookieParams(), 'cookie')];
 
         return array_values(
             array_filter(

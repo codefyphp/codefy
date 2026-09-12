@@ -33,9 +33,35 @@ trait HttpExceptionUtilityAware
 
     protected function getSafeReferrer(ServerRequestInterface $request): string
     {
-        $ref = $request->getHeaderLine('Referer');
-        // avoid redirect loop
-        return ($ref === $request->getUri()->getPath()) ? '/' : $ref;
+        return $this->safeRedirectUri($request, $request->getHeaderLine('Referer'));
+    }
+
+    protected function safeRedirectUri(ServerRequestInterface $request, string $target): string
+    {
+        // Use local absolute paths only. Reject browser URL normalization ambiguities.
+        if (
+            !str_starts_with($target, '/')
+            || str_starts_with($target, '//')
+            || preg_match('/[\\\\\\x00-\\x20\\x7f]/', rawurldecode($target)) === 1
+            || str_starts_with(rawurldecode($target), '//')
+        ) {
+            return '/';
+        }
+
+        return $target === $request->getUri()->getPath() ? '/' : $target;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function publicErrorMessage(\Throwable $exception): string
+    {
+        $http = $exception instanceof \Qubus\Exception\Http\HttpException
+        || $exception instanceof \Qubus\Exception\Http\Psr7Exception;
+        return $this->app->hasDebugModeEnabled()
+        || ($http && $exception->getCode() >= 400 && $exception->getCode() < 500)
+        ? $exception->getMessage()
+        : 'Internal Server Error.';
     }
 
     /**

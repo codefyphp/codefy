@@ -44,8 +44,8 @@ class CsrfTokenMiddleware implements MiddlewareInterface
     {
         return sprintf(
             '<input type="hidden" name="%s" value="%s">' . "\n",
-            self::$current->getFieldAttr(),
-            self::$current->token
+            htmlspecialchars(self::$current->getFieldAttr(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            htmlspecialchars(self::$current->token ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
         );
     }
 

@@ -40,6 +40,21 @@ class RbacRole implements Role
     #[\Override]
     public function addChild(Role $role): void
     {
+        $pending = [$role];
+        $visited = [];
+        while ($pending !== []) {
+            $child = array_pop($pending);
+            if ($child->name === $this->name) {
+                throw new \LogicException('RBAC inheritance must not contain cycles.');
+            }
+            if (isset($visited[$child->name])) {
+                continue;
+            }
+            $visited[$child->name] = true;
+            foreach ($child->getChildren() as $descendant) {
+                $pending[] = $descendant;
+            }
+        }
         $this->childrenNames[$role->name] = true;
     }
 

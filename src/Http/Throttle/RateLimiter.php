@@ -80,22 +80,37 @@ class RateLimiter
      */
     public function increment(string $identifier, int $count = 1): RateLimiter
     {
+        if ($count <= 0) {
+            throw new \InvalidArgumentException('The increment must be positive.');
+        }
+        $exceeded = null;
         foreach ($this->conditions as $condition) {
             $item = $this->getItem($identifier, $condition);
             if ($item->isHit()) {
-                /** @var Interval $interval */
                 $interval = $item->get();
             } else {
                 $interval = new Interval($condition->ttl);
             }
-            $item->expiresAfter($condition->ttl);
+            if (!$interval instanceof Interval || $interval->expiresAt <= time()) {
+                $interval = new Interval($condition->ttl);
+            }
+            $item->expiresAfter(max(1, $interval->expiresAt - time()));
             $interval->count += $count;
             $item->set($interval);
-            $this->cache->save($item);
+            if (!$this->cache->save($item)) {
+                throw new \RuntimeException('Unable to persist the rate limit counter.');
+            }
 
             if ($interval->count > $condition->limit) {
-                throw new RateException($identifier, $condition);
+                $retryAfter = max(1, $interval->expiresAt - time());
+                if ($exceeded === null || $retryAfter > $exceeded->retryAfter) {
+                    $exceeded = new RateException($identifier, $condition, $retryAfter);
+                }
             }
+        }
+
+        if ($exceeded !== null) {
+            throw $exceeded;
         }
 
         return $this;
@@ -112,6 +127,9 @@ class RateLimiter
         foreach ($this->conditions as $condition) {
             $item = $this->getItem($identifier, $condition);
             $interval = $item->isHit() ? $item->get() : new Interval($condition->ttl);
+            if (!$interval instanceof Interval || $interval->expiresAt <= time()) {
+                $interval = new Interval($condition->ttl);
+            }
             $intervals[] = $interval;
         }
 

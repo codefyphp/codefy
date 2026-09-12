@@ -55,9 +55,9 @@ final class BridgeManager
             $response = $this->app->handle($psrRequest);
 
             return $this->responseMerger->toSwoole($response, $swooleResponse);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $swooleResponse->status(500);
-            $swooleResponse->end("BridgeManager error: {$e->getMessage()}");
+            $swooleResponse->end('Internal Server Error.');
             return $swooleResponse;
         }
     }

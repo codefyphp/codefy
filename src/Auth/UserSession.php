@@ -19,9 +19,7 @@ final class UserSession implements SessionEntity
 
     public function clear(): void
     {
-        if (!empty($this->token)) {
-            unset($this->token);
-        }
+        $this->token = null;
     }
 
     public function isEmpty(): bool
