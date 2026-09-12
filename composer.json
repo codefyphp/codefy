@@ -17,7 +17,7 @@
         "composer/class-map-generator": "^1",
         "dragonmantank/cron-expression": "^3",
         "forxer/gravatar": "^5.0",
-        "melbahja/seo": "^2",
+        "melbahja/seo": "^3",
         "middlewares/cache": "^3",
         "middlewares/minifier": "^2",
         "middlewares/referrer-spam": "^2",
@@ -31,7 +31,8 @@
         "qubus/expressive": "^3",
         "qubus/filesystem": "^4",
         "qubus/inheritance": "^4",
-        "qubus/mail": "^5",
+        "qubus/log": "^5",
+        "qubus/mail": "^6",
         "qubus/nosql": "^4",
         "qubus/router": "^4",
         "qubus/security": "^4",
@@ -39,6 +40,8 @@
         "qubus/validation": "^5",
         "qubus/view": "^3",
         "symfony/console": "^7",
+        "symfony/mailer": "^7.3 || ^8.0",
+        "symfony/mime": "^7.3 || ^8.0",
         "symfony/options-resolver": "^7"
     },
     "autoload": {

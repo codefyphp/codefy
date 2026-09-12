@@ -7,6 +7,7 @@ namespace Codefy\Framework\Traits;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Factory\FileLoggerSmtpFactory;
 use Psr\Log\LoggerInterface;
+use Qubus\Exception\Data\TypeException;
 
 trait LoggerAware
 {
@@ -23,7 +24,7 @@ trait LoggerAware
     /**
      * FileLogger with SMTP support.
      *
-     * @throws \ReflectionException
+     * @throws TypeException
      */
     public static function getSmtpLogger(): LoggerInterface
     {

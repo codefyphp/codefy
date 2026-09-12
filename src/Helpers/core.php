@@ -18,7 +18,6 @@ use Codefy\Framework\Proxy\Codefy;
 use Codefy\Framework\Factory\FileLoggerFactory;
 use Codefy\Framework\Queue\NodeQueue;
 use Codefy\Framework\Queue\ShouldQueue;
-use Codefy\Framework\Support\CodefyMailer;
 use Codefy\Framework\Support\Server;
 use Codefy\QueryBus\Busses\SynchronousQueryBus;
 use Codefy\QueryBus\Enquire;
@@ -70,7 +69,6 @@ use function strlen;
 use function strtoupper;
 use function substr;
 use function substr_count;
-use function ucfirst;
 
 use const FILTER_FLAG_IPV6;
 use const FILTER_VALIDATE_IP;
@@ -194,16 +192,11 @@ function queryBuilder(): QueryBuilder
  * @return bool
  * @throws Exception
  * @throws \ReflectionException
- * @throws \PHPMailer\PHPMailer\Exception
  */
 function mail(string|array $to, string $subject, string $message, array $headers = [], array $attachments = []): bool
 {
-    // Instantiate CodefyMailer.
-    $instance = new CodefyMailer(config: app(name: 'codefy.config'));
-
-    // Set the mailer transport.
-    $func = sprintf('with%s', ucfirst(config(key: 'mailer.mail_transport')));
-    $instance = $instance->{$func}();
+    /** @var \Qubus\Mail\Mailer $instance */
+    $instance = app(name: 'mailer');
 
     // Detect HTML markdown.
     if (substr_count(haystack: $message, needle: '</') >= 1) {
@@ -220,7 +213,8 @@ function mail(string|array $to, string $subject, string $message, array $headers
     $charset = __observer()->filter->applyFilter('mail.charset', 'utf-8');
 
     // Set email subject and body.
-    $instance = $instance->withSubject(subject: $subject)->withBody(data: $message);
+    $instance = $instance->withCharset(charset: $charset ?: 'utf-8')
+        ->withSubject(subject: $subject)->withBody(data: $message);
 
     // Check for other headers and loop through them.
     if (!empty($headers)) {
@@ -253,9 +247,6 @@ function mail(string|array $to, string $subject, string $message, array $headers
     );
     $instance = $instance->withXMailer(xmailer: $xMailer);
 
-    // Set email charset
-    $instance = $instance->withCharset(charset: $charset ?: 'utf-8');
-
     // Check if there are attachments and loop through them.
     if (!empty($attachments)) {
         foreach ($attachments as $filename => $filepath) {
@@ -269,7 +260,7 @@ function mail(string|array $to, string $subject, string $message, array $headers
 
     try {
         return $instance->send();
-    } catch (\PHPMailer\PHPMailer\Exception $e) {
+    } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
         FileLoggerFactory::getLogger()->error($e->getMessage(), ['function' => '\Codefy\Framework\Helpers\mail']);
         return false;
     }
