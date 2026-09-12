@@ -27,7 +27,7 @@ class Callback extends BaseProcessor implements \Stringable, Processor
             return $response;
         } finally {
             if ($this->preventOverlapping) {
-                return $this->mutex->unlock($this);
+                $this->mutex->unlock($this);
             }
         }
     }

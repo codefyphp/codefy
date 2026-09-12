@@ -222,7 +222,5 @@ abstract class BaseTask extends BaseProcessor implements Task
                 return $this->mutex->unlock($this);
             }
         }
-
-        return false;
     }
 }
