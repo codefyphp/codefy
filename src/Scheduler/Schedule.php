@@ -11,11 +11,9 @@ use Codefy\Framework\Scheduler\Processor\Shell;
 use Codefy\Framework\Scheduler\Traits\LiteralAware;
 use Cron\CronExpression;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Qubus\Exception\Data\TypeException;
 use Qubus\Support\DateTime\QubusDateTimeZone;
 
 use function array_filter;
-use function count;
 use function escapeshellarg;
 use function file_exists;
 use function is_callable;
@@ -76,7 +74,7 @@ class Schedule
      * For running Codex commands.
      *
      * @param callable|string $command
-     * @param array<string, string> $args
+     * @param array<array-key, string|null> $args
      * @return Shell|Callback
      */
     public function command(callable|string $command, array $args = []): Shell|Callback
@@ -84,7 +82,7 @@ class Schedule
         if (is_callable($command)) {
             $command = new Callback($this->mutex, $command, $args, $this->timeZone);
         } else {
-            $codexCommand = sprintf('%s codex %s', PHP_BINARY, $command);
+            $codexCommand = sprintf('%s codex %s', escapeshellarg(PHP_BINARY), $command);
             $command = new Shell($this->mutex, $codexCommand, $args, $this->timeZone);
         }
 
@@ -96,7 +94,7 @@ class Schedule
     /**
      * @param string $script
      * @param string|null $bin
-     * @param array<string, string> $args
+     * @param array<array-key, string|null> $args
      * @return Shell
      */
     public function php(string $script, ?string $bin = null, array $args = []): Shell
@@ -104,20 +102,15 @@ class Schedule
         $bin = ! is_null__($bin) && is_string($bin) && file_exists($bin) ?
         $bin : PHP_BINARY;
 
-        $command = $bin . ' ' . $script;
-
-        if (count($args)) {
-            $command .= $this->compileArguments($args);
+        if (!is_file($script)) {
+            throw new \InvalidArgumentException('The script must be a valid path to a file.');
         }
-
-        $command = new Shell($this->mutex, $command, $args, $this->timeZone);
-
-        if (! file_exists($script)) {
-            $this->pushFailedProcessor(
-                $command,
-                new TypeException(message: 'The script should be a valid path to a file.')
-            );
-        }
+        $command = new Shell(
+            $this->mutex,
+            escapeshellarg($bin) . ' ' . escapeshellarg($script),
+            $args,
+            $this->timeZone
+        );
 
         $this->queueProcessor($command);
 
@@ -169,9 +162,12 @@ class Schedule
     {
         foreach ($this->dueProcessors() as $processor) {
             try {
-                $processor->run();
-                $this->pushExecutedProcessor(processor: $processor);
-            } catch (\Qubus\Exception\Exception $ex) {
+                if ($processor->run() !== false) {
+                    $this->pushExecutedProcessor(processor: $processor);
+                } else {
+                    $this->pushFailedProcessor($processor, new \RuntimeException('Processor did not complete.'));
+                }
+            } catch (\Throwable $ex) {
                 $this->pushFailedProcessor($processor, $ex);
             }
         }
@@ -204,7 +200,7 @@ class Schedule
     /**
      * Push a failed process.
      */
-    private function pushFailedProcessor(Processor $processor, \Qubus\Exception\Exception $ex): Processor
+    private function pushFailedProcessor(Processor $processor, \Throwable $ex): Processor
     {
         $this->failedProcessors[] = new FailedProcessor($processor, $ex);
 
@@ -214,7 +210,7 @@ class Schedule
     /**
      * Compile the Task command.
      *
-     * @param array<string, string> $args
+     * @param array<array-key, string|null> $args
      */
     protected function compileArguments(array $args = []): string
     {
@@ -222,7 +218,9 @@ class Schedule
 
         // Sanitize command arguments.
         foreach ($args as $key => $value) {
-            $compiled .= ' ' . escapeshellarg($key);
+            if (is_string($key)) {
+                $compiled .= ' ' . escapeshellarg($key);
+            }
             if (! is_null__($value)) {
                 $compiled .= ' ' . escapeshellarg($value);
             }

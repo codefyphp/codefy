@@ -28,15 +28,23 @@ class Shell extends BaseProcessor implements \Stringable, Processor
             return false;
         }
 
-        $this->callBeforeCallbacks();
+        try {
+            $this->callBeforeCallbacks();
 
-        $task = $this->canRunCommandInBackground() ? $this->runCommandInBackground() : $this->runCommandInForeground();
+            $task = $this->canRunCommandInBackground()
+            ? $this->runCommandInBackground()
+            : $this->runCommandInForeground();
 
-        exec($task);
+            exec($task, $output, $exitCode);
 
-        $this->callAfterCallbacks();
+            $this->callAfterCallbacks();
 
-        return true;
+            return $exitCode === 0;
+        } finally {
+            if ($this->preventOverlapping) {
+                return $this->mutex->unlock($this);
+            }
+        }
     }
 
     public function __toString(): string

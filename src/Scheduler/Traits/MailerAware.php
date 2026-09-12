@@ -15,18 +15,17 @@ trait MailerAware
     /**
      * Send email on Exception.
      */
-    public function sendEmail(\Exception $ex): bool
+    public function sendEmail(\Throwable $ex): bool
     {
+        if (is_null__($this->options['recipients'] ?? null)) {
+            return false;
+        }
+
+        if (is_null__($this->options['smtpSender'] ?? null)) {
+            return false;
+        }
+
         $mailer = app(name: 'mailer');
-
-        if (is_null__($this->options['recipients'])) {
-            return false;
-        }
-
-        if (is_null__($this->options['smtpSender'])) {
-            return false;
-        }
-
         $mailer->send(function ($message) use ($ex) {
             $message->to(explode(',', $this->options['recipients']));
             $message->from($this->options['smtpSender'], $this->options['smtpSenderName']);

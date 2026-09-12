@@ -24,13 +24,19 @@ class Dispatcher extends BaseProcessor implements \Stringable, Processor
             return false;
         }
 
-        $this->callBeforeCallbacks();
+        try {
+            $this->callBeforeCallbacks();
 
-        $this->dispatcher->dispatch($this->command);
+            $this->dispatcher->dispatch($this->command);
 
-        $this->callAfterCallbacks();
+            $this->callAfterCallbacks();
 
-        return true;
+            return true;
+        } finally {
+            if ($this->preventOverlapping) {
+                return $this->mutex->unlock($this);
+            }
+        }
     }
 
     public function setDispatcher(EventDispatcher $dispatcher): static

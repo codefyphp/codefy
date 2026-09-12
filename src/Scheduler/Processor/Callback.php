@@ -17,13 +17,19 @@ class Callback extends BaseProcessor implements \Stringable, Processor
             return false;
         }
 
-        $this->callBeforeCallbacks();
+        try {
+            $this->callBeforeCallbacks();
 
-        $response = $this->exec($this->command);
+            $response = $this->exec($this->command);
 
-        $this->callAfterCallbacks();
+            $this->callAfterCallbacks();
 
-        return $response;
+            return $response;
+        } finally {
+            if ($this->preventOverlapping) {
+                return $this->mutex->unlock($this);
+            }
+        }
     }
 
     /**
@@ -31,9 +37,17 @@ class Callback extends BaseProcessor implements \Stringable, Processor
      */
     private function exec(callable $fn): string
     {
-        $data = $this->call($fn, $this->args, true);
-
-        return is_string($data) ? $data : '';
+        $level = ob_get_level();
+        ob_start();
+        try {
+            $data = $this->call($fn, $this->args);
+            $output = ob_get_contents();
+            return $output !== '' ? $output : (is_string($data) ? $data : '');
+        } finally {
+            while (ob_get_level() > $level) {
+                ob_end_clean();
+            }
+        }
     }
 
     public function __toString(): string
