@@ -11,6 +11,8 @@ use Qubus\Routing\Psr7Router;
 use Qubus\Routing\Route\RouteFileRegistrar;
 use Qubus\Routing\Router;
 
+use ReflectionException;
+
 use function file_exists;
 use function is_array;
 use function is_callable;
@@ -67,6 +69,7 @@ class RoutingServiceProvider extends CodefyServiceProvider
      *
      * @return void
      * @throws TypeException
+     * @throws ReflectionException
      */
     protected function loadRoutes(): void
     {
