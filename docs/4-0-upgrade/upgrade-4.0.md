@@ -35,6 +35,43 @@
 | RBAC                  | Circular inheritance accepted                                              | Adding a role or permission cycle throws `LogicException`, including when persisted graphs are loaded. Repair cyclic stored data.                                                   |
 | Key generation        | Existing `.enc.key` overwritten                                            | Exclusive creation with private permissions; an existing file or symlink results in command failure. There is no implicit key rotation.                                             |
 
+## Controller dependencies
+
+`BaseController` no longer has a constructor or declares `$sessionService` and `$router`.
+Remove calls to `parent::__construct()` targeting the former base constructor and inject
+only the services each concrete controller uses or needs. Controllers that previously inherited
+the constructor must now declare their own dependencies if they use those services.
+
+A controller that only registers middleware needs no injected services:
+
+```php
+class AccountController extends BaseController
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+}
+```
+
+For a controller that needs a renderer, constructor injection can initialize the retained
+protected `$view` property directly:
+
+```php
+class PageController extends BaseController
+{
+    public function __construct(protected \Qubus\View\Renderer $view)
+    {
+        $this->middleware('auth');
+    }
+}
+```
+
+The fluent `setView()` helper remains available for explicit setter injection. Initialize
+`$view` through constructor or setter injection before reading it; it is no longer
+automatically injected by an inherited constructor. The `redirect()` helper requires no
+injected services.
+
 ## Configuration reminders
 
 The dependency upgrades also require mail transport and SEO API migration. Configure `mailer.dsn` for Qubus Mail 6, replace PHPMailer exception catches with Symfony transport exceptions, and update sitemap/indexing factory calls for SEO v3. `CodefyMailer` now implements the mail interface through composition. See the [mail, logging, and SEO migration guide](dependency-upgrades.md) for complete examples and compatibility details.

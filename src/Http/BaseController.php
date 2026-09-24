@@ -7,19 +7,15 @@ namespace Codefy\Framework\Http;
 use Codefy\Framework\Contracts\RoutingController;
 use Psr\Http\Message\ResponseInterface;
 use Qubus\Http\Factories\RedirectResponseFactory;
-use Qubus\Http\Session\SessionService;
 use Qubus\Routing\Controller\Controller;
-use Qubus\Routing\Router;
 use Qubus\View\Renderer;
 
+/**
+ * Shared controller helpers; concrete controllers inject their own dependencies.
+ */
 class BaseController extends Controller implements RoutingController
 {
-    public function __construct(
-        protected SessionService $sessionService,
-        protected Router $router,
-        protected Renderer $view,
-    ) {
-    }
+    protected Renderer $view;
 
     /**
      * Sets the view instance.
